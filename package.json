@@ -1,6 +1,6 @@
 {
   "name": "@processmaker/vue-form-elements",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Reusable VueJS Based Form Elements",
   "keywords": ["html", "vuejs", "form"],
   "homepage": "https://www.github.com/processmaker/vue-form-elements",
