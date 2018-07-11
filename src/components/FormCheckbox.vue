@@ -1,6 +1,6 @@
 <template>
+  <div class="form-group">
   <div class="form-check">
-    <label class="form-check-label" v-uni-for="name">
     <input
     v-uni-id="name"
     type="checkbox"
@@ -9,13 +9,14 @@
     :name="name"
     :disabled="disabled"
     :required='required'
-    :checked="value = checked"
-    :value="value"
+    :checked="checked"
     :crop="crop"
     @change="updateValue">
+    <label class="form-check-label" v-uni-for="name">
     {{label}}</label>
     <div v-if="error" class="invalid-feedback">{{error}}</div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+  </div>
   </div>
 </template>
 
@@ -25,10 +26,13 @@ import { createUniqIdsMixin } from 'vue-uniq-ids'
 const uniqIdsMixin = createUniqIdsMixin()
 export default {
   mixins: [uniqIdsMixin],
+  model: {
+    prop: 'checked',
+    event: 'change'
+  },
   props: [
     'error',
     'checked',
-    'value',
     'options',
     'disabled',
     'required',
@@ -54,8 +58,8 @@ export default {
   },
   methods: {
     updateValue(e) {
-      this.content = e.target.value;
-      this.$emit('input', this.content)
+      this.content = e.target.checked;
+      this.$emit('change', this.content)
     }
   }
 }

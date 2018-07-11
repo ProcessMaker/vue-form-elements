@@ -3,7 +3,8 @@
     <label v-uni-for="name">{{label}}</label>
     <input
     v-uni-id="name"
-    :required='required'
+    :required="required"
+    :value="value"
     :placeholder="placeholder"
     :type="type ? type : 'text'"
     :minlength="minlength"
