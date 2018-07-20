@@ -12,9 +12,12 @@
     :name="name"
     :disabled="disabled"
     class="form-control"
-    :class="{'is-invalid': error, classList}"
+    :class="classList"
     @input="updateValue">
-    <div v-if="error" class="invalid-feedback">{{error}}</div>
+    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
+      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+      <div v-if="error">{{error}}</div>
+    </div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
@@ -22,10 +25,12 @@
 
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
+import ValidationMixin from './mixins/validation'
+
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
 export default {
-  mixins: [uniqIdsMixin],
+  mixins: [uniqIdsMixin, ValidationMixin],
   props: [
     'label',
     'error',
@@ -42,7 +47,9 @@ export default {
   ],
   computed:{
     classList(){
-      let classList = {}
+      let classList = {
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error, 
+      }
       if(this.controlClass){
         classList[this.controlClass] = true
       }
@@ -52,10 +59,11 @@ export default {
   data() {
     return {
       content: '',
+      validator: null
     }
   },
   methods: {
-    updateValue(e) {
+   updateValue(e) {
       this.content = e.target.value;
       this.$emit('input', this.content)
     }

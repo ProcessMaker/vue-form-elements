@@ -4,7 +4,7 @@
     <select
     v-uni-id="name"
     class="form-control"
-    :class="{'is-invalid': error, classList}"
+    :class="classList"
     :multiple='multiple'
     :disabled='disabled'
     :required='required'
@@ -12,27 +12,31 @@
     :size='size'
     @change="updateValue">
         <option
-        :selected="option.value == selected"
+        :selected="option.value == value"
         :value="option.value"
         :key="index"
         v-for="(option, index) in options">
         {{option.content}}
         </option>
     </select>
-    <div v-if="error" class="invalid-feedback">{{error}}</div>
+    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
+      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+      <div v-if="error">{{error}}</div>
+    </div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
 
 
 <script>
+import ValidationMixin from './mixins/validation'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
 
 export default {
-  mixins: [uniqIdsMixin],
+  mixins: [uniqIdsMixin, ValidationMixin],
   props: [
     'label',
     'error',
@@ -49,7 +53,9 @@ export default {
   ],
   computed:{
     classList(){
-      let classList = {}
+      let classList = {
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error, 
+      }
       if(this.controlClass){
         classList[this.controlClass] = true
       }
