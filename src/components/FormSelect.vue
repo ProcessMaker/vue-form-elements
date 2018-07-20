@@ -67,6 +67,15 @@ export default {
       content: '',
     }
   },
+  mounted() {
+    // Check to see if we already have a value set, if not, set it to first option
+    // Also check if we have at least one option available
+    if(!this.value && this.options) {
+      this.content = this.options[0].value;
+      this.$emit('input', this.content)
+    }
+
+  },
   methods: {
     updateValue(e) {
       this.content = e.target.value;
