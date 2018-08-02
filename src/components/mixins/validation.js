@@ -27,7 +27,6 @@ export default {
         },
         validationData: {
             handler: function() {
-                console.log("In handling validationData change")
                 this.updateValidation() 
             },
             deep: true
