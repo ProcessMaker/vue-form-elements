@@ -14,10 +14,14 @@
     class="form-control"
     :class="classList"
     @input="updateValue">
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
-    </div>
+      <template v-if="validator && validator.errorCount">
+        <div class="invalid-feedback" v-for="(errors, index) in validator.errors.all()" :key="index">
+          <div v-for="(error, subIndex) in errors" :key="subIndex">
+            {{error}}
+          </div>
+        </div>
+      </template>
+      <div class="invalid-feedback" v-if="error">{{error}}</div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
@@ -50,7 +54,7 @@ export default {
       let classList = {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error, 
       }
-      if(this.controlClass){
+      if(this.controlClass) {
         classList[this.controlClass] = true
       }
       return classList

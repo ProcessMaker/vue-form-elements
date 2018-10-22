@@ -3,7 +3,9 @@ let Validator = require('validatorjs');
 export default {
     props: [
         'validation',
-        'validationData'
+        'validationData',
+        'validationField',
+        'validationMessages'
     ],
     data() {
         return {
@@ -35,11 +37,12 @@ export default {
     methods: {
         updateValidation() {
             if (this.validation) {
-                let data = this.validationData ? this.validationData : {[this.name]: this.value}
+                let fieldName = this.validationField ? this.validationField : this.name;
+                let data = this.validationData ? this.validationData : {[fieldName]: this.value}
                 let rules = {
-                    [this.name]: this.validation
+                    [fieldName]: this.validation
                 }
-                this.validator = new Validator(data, rules)
+                this.validator = new Validator(data, rules, this.validationMessages ? this.validationMessages : null)
                 // Validation will not run until you call passes/fails on it
                 this.validator.passes()
             } else {

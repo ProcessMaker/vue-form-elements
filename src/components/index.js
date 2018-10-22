@@ -8,6 +8,15 @@ import FormDatePicker from './FormDatePicker'
 
 
 // Export our components
+let components = {
+    FormInput,
+    FormCheckbox,
+    FormRadioButtonGroup,
+    FormSelect,
+    FormTextArea
+}
+
+// Export our named exports
 export {
     FormInput,
     FormCheckbox,
@@ -15,4 +24,22 @@ export {
     FormSelect,
     FormTextArea,
     FormDatePicker
+}
+
+// Export our Vue plugin as our default
+export default {
+    install: function (Vue) {
+        // First check to see if we're already installed
+        if (Vue._processMakerVueFormElementsInstalled) {
+            return
+        }
+
+        // Boolean flag to see if we're already installed
+        Vue._processMakerVueFormElementsInstalled = true
+
+        // Register each of our components
+        for (let component in components) {
+            Vue.component(component, components[component])
+        }
+    }
 }
