@@ -6,23 +6,24 @@ This is a collection of simple and rich form elements that can be bound to a par
 utilizing v-model.  If you are using Bootstrap 4, then the rendering of these elements will be easy to 
 use and fit right into your html rendering.
 
+## Preview
+If you want to preview the elements in action, clone the github repository and run the npm run serve target. 
+The vue-cli project will launch locally and you'll be able to play with each of the form elements.
+
 ## Example Usage For All Form Elements
 ```javascript
 // Bring in the Javascript Distribution
 import Vue from 'vue'
 import VueFormElements from '@processmaker/vue-form-elements'
 
-// Bring in the CSS File
-import '@processmaker/vue-form-elements/dist/vue-form-elements.css'
-
 Vue.use(VueFormElements)
 ```
 Using the above, the components are globally registered with VueJS.
 
 # Example Usage For Single Form Element (Using Single File Components)
-* Note: You must have the vue-loader (https://vue-loader.vuejs.org/) with webpack in order to use the Single File Components independently
+
 ```javascript
-import {FormInput, FormSelect} from '@processmaker/src/components'
+import {FormInput, FormSelect} from '@processmaker/vue-form-elements'
 
 new Vue({
     el: '#example',
@@ -48,3 +49,37 @@ Renders a select field with options being passed in through a property.
 
 ### FormTextArea
 Renders a textarea field
+
+## Field Parameters
+The following are parameters used in the components to configure it
+
+### v-model (required)
+Provides two-way binding to a variable.
+
+### name (required)
+Specify the name of the field. This is used for certain operations and for labeling when used with validation rules.
+
+### type (optional for input type)
+Specifies the type for the input field. This can be text(default) or password or any other html5 supported type.
+
+### options (required for select and radio button group)
+An array of objects that represents possible options for the field. Each object contains two properties. 'content' is 
+the text label of the option. 'value' is the value that will be assigned if the option is selected.
+
+### error (optional)
+An optional error to render with the field.
+
+### rows (optional, for textarea field)
+The number of rows to provide input for the textarea control.
+
+Other properties may exist. Refer to the source code of the control to see what additional properties are available.
+
+## Validation
+Validation is performed by the https://github.com/skaterdav85/validatorjs library in order to resemble
+the functionality of Laravel validation rules.  Please see this repository for more information on applicable 
+rules.
+
+### Validation Parameters
+* validation: string representation of the validation rules
+* validationData: a reference to a data model to validate against. Useful if you are using rules that reference other properties
+* validationMessages: A custom map of validation messages to use if defaults are not wanted (ex: translations). See validatorjs repository for the formatting of this parameter.

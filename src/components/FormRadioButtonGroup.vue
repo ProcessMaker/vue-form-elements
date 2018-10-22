@@ -2,14 +2,14 @@
 <div class="form-group">
   <label>{{label}}</label>
   <div class="form-check" :key="index" v-for="(option, index) in options">
-    <label class="form-check-label" v-uni-for="name">
+    <label class="form-check-label" v-uni-for="name + option.value">
     <input class="form-check-input"
     :class="{'is-invalid': error, classList}"
     type="radio"
     :name="name"
     :disabled="disabled"
     :required='required'
-    v-uni-id="name"
+    v-uni-id="name + option.value"
     :value="option.value"
     @change="updateValue"
     :checked="options.value = checked">
