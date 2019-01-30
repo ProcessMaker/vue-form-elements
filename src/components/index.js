@@ -13,7 +13,8 @@ let components = {
     FormCheckbox,
     FormRadioButtonGroup,
     FormSelect,
-    FormTextArea
+    FormTextArea,
+    FormDatePicker
 }
 
 // Export our named exports
