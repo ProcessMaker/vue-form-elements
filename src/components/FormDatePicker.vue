@@ -1,9 +1,7 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
-    <v-date-picker :value="content" @input="updateValue" :input-props='{ class: "form-control", placeholder: placeholder, readonly: true }'>
->
-   </v-date-picker>
+    <v-date-picker :value="content" @input="updateValue" :input-props='{ class: "form-control", placeholder: placeholder, readonly: true }' />
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
