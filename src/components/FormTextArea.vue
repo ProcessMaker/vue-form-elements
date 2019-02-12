@@ -2,6 +2,7 @@
   <div class='form-group'>
   <label v-uni-for='label'>{{label}}</label>
     <textarea
+    ref="field"
     v-uni-id='label'
     :placeholder='placeholder'
     class='form-control'
@@ -13,7 +14,8 @@
     :name='name'
     :wrap='wrap'
     :disabled="disabled"
-    @input='updateValue' v-text="value"></textarea>
+    @input='updateValue'
+    v-text="value"></textarea>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
@@ -50,7 +52,7 @@ export default {
   computed:{
     classList(){
       let classList = {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error, 
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
       }
       if(this.controlClass){
         classList[this.controlClass] = true
@@ -61,6 +63,12 @@ export default {
   data() {
     return {
       content: '',
+    }
+  },
+  watch: {
+    value() {
+      this.$refs.field.value = this.value;
+      return this.value;
     }
   },
   methods: {
