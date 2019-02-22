@@ -31,8 +31,8 @@ import ValidationMixin from './mixins/validation'
 import Editor from '@tinymce/tinymce-vue';
 import 'tinymce/tinymce';
 import 'tinymce/themes/silver';
-// import 'tinymce/plugins/link';
-// import 'tinymce/plugins/lists';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/lists';
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
@@ -68,7 +68,7 @@ export default {
       editorSettings: {
         inline: true,
         menubar: false,
-        // plugins: [ 'link', 'lists' ],
+        plugins: [ 'link', 'lists' ],
         toolbar: "undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
         skin: "oxide",
         skin_url: '/tinymce/skins/ui/oxide',

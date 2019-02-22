@@ -1,7 +1,6 @@
 <template>
 <div class="container">
     <h1>vue-form-elements playground</h1>
-    <form-html-editor name="sampleHtmlText" label="Sample Html Editor" v-model="data.sampleHtmlText" validation="required|max:100" />
     <form-input name="sampleInput" label="Sample Input with Validation" helper="This is sample help text for the sample input field. This field is required and has a minimum length of 2 characters." v-model="data.sampleInput" :validation="inputValidationRules"></form-input>
     <form-input name="password.value" label="Sample Input to support Password masking" type="password" helper="This password style implementation has complex validation rules. The field must be 9 characters long with at least one alphabetic, lower and upper case, numeric and symbol" v-model="data.password.value" :validation="passwordValidationRules"></form-input>
     <form-input name="password.confirm" label="Sample Input with validation rule to match another property" type="password" helper="This password style has validation rules to match another field" v-model="data.password.confirm" :validationData="data" :validation="confirmPasswordValidationRules"></form-input>
@@ -13,6 +12,9 @@
     <form-radio-button-group name="sampleRadioButtonGroup" label="Sample Radio Button Group" :options="radioButtonOptions" helper="This shows rendering a radio button group with a required validation rule" validation="required"></form-radio-button-group>
     <form-checkbox name="sampleCheckbox" label="Sample Checkbox" v-model="data.sampleCheckbox" helper="This checkbox represents a boolean in the data model."></form-checkbox>
     Current Value: {{data.sampleCheckbox}}
+    <br/>
+    <br/>
+    <form-html-editor name="sampleHtmlText" label="Sample Html Editor" v-model="data.sampleHtmlText" validation="required|max:300" />
 </div>
 </template>
 
@@ -32,7 +34,7 @@ export default {
             data: {
                 sampleInput: '',
                 sampleText: '',
-                sampleHtmlText: '<h3>Edit this text inline</h3>',
+                sampleHtmlText: '<h3>Edit this text inline</h3> <ul> <li>Add some <a href="https://github.com/ProcessMaker/vue-form-elements/branches">links</a></li> <li><span style="color: #8e44ad;">Color</span> some text</li> </ul>',
                 // Shows off ability to nest and refer to items deep in data model
                 password: {
                     value: '',
