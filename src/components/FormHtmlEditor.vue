@@ -1,12 +1,14 @@
 <template>
   <div class='form-group'>
   <label v-uni-for='label'>{{label}}</label>
+    <div :class="classList">
     <editor
       v-model="content"
       :init="editorSettings"
       v-bind:disabled="disabled"
-      :id="name"
-      :class="classList"></editor>
+      :id="name">
+      </editor>
+    </div>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
@@ -64,6 +66,7 @@ export default {
   data() {
     return {
       editorSettings: {
+        inline: true,
         menubar: false,
         // plugins: [ 'link', 'lists' ],
         toolbar: "undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
@@ -82,11 +85,18 @@ export default {
       this.content = this.value;
     }
   },
-  methods: {
+  mounted() {
+    this.content = this.value;
   }
 }
 </script>
 
 <style lang='scss' scoped>
-.invalid-feedback { display: block; }
+.invalid-feedback {
+  display: block;
+}
+div.is-invalid {
+  border: 1px solid #dc3545;
+  border-radius: 0.25rem;
+}
 </style>

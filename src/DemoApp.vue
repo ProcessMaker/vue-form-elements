@@ -32,7 +32,7 @@ export default {
             data: {
                 sampleInput: '',
                 sampleText: '',
-                sampleHtmlText: '',
+                sampleHtmlText: '<h3>Edit this text inline</h3>',
                 // Shows off ability to nest and refer to items deep in data model
                 password: {
                     value: '',
