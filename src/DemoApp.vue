@@ -1,6 +1,7 @@
 <template>
 <div class="container">
     <h1>vue-form-elements playground</h1>
+    <form-html-editor name="sampleHtmlText" label="Sample Html Editor" v-model="data.sampleHtmlText" validation="required|max:100" />
     <form-input name="sampleInput" label="Sample Input with Validation" helper="This is sample help text for the sample input field. This field is required and has a minimum length of 2 characters." v-model="data.sampleInput" :validation="inputValidationRules"></form-input>
     <form-input name="password.value" label="Sample Input to support Password masking" type="password" helper="This password style implementation has complex validation rules. The field must be 9 characters long with at least one alphabetic, lower and upper case, numeric and symbol" v-model="data.password.value" :validation="passwordValidationRules"></form-input>
     <form-input name="password.confirm" label="Sample Input with validation rule to match another property" type="password" helper="This password style has validation rules to match another field" v-model="data.password.confirm" :validationData="data" :validation="confirmPasswordValidationRules"></form-input>
@@ -31,6 +32,7 @@ export default {
             data: {
                 sampleInput: '',
                 sampleText: '',
+                sampleHtmlText: '',
                 // Shows off ability to nest and refer to items deep in data model
                 password: {
                     value: '',
