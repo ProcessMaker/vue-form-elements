@@ -1,12 +1,13 @@
 <template>
   <div class='form-group'>
-  <label v-uni-for='label'>{{label}}</label>
     <div :class="classList">
-    <editor
-      v-model="content"
-      :init="editorSettings"
-      v-bind:disabled="disabled"
-      :id="name">
+      <editor
+        v-model="content"
+        :init="editorSettings"
+        v-bind:disabled="disabled"
+        :id="name"
+        @onFocus="$emit('onFocus')"
+        @onBlur="$emit('onBlur')">
       </editor>
     </div>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
@@ -14,13 +15,6 @@
       <div v-if="error">{{error}}</div>
     </div>
     <small v-if='helper' class='form-text text-muted'>{{helper}}</small>
-
-    Html Preview:
-    <textarea
-    ref="html-preview"
-    class='form-control'
-    v-model="content"
-    v-uni-id='label'></textarea>
   </div>
 </template>
 
@@ -72,7 +66,6 @@ export default {
         toolbar: "undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
         skin: "oxide",
         skin_url: '/tinymce/skins/ui/oxide',
-        content_css : '/tinymce/skins/content/default/content.min.css'
       },
       content: '',
     }
