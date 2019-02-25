@@ -5,7 +5,6 @@
         v-model="content"
         :init="editorSettings"
         v-bind:disabled="disabled"
-        :id="name"
         @onFocus="$emit('onFocus')"
         @onBlur="$emit('onBlur')">
       </editor>
