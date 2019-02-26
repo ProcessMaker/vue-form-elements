@@ -5,7 +5,9 @@ import FormRadioButtonGroup from './FormRadioButtonGroup'
 import FormSelect from './FormSelect'
 import FormTextArea from './FormTextArea'
 import FormDatePicker from './FormDatePicker'
+import FormAccordion from './FormAccordion'
 import FormHtmlEditor from './FormHtmlEditor'
+
 
 // Export our components
 let components = {
@@ -14,6 +16,7 @@ let components = {
     FormRadioButtonGroup,
     FormSelect,
     FormTextArea,
+    FormAccordion,
     FormHtmlEditor
 }
 
@@ -25,6 +28,7 @@ export {
     FormSelect,
     FormTextArea,
     FormDatePicker,
+    FormAccordion,
     FormHtmlEditor
 }
 
