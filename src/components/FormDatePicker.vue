@@ -78,7 +78,7 @@
       },
       dtFormat() {
         if (this.format && typeof this.format === 'string') {
-          if (ProcessMaker !== undefined && ProcessMaker.user !== undefined && ProcessMaker.user.calendar_format !== undefined) {
+          if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.calendar_format) {
             return ProcessMaker.user.calendar_format;
           }
           return this.format;
@@ -125,7 +125,7 @@
         return 1;
       },
       dtZoneServer() {
-        if (ProcessMaker !== undefined && ProcessMaker.user !== undefined && ProcessMaker.user.app_timezone !== undefined) {
+        if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.app_timezone) {
           return ProcessMaker.user.app_timezone;
         }
         if (this.zoneServer) {
@@ -134,7 +134,7 @@
         return 'UTC';
       },
       dtZoneClient() {
-        if (ProcessMaker !== undefined && ProcessMaker.user !== undefined && ProcessMaker.user.timezone !== undefined) {
+        if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.timezone) {
           return ProcessMaker.user.timezone;
         }
         if (this.zoneClient) {
