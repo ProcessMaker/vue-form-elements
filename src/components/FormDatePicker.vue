@@ -1,84 +1,168 @@
 <template>
-  <div class="form-group">
-    <label v-uni-for="name">{{label}}</label>
-    <v-date-picker :value="content" @input="updateValue" :input-props='{ class: "form-control", placeholder: placeholder, readonly: true }' />
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
+    <div class="form-group">
+        <label v-uni-for="name">{{label}}</label>
+        <datetime
+                type="datetime"
+                v-model="content"
+                :value="content"
+                @input="updateValue"
+                input-class="form-control"
+                :value-zone="dtZoneServer"
+                :zone="dtZoneClient"
+                :title="placeholder"
+                :format="dtFormat"
+                :phrases="dtPhrases"
+                :hour-step="dtHourStep"
+                :minute-step="dtMinuteStep"
+                :min-datetime="dtMin"
+                :max-datetime="dtMax"
+                :week-start="7"
+                :use12-hour="dtUse12Hour"
+                auto
+        ></datetime>
+
+        <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
+            <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+            <div v-if="error">{{error}}</div>
+        </div>
+        <small v-if="helper" class="form-text text-muted">{{helper}}</small>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
-  </div>
 </template>
 
 
 <script>
-import { createUniqIdsMixin } from "vue-uniq-ids";
-import ValidationMixin from "./mixins/validation";
-import { setupCalendar, DatePicker} from 'v-calendar'
+  /* global ProcessMaker*/
+  import {createUniqIdsMixin} from "vue-uniq-ids";
+  import ValidationMixin from "./mixins/validation";
+  import {Datetime} from 'vue-datetime';
 
-import "v-calendar/lib/v-calendar.min.css";
+  // You need a specific loader for CSS files
+  import 'vue-datetime/dist/vue-datetime.css'
 
-
-setupCalendar();
-
-// Create the mixin
-const uniqIdsMixin = createUniqIdsMixin();
-export default {
-  mixins: [uniqIdsMixin, ValidationMixin],
-  components: {
-    'v-date-picker': DatePicker
-  },
-  props: [
-    "label",
-    "error",
-    "helper",
-    "type",
-    "name",
-    "minlength",
-    "maxlength",
-    "required",
-    "disabled",
-    "placeholder",
-    "value",
-    "controlClass"
-  ],
-  computed: {
-    classList() {
-      let classList = {
-        "is-invalid":
-          (this.validator && this.validator.errorCount) || this.error
-      };
-      if (this.controlClass) {
-        classList[this.controlClass] = true;
-      }
-      return classList;
-    }
-  },
-  data() {
-    return {
-      content: this.parseDateFromValue(),
-      validator: null
-    };
-  },
-  watch: {
-    value() {
-      this.content = this.parseDateFromValue()
-    }
-  },
-  methods: {
-    parseDateFromValue() {
-      let value = new Date(this.value)
-      // Check if value is a valid date
-      if(isNaN(value)) {
-        return null
-      }
-      return value
+  // Create the mixin
+  const uniqIdsMixin = createUniqIdsMixin();
+  export default {
+    mixins: [uniqIdsMixin, ValidationMixin],
+    components: {
+      datetime: Datetime
     },
-    updateValue(newDate) {
-      this.$emit("input", newDate.toISOString());
+    props: [
+      'label',
+      'error',
+      'helper',
+      'type',
+      'name',
+      'placeholder',
+      'value',
+      'minDatetime',
+      'maxDatetime',
+      'format',
+      'phrases',
+      'hourStep',
+      'minuteStep',
+      'zoneServer',
+      'zoneClient'
+    ],
+    computed: {
+      dtMin() {
+        if (this.minDatetime) {
+          return this.minDatetime;
+        }
+        return "1";
+      },
+      dtMax() {
+        if (this.maxDatetime) {
+          return this.maxDatetime;
+        }
+        return "1";
+      },
+      dtFormat() {
+        if (this.format && typeof this.format === 'string') {
+          if (ProcessMaker !== undefined && ProcessMaker.user !== undefined && ProcessMaker.user.calendar_format !== undefined) {
+            return ProcessMaker.user.calendar_format;
+          }
+          return this.format;
+        }
+        let format = {};
+        format.year = 'numeric';
+        format.month = 'numeric';
+        format.day = 'numeric';
+        format.hour = 'numeric';
+        format.minute = '2-digit';
+        if (this.format && typeof this.format === 'object') {
+          format.year = this.format.year ? this.format.year : format.year;
+          format.month = this.format.month ? this.format.month : format.month;
+          format.day = this.format.day ? this.format.day : format.day;
+          format.hour = this.format.hour ? this.format.hour : format.hour;
+          format.minute = this.format.minute ? this.format.minute : format.minute;
+
+          if (this.format.timeZoneName) {
+            format.timeZoneName = this.format.timeZoneName;
+          }
+        }
+        return format;
+      },
+      dtPhrases() {
+        let phrases = {};
+        phrases.ok = 'Continue';
+        phrases.cancel = 'Exit';
+        if (this.phrases) {
+          phrases.ok = this.phrases.ok ? this.phrases.ok : phrases.ok;
+          phrases.cancel = this.phrases.cancel ? this.phrases.cancel : phrases.cancel;
+        }
+        return phrases;
+      },
+      dtHourStep() {
+        if (this.hourStep) {
+          return parseInt(this.hourStep);
+        }
+        return 1;
+      },
+      dtMinuteStep() {
+        if (this.minuteStep) {
+          return parseInt(this.minuteStep);
+        }
+        return 1;
+      },
+      dtZoneServer() {
+        if (ProcessMaker !== undefined && ProcessMaker.user !== undefined && ProcessMaker.user.app_timezone !== undefined) {
+          return ProcessMaker.user.app_timezone;
+        }
+        if (this.zoneServer) {
+          return this.zoneServer;
+        }
+        return 'UTC';
+      },
+      dtZoneClient() {
+        if (ProcessMaker !== undefined && ProcessMaker.user !== undefined && ProcessMaker.user.timezone !== undefined) {
+          return ProcessMaker.user.timezone;
+        }
+        if (this.zoneClient) {
+          return this.zoneClient;
+        }
+        return 'local'
+      },
+      dtUse12Hour() {
+        return this.use12Hour ? Boolean(this.use12Hour) : false;
+      }
+    },
+    data() {
+      return {
+        content: null,
+        validator: null
+      };
+    },
+    watch: {
+      value() {
+        this.content = this.value;
+      }
+    },
+    methods: {
+      updateValue(newDate) {
+        this.$emit("input", newDate);
+      }
     }
-  }
-};
+  };
 </script>
 
 <style lang="scss" scoped>
