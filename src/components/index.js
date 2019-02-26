@@ -5,6 +5,7 @@ import FormRadioButtonGroup from './FormRadioButtonGroup'
 import FormSelect from './FormSelect'
 import FormTextArea from './FormTextArea'
 import FormDatePicker from './FormDatePicker'
+import FormAccordion from './FormAccordion'
 
 
 // Export our components
@@ -13,7 +14,8 @@ let components = {
     FormCheckbox,
     FormRadioButtonGroup,
     FormSelect,
-    FormTextArea
+    FormTextArea,
+    FormAccordion
 }
 
 // Export our named exports
@@ -23,7 +25,8 @@ export {
     FormRadioButtonGroup,
     FormSelect,
     FormTextArea,
-    FormDatePicker
+    FormDatePicker,
+    FormAccordion
 }
 
 // Export our Vue plugin as our default
