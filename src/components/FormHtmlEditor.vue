@@ -4,9 +4,8 @@
       <editor
         v-model="content"
         :init="editorSettings"
-        v-bind:disabled="disabled"
-        @onFocus="$emit('onFocus')"
-        @onBlur="$emit('onBlur')">
+        :disabled="disabled"
+        v-on="$listeners">
       </editor>
     </div>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
@@ -26,6 +25,8 @@ import 'tinymce/tinymce';
 import 'tinymce/themes/silver';
 import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
+import 'tinymce/skins/ui/oxide/skin.min.css';
+import 'tinymce/skins/ui/oxide/content.inline.min.css';
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
@@ -62,9 +63,8 @@ export default {
         inline: true,
         menubar: false,
         plugins: [ 'link', 'lists' ],
-        toolbar: "undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-        skin: "oxide",
-        skin_url: '/tinymce/skins/ui/oxide',
+        toolbar: 'undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+        skin: false,
       },
       content: '',
     }
@@ -83,11 +83,11 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
+<style scoped>
 .invalid-feedback {
   display: block;
 }
-div.is-invalid {
+.is-invalid {
   border: 1px solid #dc3545;
   border-radius: 0.25rem;
 }

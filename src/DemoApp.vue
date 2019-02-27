@@ -12,9 +12,7 @@
     <form-radio-button-group name="sampleRadioButtonGroup" label="Sample Radio Button Group" :options="radioButtonOptions" helper="This shows rendering a radio button group with a required validation rule" validation="required"></form-radio-button-group>
     <form-checkbox name="sampleCheckbox" label="Sample Checkbox" v-model="data.sampleCheckbox" helper="This checkbox represents a boolean in the data model."></form-checkbox>
     Current Value: {{data.sampleCheckbox}}
-    <br/>
-    <br/>
-    <form-html-editor name="sampleHtmlText" label="Sample Html Editor" v-model="data.sampleHtmlText" validation="required|max:300" />
+    <form-html-editor name="sampleHtmlText" label="Sample Html Editor" v-model="data.sampleHtmlText" validation="required|max:300" class="mt-3" />
 </div>
 </template>
 
