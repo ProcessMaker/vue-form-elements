@@ -6,7 +6,7 @@
                 v-model="content"
                 :value="content"
                 @input="updateValue"
-                input-class="form-control"
+                :input-class="dtClass"
                 :value-zone="dtZoneServer"
                 :zone="dtZoneClient"
                 :title="placeholder"
@@ -59,11 +59,20 @@
       'format',
       'phrases',
       'hourStep',
+      'use12Hour',
       'minuteStep',
       'zoneServer',
-      'zoneClient'
+      'zoneClient',
+      'controlClass',
     ],
     computed: {
+      dtClass() {
+        let controlClass = 'form-control';
+        if (this.controlClass) {
+          controlClass = this.controlClass;
+        }
+        return controlClass;
+      },
       dtMin() {
         if (this.minDatetime) {
           return this.minDatetime;
@@ -77,10 +86,11 @@
         return "1";
       },
       dtFormat() {
+        //If the global variable is set by default.
+        if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.calendar_format) {
+          return ProcessMaker.user.calendar_format;
+        }
         if (this.format && typeof this.format === 'string') {
-          if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.calendar_format) {
-            return ProcessMaker.user.calendar_format;
-          }
           return this.format;
         }
         let format = {};
@@ -106,7 +116,14 @@
         let phrases = {};
         phrases.ok = 'Continue';
         phrases.cancel = 'Exit';
-        if (this.phrases) {
+        if (this.phrases && typeof this.phrases === 'string') {
+          try {
+            phrases = JSON.parse(this.phrases)
+          } catch (e) {
+            //phrases with values by default
+          }
+        }
+        if (this.phrases && typeof this.phrases === 'object') {
           phrases.ok = this.phrases.ok ? this.phrases.ok : phrases.ok;
           phrases.cancel = this.phrases.cancel ? this.phrases.cancel : phrases.cancel;
         }
@@ -125,6 +142,7 @@
         return 1;
       },
       dtZoneServer() {
+        //If the global variable is set by default.
         if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.app_timezone) {
           return ProcessMaker.user.app_timezone;
         }
@@ -134,6 +152,7 @@
         return 'UTC';
       },
       dtZoneClient() {
+        //If the global variable is set by default.
         if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.timezone) {
           return ProcessMaker.user.timezone;
         }
