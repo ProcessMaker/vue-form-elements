@@ -70,6 +70,13 @@
                        helper="This checkbox represents a boolean in the data model. Need parameter 'toggle=true' for enable custom switches">
         </form-checkbox>
         Current Value: {{data.sampleCustomCheckbox}}
+        <form-radio-button-group name="sampleCustomRadioButtonGroup"
+                                 toggle="true"
+                                 label="Sample Custom Radio Button Group"
+                                 :options="radioButtonOptions"
+                                 helper="This shows rendering a radio button group with a required validation rule. Need parameter 'toggle=true' for enable custom radio"
+                                 validation="required">
+        </form-radio-button-group>
         <form-date-picker
                 label="Sample calendar"
                 placeholder="Placeholder Sample Calendar"
