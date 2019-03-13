@@ -67,7 +67,7 @@
                        label="Sample Custom Checkbox"
                        v-model="data.sampleCustomCheckbox"
                        toggle="true"
-                       helper="This checkbox represents a boolean in the data model.">
+                       helper="This checkbox represents a boolean in the data model. Need parameter 'toggle=true' for enable custom switches">
         </form-checkbox>
         Current Value: {{data.sampleCustomCheckbox}}
         <form-date-picker
