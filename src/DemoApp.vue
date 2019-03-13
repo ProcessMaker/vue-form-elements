@@ -62,6 +62,14 @@
                        helper="This checkbox represents a boolean in the data model.">
         </form-checkbox>
         Current Value: {{data.sampleCheckbox}}
+
+        <form-checkbox name="sampleCustomCheckbox"
+                       label="Sample Custom Checkbox"
+                       v-model="data.sampleCustomCheckbox"
+                       toggle="true"
+                       helper="This checkbox represents a boolean in the data model.">
+        </form-checkbox>
+        Current Value: {{data.sampleCustomCheckbox}}
         <form-date-picker
                 label="Sample calendar"
                 placeholder="Placeholder Sample Calendar"
@@ -100,6 +108,7 @@
             confirm: ''
           },
           sampleCheckbox: false,
+          sampleCustomCheckbox: false,
           sampleRadioButtonGroup: '',
           sampleSelect: '',
           sampleCustomValidationError: '',
