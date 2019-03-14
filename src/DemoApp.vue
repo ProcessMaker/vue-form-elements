@@ -88,6 +88,12 @@
                 phrases='{"ok": "Save", "cancel": "Cancel"}'
                 v-model="data.sampleDatePicker">
         </form-date-picker>
+        <form-html-editor
+            name="sampleHtmlText"
+            label="Sample Html Editor"
+            v-model="data.sampleHtmlText"
+            validation="required|max:300" class="mt-3"
+        />
     </div>
 </template>
 
@@ -109,6 +115,7 @@
         data: {
           sampleInput: '',
           sampleText: '',
+          sampleHtmlText: '<h3>Edit this text inline</h3> <ul> <li>Add some <a href="https://github.com/ProcessMaker/vue-form-elements/branches">links</a></li> <li><span style="color: #8e44ad;">Color</span> some text</li> </ul>',
           // Shows off ability to nest and refer to items deep in data model
           password: {
             value: '',
