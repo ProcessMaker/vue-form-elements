@@ -1,6 +1,5 @@
 .DS_Store
 node_modules
-public/tinymce
 /dist
 
 # local env files
