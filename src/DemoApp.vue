@@ -80,12 +80,11 @@
         <form-date-picker
                 label="Sample calendar"
                 placeholder="Placeholder Sample Calendar"
-                helper="Helper Sample Calendar, Theming is supported by overwriting CSS classes. "
-                control-class="form-control"
+                helper="Helper Sample Calendar, Theming is supported by overwriting CSS classes."
                 format="yyyy-MM-dd tttt"
-                use12-hour="true"
-                minuteStep="2"
-                phrases='{"ok": "Save", "cancel": "Cancel"}'
+                :use12-hour="true"
+                :minuteStep="2"
+                :phrases="{ ok: 'Save', cancel: 'Cancel' }"
                 v-model="data.sampleDatePicker">
         </form-date-picker>
         <form-html-editor
@@ -101,8 +100,9 @@
 <script>
   // We're bringing in our Vue plugin
   import Vue from 'vue'
-  import VueFormElements from './components/index'
-  import FormDatePicker from "./components/FormDatePicker";
+  import VueFormElements from './components/index';
+  import FormDatePicker from './components/FormDatePicker';
+  import { DateTime } from 'luxon';
 
   // Register our plugin
   Vue.use(VueFormElements)
@@ -126,7 +126,7 @@
           sampleRadioButtonGroup: '',
           sampleSelect: '',
           sampleCustomValidationError: '',
-          sampleDatePicker: ''
+          sampleDatePicker: DateTime.local().toISO()
         },
         inputValidationRules: 'required|min:2',
         textValidationRules: 'max:255',
