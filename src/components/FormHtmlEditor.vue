@@ -2,11 +2,11 @@
   <div class='form-group'>
     <div :class="classList">
       <editor
-        v-model="content"
+        v-on="$listeners"
+        v-bind="$attrs"
+        :value="content"
         :init="editorSettings"
-        :disabled="disabled"
-        v-on="$listeners">
-      </editor>
+      />
     </div>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
@@ -32,19 +32,17 @@ import 'tinymce/skins/ui/oxide/content.inline.min.css';
 const uniqIdsMixin = createUniqIdsMixin()
 
 export default {
+  inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin],
   components: {
-      Editor
+    Editor
   },
   props: [
-    'label',
     'error',
     'name',
-    'required',
-    'value',
     'helper',
-    'disabled',
-    'controlClass'
+    'controlClass',
+    'content',
   ],
   computed:{
     classList(){
@@ -66,19 +64,7 @@ export default {
         toolbar: 'undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
         skin: false,
       },
-      content: '',
     }
-  },
-  watch: {
-    content() {
-      this.$emit('input', this.content)
-    },
-    value() {
-      this.content = this.value;
-    }
-  },
-  mounted() {
-    this.content = this.value;
   }
 }
 </script>
@@ -87,6 +73,7 @@ export default {
 .invalid-feedback {
   display: block;
 }
+
 .is-invalid {
   border: 1px solid #dc3545;
   border-radius: 0.25rem;
