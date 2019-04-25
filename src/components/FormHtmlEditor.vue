@@ -4,7 +4,7 @@
       <editor
         v-on="$listeners"
         v-bind="$attrs"
-        :value="content"
+        :value="rendered"
         :init="editorSettings"
       />
     </div>
@@ -21,6 +21,7 @@
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
 import Editor from '@tinymce/tinymce-vue';
+import Mustache from 'mustache';
 import 'tinymce/tinymce';
 import 'tinymce/themes/silver';
 import 'tinymce/plugins/link';
@@ -43,6 +44,7 @@ export default {
     'helper',
     'controlClass',
     'content',
+    'validationData',
   ],
   computed:{
     classList(){
@@ -53,6 +55,17 @@ export default {
         classList[this.controlClass] = true
       }
       return classList
+    },
+    rendered() {
+      if (!this.validationData) {
+        return this.content;
+      }
+
+      try {
+        return Mustache.render(this.content, this.validationData);
+      } catch (error) {
+        return this.content;
+      }
     }
   },
   data() {
