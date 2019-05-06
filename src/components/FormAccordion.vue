@@ -2,7 +2,7 @@
   <div class="form-accordtion-container">
     <button
       @click="showCollapse = !showCollapse"
-      class="text-left card-header d-flex align-items-center w-100 border-none border-bottom"
+      class="accordion-button text-left card-header d-flex align-items-center w-100"
       >
         <i
           v-if="config.icon"
@@ -14,12 +14,12 @@
 
         <i
           v-if="showCollapse"
-          class="fas fa-caret-down accordion-arrow ml-auto"
+          class="fas fa-chevron-down accordion-arrow ml-auto"
         />
 
         <i
           v-else
-          class="fas fa-caret-right accordion-arrow ml-auto"
+          class="fas fa-chevron-right accordion-arrow ml-auto"
         />
     </button>
 
@@ -69,15 +69,10 @@ export default {
   padding-bottom: 0.25rem;
 
   .accordion-button {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1rem;
     cursor: pointer;
+    outline: none;
     border: none;
-    background: none;
-    padding: 0.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 
     .button-label {
       margin-right: auto;
