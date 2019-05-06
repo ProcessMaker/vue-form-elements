@@ -2,7 +2,7 @@
   <div class="form-accordtion-container">
     <button
       @click="showCollapse = !showCollapse"
-      class="accordion-buttontext-left card-header d-flex align-items-center w-100"
+      class="accordion-button text-left card-header d-flex align-items-center w-100"
       >
         <i
           v-if="config.icon"
