@@ -1,8 +1,10 @@
 <template>
-  <div class="form-accordtion-container" :class="config.containerClass">
+  <div class="form-accordtion-container">
     <button
       @click="showCollapse = !showCollapse"
-      :class="config.buttonClass">
+      :class="config.class"
+      class="text-left card-header d-flex align-items-center w-100"
+      >
         <i
           v-if="config.icon"
           class="fas"
@@ -17,19 +19,17 @@
         />
     </button>
 
-    <div class="accordion-wrapper" :class="config.accordionWrapperClass">
+    <div class="accordion-wrapper">
       <b-collapse
         v-model="showCollapse"
         :id="'collapse-' + config.name"
         class="accordion"
-        :class="config.collapseClass"
       >
         <div v-for="element in items" :key="element.config.name">
           <component
             v-bind="element.config"
             :is="element.component"
             v-model="transientData[element.config.name]"
-            :class="config.formElementClass"
           />
         </div>
       </b-collapse>
