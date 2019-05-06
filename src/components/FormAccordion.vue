@@ -72,6 +72,7 @@ export default {
     cursor: pointer;
     outline: none;
     border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 
     .button-label {
       margin-right: auto;
