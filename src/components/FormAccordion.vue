@@ -2,19 +2,18 @@
   <div class="form-accordtion-container">
     <button
       @click="showCollapse = !showCollapse"
-      :class="config.class"
       class="text-left card-header d-flex align-items-center w-100"
       >
         <i
           v-if="config.icon"
-          class="fas"
+          class="fas mr-1"
           :class="`fa-${config.icon}`"
         />
 
         <span class="button-label">{{ config.label }}</span>
 
         <i
-          class="fas fa-caret-right accordion-arrow"
+          class="fas fa-caret-right accordion-arrow ml-auto"
           :class="[{ opened: showCollapse }]"
         />
     </button>
@@ -82,7 +81,6 @@ export default {
 
     .accordion-arrow {
       transition: all 200ms;
-      margin-left: auto;
 
       &.opened {
         transform: rotate(90deg);
