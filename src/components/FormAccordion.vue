@@ -13,8 +13,13 @@
         <span class="button-label">{{ config.label }}</span>
 
         <i
+          v-if="showCollapse"
+          class="fas fa-caret-down accordion-arrow ml-auto"
+        />
+
+        <i
+          v-else
           class="fas fa-caret-right accordion-arrow ml-auto"
-          :class="[{ opened: showCollapse }]"
         />
     </button>
 
@@ -77,14 +82,6 @@ export default {
     .button-label {
       margin-right: auto;
       margin-left: 1rem;
-    }
-
-    .accordion-arrow {
-      transition: all 200ms;
-
-      &.opened {
-        transform: rotate(90deg);
-      }
     }
   }
 
