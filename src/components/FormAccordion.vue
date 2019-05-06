@@ -86,8 +86,8 @@ export default {
   }
 
   .accordion-wrapper {
-    border-bottom: 1px solid #aaa;
     padding: 0.5rem;
+    padding-bottom: 0;
   }
 }
 </style>
