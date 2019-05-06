@@ -82,6 +82,7 @@ export default {
 
     .accordion-arrow {
       transition: all 200ms;
+      margin-left: auto;
 
       &.opened {
         transform: rotate(90deg);
