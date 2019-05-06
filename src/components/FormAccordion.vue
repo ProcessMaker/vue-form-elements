@@ -1,18 +1,26 @@
 <template>
   <div class="form-accordtion-container">
-    <button @click="showCollapse = !showCollapse" class="accordion-button">
-      <i
-        v-if="config.icon"
-        class="fas"
-        :class="`fa-${config.icon}`"
-      />
+    <button
+      @click="showCollapse = !showCollapse"
+      class="text-left card-header d-flex align-items-center w-100 border-none border-bottom"
+      >
+        <i
+          v-if="config.icon"
+          class="fas mr-1"
+          :class="`fa-${config.icon}`"
+        />
 
-      <span class="button-label">{{ config.label }}</span>
+        <span class="button-label">{{ config.label }}</span>
 
-      <i
-        class="fas fa-caret-right accordion-arrow"
-        :class="{ opened: showCollapse }"
-      />
+        <i
+          v-if="showCollapse"
+          class="fas fa-caret-down accordion-arrow ml-auto"
+        />
+
+        <i
+          v-else
+          class="fas fa-caret-right accordion-arrow ml-auto"
+        />
     </button>
 
     <div class="accordion-wrapper">
@@ -75,19 +83,11 @@ export default {
       margin-right: auto;
       margin-left: 1rem;
     }
-
-    .accordion-arrow {
-      transition: all 200ms;
-
-      &.opened {
-        transform: rotate(90deg);
-      }
-    }
   }
 
   .accordion-wrapper {
-    border-bottom: 1px solid #aaa;
-    padding-top: 0.5rem;
+    padding: 0.5rem;
+    padding-bottom: 0;
   }
 }
 </style>
