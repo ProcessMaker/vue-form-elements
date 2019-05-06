@@ -1,31 +1,35 @@
 <template>
-  <div class="form-accordtion-container">
-    <button @click="showCollapse = !showCollapse" class="accordion-button">
-      <i
-        v-if="config.icon"
-        class="fas"
-        :class="`fa-${config.icon}`"
-      />
+  <div class="form-accordtion-container" :class="config.containerClass">
+    <button
+      @click="showCollapse = !showCollapse"
+      :class="config.buttonClass">
+        <i
+          v-if="config.icon"
+          class="fas"
+          :class="`fa-${config.icon}`"
+        />
 
-      <span class="button-label">{{ config.label }}</span>
+        <span class="button-label">{{ config.label }}</span>
 
-      <i
-        class="fas fa-caret-right accordion-arrow"
-        :class="{ opened: showCollapse }"
-      />
+        <i
+          class="fas fa-caret-right accordion-arrow"
+          :class="[{ opened: showCollapse }]"
+        />
     </button>
 
-    <div class="accordion-wrapper">
+    <div class="accordion-wrapper" :class="config.accordionWrapperClass">
       <b-collapse
         v-model="showCollapse"
         :id="'collapse-' + config.name"
         class="accordion"
+        :class="config.collapseClass"
       >
         <div v-for="element in items" :key="element.config.name">
           <component
             v-bind="element.config"
             :is="element.component"
             v-model="transientData[element.config.name]"
+            :class="config.formElementClass"
           />
         </div>
       </b-collapse>
