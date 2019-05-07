@@ -1,5 +1,5 @@
 <template>
-  <div class="form-accordtion-container">
+  <div>
     <button
       @click="showCollapse = !showCollapse"
       class="accordion-button text-left card-header d-flex align-items-center w-100"
@@ -23,21 +23,19 @@
         />
     </button>
 
-    <div class="accordion-wrapper">
-      <b-collapse
-        v-model="showCollapse"
-        :id="'collapse-' + config.name"
-        class="accordion"
-      >
-        <div v-for="element in items" :key="element.config.name">
-          <component
-            v-bind="element.config"
-            :is="element.component"
-            v-model="transientData[element.config.name]"
-          />
-        </div>
-      </b-collapse>
-    </div>
+    <b-collapse
+      v-model="showCollapse"
+      :id="'collapse-' + config.name"
+    >
+      <div v-for="element in items" :key="element.config.name">
+        <component
+          v-bind="element.config"
+          :is="element.component"
+          v-model="transientData[element.config.name]"
+          class="pl-4 pr-4 pt-3 pb-3 border-bottom m-0"
+        />
+      </div>
+    </b-collapse>
   </div>
 </template>
 
@@ -65,24 +63,15 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.form-accordtion-container {
-  padding-bottom: 0.25rem;
+.accordion-button {
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 
-  .accordion-button {
-    cursor: pointer;
-    outline: none;
-    border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-
-    .button-label {
-      margin-right: auto;
-      margin-left: 1rem;
-    }
-  }
-
-  .accordion-wrapper {
-    padding: 0.5rem;
-    padding-bottom: 0;
+  .button-label {
+    margin-right: auto;
+    margin-left: 1rem;
   }
 }
 </style>
