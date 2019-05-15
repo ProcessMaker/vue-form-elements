@@ -42,7 +42,7 @@
                         validation="max:20"
                         v-model="data.sampleText">
         </form-text-area>
-        Current Character Countasdfasdfasdfsd: {{data.sampleText.length}}
+        Current Character Count: {{data.sampleText.length}}
         <form-select name="sampleSelect"
                      label="Sample Select"
                      :options="selectOptions"
