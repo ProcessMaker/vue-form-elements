@@ -11,6 +11,7 @@
     :name='name'
     :size='size'
     @change="updateValue">
+        <option value="">{{ $t('Select...') }}</option>
         <option
         :selected="option.value == value"
         :value="option.value"
