@@ -1,6 +1,6 @@
 {
   "name": "@processmaker/vue-form-elements",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "Reusable VueJS Based Form Elements styled with Bootstrap 4",
   "keywords": [
     "html",
