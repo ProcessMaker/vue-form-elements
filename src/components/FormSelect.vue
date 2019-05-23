@@ -11,7 +11,6 @@
     :name='name'
     :size='size'
     @change="updateValue">
-        <option value="">{{ $t('Select...') }}</option>
         <option
         :selected="option.value == value"
         :value="option.value"
@@ -55,7 +54,7 @@ export default {
   computed:{
     classList(){
       let classList = {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error, 
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
       }
       if(this.controlClass){
         classList[this.controlClass] = true
