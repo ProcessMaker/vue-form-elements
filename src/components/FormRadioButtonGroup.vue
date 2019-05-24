@@ -4,13 +4,12 @@
         <div :class="divClass" :key="index" v-for="(option, index) in options">
             <input :class="classList"
                    type="radio"
-                   :name="name"
                    :disabled="disabled"
                    :required="required"
                    v-uni-id="name + option.value"
                    :value="option.value"
                    @change="updateValue"
-                   :checked="option.value === value">
+                   :checked="option.value === content">
             <label :class="labelClass" v-uni-for="name + option.value">{{option.content}}</label>
         </div>
         <small v-if="helper" class="form-text text-muted">{{helper}}</small>
@@ -60,10 +59,30 @@
         content: '',
       }
     },
+    watch: {
+      options: {
+        handler(options) {
+          if (options && options.length > 0) {
+            this.content = options[0].value;
+          }
+        },
+        immediate: true
+      },
+      value: {
+        handler(value) {
+          this.content = value;
+
+          if (value === undefined && this.options && this.options.length > 0) {
+            this.content = this.options[0].value;
+          }
+        },
+        immediate: true
+      }
+    },
     methods: {
       updateValue(e) {
         this.content = e.target.value;
-        this.$emit('input', this.content)
+        this.$emit('input', this.content);
       }
     },
   }
