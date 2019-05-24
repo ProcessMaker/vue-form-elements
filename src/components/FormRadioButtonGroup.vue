@@ -6,11 +6,11 @@
                    type="radio"
                    :name="name"
                    :disabled="disabled"
-                   :required='required'
+                   :required="required"
                    v-uni-id="name + option.value"
                    :value="option.value"
                    @change="updateValue"
-                   :checked="options.value = checked">
+                   :checked="option.value === value">
             <label :class="labelClass" v-uni-for="name + option.value">{{option.content}}</label>
         </div>
         <small v-if="helper" class="form-text text-muted">{{helper}}</small>
@@ -26,7 +26,6 @@
     mixins: [uniqIdsMixin],
     props: [
       'error',
-      'checked',
       'value',
       'options',
       'disabled',
@@ -66,9 +65,6 @@
         this.content = e.target.value;
         this.$emit('input', this.content)
       }
-    }
+    },
   }
 </script>
-
-<style lang="scss" scoped>
-</style>
