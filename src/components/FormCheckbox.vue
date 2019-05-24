@@ -7,7 +7,7 @@
                    :name="name"
                    :disabled="disabled"
                    :required='required'
-                   :checked="checked"
+                   :checked="isChecked"
                    :crop="crop"
                    @change="updateValue">
             <label :class="labelClass" v-uni-for="name"> {{label}} </label>
@@ -36,7 +36,7 @@
     },
     props: [
       'error',
-      'checked',
+      'initiallyChecked',
       'options',
       'disabled',
       'required',
@@ -48,6 +48,9 @@
       'toggle'
     ],
     computed: {
+      isChecked() {
+        return this.checked || this.initiallyChecked;
+      },
       divClass() {
         return !this.toggle ? 'form-check' : 'custom-control custom-switch';
       },
@@ -76,9 +79,6 @@
         this.content = e.target.checked;
         this.$emit('change', this.content)
       }
-    }
+    },
   }
 </script>
-
-<style lang="scss" scoped>
-</style>
