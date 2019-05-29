@@ -16,6 +16,7 @@ let components = {
     FormRadioButtonGroup,
     FormSelect,
     FormTextArea,
+    FormDatePicker,
     FormAccordion,
     FormHtmlEditor
 }
