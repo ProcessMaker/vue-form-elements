@@ -1,12 +1,11 @@
 <template>
     <div class="form-group">
         <label>{{label}}</label>
-        <div :class="divClass" :key="index" v-for="(option, index) in options">
+        <div :class="divClass" :key="option.value" v-for="option in options">
             <input
               type="radio"
               v-bind="$attrs"
               :class="inputClass"
-              :name="name"
               :value="option.value"
               :checked="option.value === selectedValue"
               v-uni-id="name + option.value"
