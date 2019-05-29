@@ -1,16 +1,16 @@
 <template>
     <div class="form-group">
         <label>{{label}}</label>
-        <div :class="divClass" :key="index" v-for="(option, index) in options">
-            <input :class="classList"
-                   type="radio"
-                   :name="name"
-                   :disabled="disabled"
-                   :required="required"
-                   v-uni-id="name + option.value"
-                   :value="option.value"
-                   @change="updateValue"
-                   :checked="option.value === value">
+        <div :class="divClass" :key="option.value" v-for="option in options">
+            <input
+              type="radio"
+              v-bind="$attrs"
+              :class="inputClass"
+              :value="option.value"
+              :checked="option.value === selectedValue"
+              v-uni-id="name + option.value"
+              @change="updateValue"
+            >
             <label :class="labelClass" v-uni-for="name + option.value">{{option.content}}</label>
         </div>
         <small v-if="helper" class="form-text text-muted">{{helper}}</small>
@@ -23,47 +23,43 @@
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
+    inheritAttrs: false,
     mixins: [uniqIdsMixin],
     props: [
+      'name',
+      'label',
       'error',
       'value',
       'options',
-      'disabled',
-      'required',
-      'label',
-      'name',
       'helper',
       'controlClass',
       'toggle'
     ],
     computed: {
+      selectedValue() {
+        if (!this.value && this.options.length > 0) {
+          return this.options[0].value;
+        }
+
+        return this.value;
+      },
       divClass() {
-        return !this.toggle ? 'form-check' : 'custom-control custom-radio';
+        return this.toggle ? 'custom-control custom-radio' : 'form-check';
       },
       labelClass() {
-        return !this.toggle ? 'form-check-label' : 'custom-control-label';
+        return this.toggle ? 'custom-control-label': 'form-check-label';
       },
-      classList() {
-        let classList = {
-          'is-invalid': (this.validator && this.validator.errorCount) || this.error,
-        };
-        classList['form-check-input'] = !this.toggle;
-        classList['custom-control-input'] = this.toggle;
-        if (this.controlClass) {
-          classList[this.controlClass] = true
-        }
-        return classList
-      }
-    },
-    data() {
-      return {
-        content: '',
+      inputClass() {
+        return [
+          { [this.controlClass]: !!this.controlClass },
+          { 'is-invalid': (this.validator && this.validator.errorCount) || this.error },
+          this.toggle ? 'custom-control-input' : 'form-check-input'
+        ];
       }
     },
     methods: {
-      updateValue(e) {
-        this.content = e.target.value;
-        this.$emit('input', this.content)
+      updateValue(event) {
+        this.$emit('input', event.target.value)
       }
     },
   }
