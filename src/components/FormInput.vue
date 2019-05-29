@@ -9,6 +9,8 @@
     :type="type ? type : 'text'"
     :minlength="minlength"
     :maxlength="maxlength"
+    :max="max"
+    :min="min"
     :name="name"
     :disabled="disabled"
     class="form-control"
@@ -48,11 +50,13 @@ export default {
     'placeholder',
     'value',
     'controlClass',
+    'max',
+    'min'
   ],
   computed:{
     classList(){
       let classList = {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error, 
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
       }
       if(this.controlClass) {
         classList[this.controlClass] = true
