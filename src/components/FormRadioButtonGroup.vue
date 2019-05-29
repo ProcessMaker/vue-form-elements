@@ -4,11 +4,11 @@
         <div :class="divClass" :key="index" v-for="(option, index) in options">
             <input
               type="radio"
+              v-bind="$attrs"
               :class="inputClass"
               :name="name"
               :value="option.value"
-              :checked="option.value === value"
-              v-bind="$attrs"
+              :checked="option.value === selectedValue"
               v-uni-id="name + option.value"
               @change="updateValue"
             >
@@ -37,6 +37,13 @@
       'toggle'
     ],
     computed: {
+      selectedValue() {
+        if (!this.value && this.options.length > 0) {
+          return this.options[0].value;
+        }
+
+        return this.value;
+      },
       divClass() {
         return this.toggle ? 'custom-control custom-radio' : 'form-check';
       },
@@ -51,15 +58,9 @@
         ];
       }
     },
-    data() {
-      return {
-        content: '',
-      }
-    },
     methods: {
-      updateValue(e) {
-        this.content = e.target.value;
-        this.$emit('input', this.content)
+      updateValue(event) {
+        this.$emit('input', event.target.value)
       }
     },
   }
