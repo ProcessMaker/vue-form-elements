@@ -24,8 +24,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build-bundle": "vue-cli-service build --target lib --name vue-form-elements ./src/components/index.js",
-    "lint": "vue-cli-service lint",
-    "postinstall": "npm run build-bundle"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@tinymce/tinymce-vue": "^2.0.0",
