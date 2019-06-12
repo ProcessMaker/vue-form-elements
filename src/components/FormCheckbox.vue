@@ -36,7 +36,6 @@
     },
     props: [
       'error',
-      'initiallyChecked',
       'options',
       'disabled',
       'required',
@@ -45,7 +44,9 @@
       'name',
       'helper',
       'controlClass',
-      'toggle'
+      'toggle',
+      'checked',
+      'initiallyChecked',
     ],
     computed: {
       isChecked() {
@@ -69,15 +70,9 @@
         return classList
       }
     },
-    data() {
-      return {
-        content: '',
-      }
-    },
     methods: {
-      updateValue(e) {
-        this.content = e.target.checked;
-        this.$emit('change', this.content)
+      updateValue(event) {
+        this.$emit('change', event.target.checked)
       }
     },
   }
