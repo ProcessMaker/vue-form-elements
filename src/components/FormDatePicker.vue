@@ -45,8 +45,8 @@
       label: String,
       error: String,
       helper: String,
-      type: { type: String, default: 'datetime' },
-      inputClass: { type: [String, Array, Object], default: 'form-control' },
+      type: {type: String, default: 'datetime'},
+      inputClass: {type: [String, Array, Object], default: 'form-control'},
       valueZone: {
         type: String,
         default() {
@@ -67,7 +67,7 @@
           return 'local';
         }
       },
-      weekStart: { type: Number, default: 7 },
+      weekStart: {type: Number, default: 7},
       format: {
         type: [String, Object],
         default() {
@@ -87,24 +87,30 @@
       phrases: {
         type: [String, Object],
         default() {
-          return { ok: 'Continue', cancel: 'Exit' };
+          return {ok: 'Continue', cancel: 'Exit'};
         }
       },
-      auto: { type: Boolean, default: true },
+      auto: {type: Boolean, default: true},
     },
     computed: {
       parsedPhrases() {
-        let phrases;
-
         if (typeof this.phrases === 'string') {
           try {
-            phrases = JSON.parse(this.phrases)
+            return JSON.parse(this.phrases)
           } catch (e) {
             // Ignore string, use default prop
           }
         }
 
-        return { ok: 'Continue', cancel: 'Exit' };
+        if (typeof this.phrases === "object") {
+          try {
+            return this.phrases;
+          } catch (e) {
+            // Ignore string, use default prop
+          }
+        }
+
+        return {ok: 'Continue', cancel: 'Exit'};
       }
     }
   };
