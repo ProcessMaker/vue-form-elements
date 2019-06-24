@@ -9,6 +9,7 @@
                 :value-zone="valueZone"
                 :zone="zone"
                 :title="placeholder"
+                :placeholder="placeholder"
                 :week-start="weekStart"
                 :format="format"
                 :phrases="parsedPhrases"
