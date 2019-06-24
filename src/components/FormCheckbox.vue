@@ -24,12 +24,13 @@
 <script>
   import ValidationMixin from './mixins/validation'
   import {createUniqIdsMixin} from 'vue-uniq-ids'
+  import DataFormatMixin from './mixins/DataFormat';
 
   // Create the mixin
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    mixins: [uniqIdsMixin, ValidationMixin],
+    mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     model: {
       prop: 'checked',
       event: 'change'

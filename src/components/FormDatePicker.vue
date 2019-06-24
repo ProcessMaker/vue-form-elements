@@ -30,12 +30,13 @@
   import ValidationMixin from './mixins/validation';
   import {Datetime} from 'vue-datetime';
   import 'vue-datetime/dist/vue-datetime.css'
+  import DataFormatMixin from './mixins/DataFormat';
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
     inheritAttrs: false,
-    mixins: [uniqIdsMixin, ValidationMixin],
+    mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     components: {
       datetime: Datetime
     },

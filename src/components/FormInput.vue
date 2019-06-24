@@ -30,11 +30,12 @@
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
+import DataFormatMixin from './mixins/DataFormat';
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
 export default {
-  mixins: [uniqIdsMixin, ValidationMixin],
+  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [
     'label',
     'error',
@@ -52,7 +53,7 @@ export default {
   computed:{
     classList(){
       let classList = {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error, 
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
       }
       if(this.controlClass) {
         classList[this.controlClass] = true
