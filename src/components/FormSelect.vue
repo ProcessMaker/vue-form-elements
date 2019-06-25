@@ -2,22 +2,21 @@
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
     <select
-    v-uni-id="name"
-    class="form-control"
-    :class="classList"
-    :multiple='multiple'
-    :disabled='disabled'
-    :required='required'
-    :name='name'
-    :size='size'
-    @change="updateValue">
-        <option
+      v-bind="$attrs"
+      v-uni-id="name"
+      class="form-control"
+      :class="classList"
+      :name='name'
+      @change="$emit('input', $event.target.value)"
+    >
+      <option
+        v-for="(option, index) in options"
         :selected="option.value == value"
         :value="option.value"
         :key="index"
-        v-for="(option, index) in options">
+      >
         {{option.content}}
-        </option>
+      </option>
     </select>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
@@ -27,44 +26,30 @@
   </div>
 </template>
 
-
 <script>
 import ValidationMixin from './mixins/validation'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 
-// Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
 
 export default {
+  inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin],
   props: [
     'label',
     'error',
-    'selected',
     'value',
     'options',
     'helper',
-    'disabled',
-    'required',
-    'size',
     'name',
     'controlClass',
-    'multiple'
   ],
   computed:{
-    classList(){
-      let classList = {
+    classList() {
+      return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
+        [this.controlClass]: !!this.controlClass
       }
-      if(this.controlClass){
-        classList[this.controlClass] = true
-      }
-      return classList
-    }
-  },
-  data() {
-    return {
-      content: '',
     }
   },
   mounted() {
@@ -76,15 +61,5 @@ export default {
     }
 
   },
-  methods: {
-    updateValue(e) {
-      this.content = e.target.value;
-      this.$emit('input', this.content)
-    }
-  }
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
