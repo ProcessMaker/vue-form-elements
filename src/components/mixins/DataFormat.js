@@ -13,14 +13,18 @@ export default {
   watch: {
     // Triggered whenever the v-model is updated
     value() {
-      if (this.value && this.$parent.transientData) {
+      if (this.$parent.transientData) {
         this.$parent.transientData[this.name] = this.formatValue(this.value)
       }
     }
   },
   methods: {
+    formatValueWith(value, format) {
+      this.$set(this, 'dataFormat', format);
+      return this.formatValue(value)
+    },
     formatValue(value) {
-      if (!value) {
+      if (!value && this.dataFormat !== 'boolean') {
         return '';
       }
       let newValue = value;
@@ -32,7 +36,7 @@ export default {
           newValue = Boolean(newValue);
           break;
         case 'currency':
-          newValue = Number(newValue.replace(/[^0-9.-]+/g, ""));
+          newValue = parseFloat(newValue);
           break;
         case 'date':
           newValue = Date.parse(newValue);
@@ -41,10 +45,10 @@ export default {
           newValue = Date.parse(newValue);
           break;
         case 'float':
-          newValue = parseFloat(newValue);
+          newValue = parseFloat(newValue.toString().replace(',', '.'));
           break;
         case 'int':
-          newValue = parseInt(newValue);
+          newValue = Number(newValue);
           break;
         default:
           newValue = newValue.toString();
