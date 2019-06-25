@@ -3,24 +3,24 @@
     <button
       @click="showCollapse = !showCollapse"
       class="accordion-button text-left card-header d-flex align-items-center w-100"
-      >
-        <i
-          v-if="config.icon"
-          class="fas mr-1"
-          :class="`fa-${config.icon}`"
-        />
+    >
+      <i
+        v-if="config.icon"
+        class="fas mr-1"
+        :class="`fa-${config.icon}`"
+      />
 
-        <span class="button-label">{{ config.label }}</span>
+      <span class="button-label">{{ config.label }}</span>
 
-        <i
-          v-if="showCollapse"
-          class="fas fa-chevron-down accordion-arrow ml-auto"
-        />
+      <i
+        v-if="showCollapse"
+        class="fas fa-chevron-down accordion-arrow ml-auto"
+      />
 
-        <i
-          v-else
-          class="fas fa-chevron-right accordion-arrow ml-auto"
-        />
+      <i
+        v-else
+        class="fas fa-chevron-right accordion-arrow ml-auto"
+      />
     </button>
 
     <b-collapse
@@ -46,7 +46,7 @@ export default {
     return {
       showCollapse: Boolean(this.config.initiallyOpen),
       items: [],
-    }
+    };
   },
   watch: {
     value: {
@@ -59,7 +59,7 @@ export default {
       this.$emit('input', this.items);
     },
   },
-}
+};
 </script>
 
 <style scoped lang="scss">

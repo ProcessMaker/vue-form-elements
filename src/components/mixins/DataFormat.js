@@ -4,24 +4,24 @@ export default {
       type: String,
       default() {
         return 'string';
-      }
+      },
     },
   },
   data() {
-    return {}
+    return {};
   },
   watch: {
     // Triggered whenever the v-model is updated
     value() {
       if (this.$parent.transientData) {
-        this.$parent.transientData[this.name] = this.formatValue(this.value)
+        this.$parent.transientData[this.name] = this.formatValue(this.value);
       }
-    }
+    },
   },
   methods: {
     formatValueWith(value, format) {
       this.$set(this, 'dataFormat', format);
-      return this.formatValue(value)
+      return this.formatValue(value);
     },
     formatValue(value) {
       if (!value && this.dataFormat !== 'boolean') {
@@ -56,6 +56,6 @@ export default {
       }
 
       return newValue;
-    }
-  }
-}
+    },
+  },
+};

@@ -9,17 +9,17 @@
       />
     </div>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
+      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{ error }}</div>
+      <div v-if="error">{{ error }}</div>
     </div>
-    <small v-if='helper' class='form-text text-muted'>{{helper}}</small>
+    <small v-if='helper' class='form-text text-muted'>{{ helper }}</small>
   </div>
 </template>
 
 
 <script>
-import { createUniqIdsMixin } from 'vue-uniq-ids'
-import ValidationMixin from './mixins/validation'
+import { createUniqIdsMixin } from 'vue-uniq-ids';
+import ValidationMixin from './mixins/validation';
 import Editor from '@tinymce/tinymce-vue';
 import Mustache from 'mustache';
 import 'tinymce/tinymce';
@@ -30,13 +30,13 @@ import 'tinymce/skins/ui/oxide/skin.min.css';
 import 'tinymce/skins/ui/oxide/content.inline.min.css';
 
 // Create the mixin
-const uniqIdsMixin = createUniqIdsMixin()
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin],
   components: {
-    Editor
+    Editor,
   },
   props: [
     'error',
@@ -50,11 +50,11 @@ export default {
     classList(){
       let classList = {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
+      };
+      if (this.controlClass){
+        classList[this.controlClass] = true;
       }
-      if(this.controlClass){
-        classList[this.controlClass] = true
-      }
-      return classList
+      return classList;
     },
     rendered() {
       if (!this.validationData) {
@@ -66,7 +66,7 @@ export default {
       } catch (error) {
         return this.content;
       }
-    }
+    },
   },
   data() {
     return {
@@ -77,9 +77,9 @@ export default {
         toolbar: 'undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
         skin: false,
       },
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
 <style scoped>
