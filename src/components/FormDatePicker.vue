@@ -41,7 +41,6 @@ export default {
     datetime: Datetime,
   },
   props: {
-    value: [String, Array, Object, Boolean, Number],
     name: String,
     placeholder: String,
     label: String,
