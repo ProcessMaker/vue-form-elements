@@ -41,6 +41,7 @@ export default {
   },
   methods: {
     updateValidation() {
+      this.validator = null;
       if (this.validation) {
         let fieldName = this.validationField ? this.validationField : this.name;
         let data = this.validationData ? this.validationData : {[fieldName]: this.value};
@@ -50,8 +51,11 @@ export default {
         this.validator = new Validator(data, rules, this.validationMessages ? this.validationMessages : null);
         // Validation will not run until you call passes/fails on it
         this.validator.passes();
-      } else {
-        this.validator = null;
+      }
+
+      //Validations data format
+      if (this.validatorFormat) {
+        this.validator = this.validatorFormat;
       }
     },
   },
