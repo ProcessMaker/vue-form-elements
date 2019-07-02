@@ -45,7 +45,7 @@ export default {
         'datetime': 'date',
         'date': 'date',
         'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
-        'currency': 'regex:/^(?!0\\.00)[1-9]\\d{0,2}(,\\d{3})*(\\.\\d\\d)?$/',
+        'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
       };
       //Validate rule format
       this.validatorFormat = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
