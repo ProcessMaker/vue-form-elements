@@ -37,11 +37,6 @@ export default {
         return '';
       }
 
-      console.log('Format value');
-      console.log('value => ' + value);
-      console.log('format => ' + typeof value);
-      console.log('parse => ' + this.dataFormat);
-
       //Rules
       let rules = {
         'int': 'integer',
@@ -90,9 +85,6 @@ export default {
             newValue = newValue.toString();
             break;
         }
-        console.log('New value');
-        console.log('value => ' + newValue);
-        console.log('parse => ' + typeof newValue);
       }
 
       return newValue;
