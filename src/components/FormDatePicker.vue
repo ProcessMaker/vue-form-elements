@@ -11,7 +11,7 @@
       :title="placeholder"
       :placeholder="placeholder"
       :week-start="weekStart"
-      :format="format"
+      :format="formatView"
       :phrases="parsedPhrases"
       :auto="auto"
     />
@@ -71,19 +71,6 @@ export default {
     weekStart: {type: Number, default: 7},
     format: {
       type: [String, Object],
-      default() {
-        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user && ProcessMaker.user.calendar_format) {
-          return ProcessMaker.user.calendar_format;
-        }
-
-        return {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-        };
-      },
     },
     phrases: {
       type: [String, Object],
@@ -94,6 +81,27 @@ export default {
     auto: {type: Boolean, default: true},
   },
   computed: {
+    formatView() {
+      if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user && ProcessMaker.user.calendar_format) {
+        let withoutTime = ProcessMaker.user.calendar_format.replace(/\s*HH:mm(:ss)?/, '');
+        return this.type==='date' ? withoutTime : ProcessMaker.user.calendar_format;
+      }
+      return this.format ? this.format : (
+        this.type==='date' ? 
+          {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+          } :
+          {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+          }
+      );
+    },
     parsedPhrases() {
       if (typeof this.phrases === 'string') {
         try {
