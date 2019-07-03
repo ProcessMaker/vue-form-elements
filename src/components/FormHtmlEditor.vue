@@ -45,6 +45,8 @@ export default {
     'controlClass',
     'content',
     'validationData',
+    'label',
+    // 'value'
   ],
   computed:{
     classList(){
