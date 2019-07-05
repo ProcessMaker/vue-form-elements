@@ -1,17 +1,18 @@
 <template>
   <div class="form-group">
     <label>{{label}}</label>
-    <div :class="divClass" :key="option.value" v-for="option in options">
+
+    <div :class="divClass" :key="option.value" v-for="option in radioOptions">
       <input
         v-bind="$attrs"
         type="radio"
         :class="inputClass"
         :value="option.value"
-        :checked="option.value === selectedValue"
-        v-uni-id="name + option.value"
+        v-uni-id="`${name}-${option.value}`"
+        :checked="option.value == selectedValue"
         @change="$emit('input', $event.target.value)"
       >
-      <label :class="labelClass" v-uni-for="name + option.value">{{option.content}}</label>
+      <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
     </div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
@@ -21,6 +22,11 @@
 import {createUniqIdsMixin} from 'vue-uniq-ids'
 
 const uniqIdsMixin = createUniqIdsMixin();
+
+function removeInvalidOptions(option) {
+  return Object.keys(option).includes('value', 'contemnt') &&
+    option.content != null;
+}
 
 export default {
   inheritAttrs: false,
@@ -33,15 +39,66 @@ export default {
     'options',
     'helper',
     'controlClass',
-    'toggle'
+    'toggle',
+    'validationData'
   ],
+  watch: {
+    selectedValue(selectedValue) {
+      if (!this.value && this.radioOptions.length > 0) {
+          return this.radioOptions[0].value;
+        }
+    }
+  },
   computed: {
-    selectedValue() {
-      if (!this.value && this.options.length > 0) {
-        return this.options[0].value;
+    radioOptions() {
+      if (Array.isArray(this.options)) {
+        return this.options;
+      } else {
+        return this.optionsFromDataSource;
+      }
+    },
+    optionsFromDataSource() {
+      const { jsonData, key, value, dataName } = this.options;
+      let options = [];
+
+      const convertToSelectOptions = option => ({
+        value: option[key || 'value'],
+        content: option[value || 'content'],
+      })
+
+      if (jsonData) {
+        try {
+          options = JSON.parse(jsonData)
+            .map(convertToSelectOptions)
+            .filter(removeInvalidOptions);
+        } catch (error) {
+          /* Ignore error */
+        }
       }
 
-      return this.value;
+      if (dataName) {
+        try {
+          options = this.validationData[dataName]
+            .map(convertToSelectOptions)
+            .filter(removeInvalidOptions);
+        } catch (error) {
+          /* Ignore error */
+        }
+      }
+
+      return options;
+    },
+    selectedValue: {
+      get() {
+        if (!this.value && this.radioOptions.length > 0) {
+          return this.radioOptions[0].value;
+        }
+
+        return this.value;
+      },
+      set(value) {
+        console.log('Setting value', value);
+      }
     },
     divClass() {
       return this.toggle ? 'custom-control custom-radio' : 'form-check';
@@ -56,6 +113,6 @@ export default {
         this.toggle ? 'custom-control-input' : 'form-check-input'
       ];
     }
-  },
+  }
 }
 </script>
