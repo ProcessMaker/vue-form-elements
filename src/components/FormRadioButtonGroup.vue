@@ -42,14 +42,14 @@ export default {
     'toggle',
     'validationData'
   ],
-  watch: {
-    selectedValue(selectedValue) {
-      if (!this.value && this.radioOptions.length > 0) {
-          return this.radioOptions[0].value;
-        }
-    }
-  },
   computed: {
+    selectedValue() {
+      if (!this.value && this.radioOptions.length > 0) {
+        return this.radioOptions[0].value;
+      }
+
+      return this.value;
+    },
     radioOptions() {
       if (Array.isArray(this.options)) {
         return this.options;
@@ -87,18 +87,6 @@ export default {
       }
 
       return options;
-    },
-    selectedValue: {
-      get() {
-        if (!this.value && this.radioOptions.length > 0) {
-          return this.radioOptions[0].value;
-        }
-
-        return this.value;
-      },
-      set(value) {
-        console.log('Setting value', value);
-      }
     },
     divClass() {
       return this.toggle ? 'custom-control custom-radio' : 'form-check';
