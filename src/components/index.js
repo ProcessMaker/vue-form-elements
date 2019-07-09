@@ -7,6 +7,7 @@ import FormTextArea from './FormTextArea'
 import FormDatePicker from './FormDatePicker'
 import FormAccordion from './FormAccordion'
 import FormHtmlEditor from './FormHtmlEditor'
+import FormDelayTimeControl from './FormDelayTimeControl'
 
 
 // Export our components
@@ -18,7 +19,8 @@ let components = {
     FormTextArea,
     FormDatePicker,
     FormAccordion,
-    FormHtmlEditor
+    FormHtmlEditor,
+    FormDelayTimeControl,
 }
 
 // Export our named exports
@@ -30,7 +32,8 @@ export {
     FormTextArea,
     FormDatePicker,
     FormAccordion,
-    FormHtmlEditor
+    FormHtmlEditor,
+    FormDelayTimeControl,
 }
 
 // Export our Vue plugin as our default

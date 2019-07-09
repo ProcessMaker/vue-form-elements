@@ -93,6 +93,13 @@
             v-model="data.sampleHtmlText"
             validation="required|max:300" class="mt-3"
         />
+        <form-delay-time-control
+            name="sampleDelayTimeControl"
+            v-model="data.sampleDelayTimeControl"
+            label="Sample delay time control"
+            helper="Example 7 minutes (PT7M)"
+            validation="required"
+        />
     </div>
 </template>
 
@@ -126,7 +133,8 @@
           sampleRadioButtonGroup: '',
           sampleSelect: '',
           sampleCustomValidationError: '',
-          sampleDatePicker: DateTime.local().toISO()
+          sampleDatePicker: DateTime.local().toISO(),
+          sampleDelayTimeControl: '',
         },
         inputValidationRules: 'required|min:2',
         textValidationRules: 'max:255',
