@@ -64,7 +64,8 @@ export default {
       return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass,
-        'form-control': this.richtext
+        'form-control': this.richtext,
+        'richtext': this.richtext,
       }
     },
   },
@@ -86,3 +87,10 @@ export default {
   }
 }
 </script>
+
+<style>
+.richtext {
+  height: auto;
+}
+</style>
+
