@@ -7,7 +7,6 @@ if (window.ProcessMaker && window.ProcessMaker.user && window.ProcessMaker.user.
 
 export default {
   props: {
-    transientData: Object,
     dataFormat: {
       type: String,
       default() {
@@ -21,10 +20,10 @@ export default {
     };
   },
   watch: {
-    // Triggered whenever the v-model is updated
-    value() {
-      if (this.transientData) {
-        this.transientData[this.name] = this.formatValue(this.value);
+    value(value) {
+      const typedValue = this.formatValue(value);
+      if (typedValue !== value) {
+        this.$emit('input', typedValue);
       }
     },
   },
