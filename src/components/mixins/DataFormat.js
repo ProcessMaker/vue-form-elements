@@ -16,7 +16,8 @@ export default {
   },
   data() {
     return {
-      validatorFormat: null,
+      dataTypeValidator: null,
+      dataTypeValidatorPasses: true,
     };
   },
   watch: {
@@ -36,7 +37,8 @@ export default {
       if (!value && this.dataFormat !== 'boolean') {
         return '';
       }
-      return this.validateRuleFormat(value) ? this.formatValueIfValid(value) : value;
+      this.dataTypeValidatorPasses = this.validateRuleFormat(value);
+      return this.dataTypeValidatorPasses ? this.formatValueIfValid(value) : value;
     },
     validateRuleFormat(value) {
       const rules = {
@@ -48,11 +50,10 @@ export default {
         'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
       };
-      this.validatorFormat = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
-      return this.validatorFormat.passes();
+      this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
+      return this.dataTypeValidator.passes();
     },
     formatValueIfValid(newValue) {
-      this.validatorFormat = null;
       switch (this.dataFormat) {
         case 'string':
           newValue = newValue.toString();
