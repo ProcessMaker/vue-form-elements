@@ -1,26 +1,26 @@
 <template>
   <div class="form-group">
-    <label>{{ label }}</label>
+    <label>{{label}}</label>
     <div :class="divClass" :key="option.value" v-for="option in options">
       <input
-        type="radio"
         v-bind="$attrs"
+        type="radio"
         :class="inputClass"
         :value="option.value"
         :checked="option.value === selectedValue"
         v-uni-id="name + option.value"
-        @change="updateValue"
+        @change="$emit('input', $event.target.value)"
       >
-      <label :class="labelClass" v-uni-for="name + option.value">{{ option.content }}</label>
+      <label :class="labelClass" v-uni-for="name + option.value">{{option.content}}</label>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{ helper }}</small>
+    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
 
 <script>
-import {createUniqIdsMixin} from 'vue-uniq-ids';
+import {createUniqIdsMixin} from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
-// Create the mixin
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
@@ -34,7 +34,7 @@ export default {
     'options',
     'helper',
     'controlClass',
-    'toggle',
+    'toggle'
   ],
   computed: {
     selectedValue() {
@@ -54,14 +54,9 @@ export default {
       return [
         { [this.controlClass]: !!this.controlClass },
         { 'is-invalid': (this.validator && this.validator.errorCount) || this.error },
-        this.toggle ? 'custom-control-input' : 'form-check-input',
+        this.toggle ? 'custom-control-input' : 'form-check-input'
       ];
-    },
+    }
   },
-  methods: {
-    updateValue(event) {
-      this.$emit('input', event.target.value);
-    },
-  },
-};
+}
 </script>
