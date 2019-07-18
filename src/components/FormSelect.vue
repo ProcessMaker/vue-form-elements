@@ -60,11 +60,7 @@ export default {
       }
     },
     selectOptions() {
-      if (Array.isArray(this.options)) {
-        return this.options;
-      } else {
-        return this.optionsFromDataSource;
-      }
+      return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
       const { jsonData, key, value, dataName } = this.options;
@@ -97,18 +93,6 @@ export default {
 
       return options;
     },
-  },
-  methods: {
-    setDefaultValueFromOptionsArray() {
-      if (!this.value && this.options) {
-        this.$emit('input', this.options[0].value)
-      }
-    },
-  },
-  mounted() {
-    if (Array.isArray(this.options)) {
-      this.setDefaultValueFromOptionsArray();
-    }
   },
 }
 </script>
