@@ -1,6 +1,7 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
+
     <select
       v-bind="$attrs"
       v-uni-id="name"
@@ -9,8 +10,9 @@
       :name='name'
       @change="$emit('input', $event.target.value)"
     >
+      <option :value="null">Select</option>
       <option
-        v-for="(option, index) in options"
+        v-for="(option, index) in selectOptions"
         :selected="option.value == value"
         :value="option.value"
         :key="index"
@@ -33,6 +35,11 @@ import DataFormatMixin from './mixins/DataFormat';
 
 const uniqIdsMixin = createUniqIdsMixin()
 
+function removeInvalidOptions(option) {
+  return Object.keys(option).includes('value', 'contemnt') &&
+    option.content != null;
+}
+
 export default {
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
@@ -44,6 +51,7 @@ export default {
     'helper',
     'name',
     'controlClass',
+    'validationData',
   ],
   computed:{
     classList() {
@@ -51,16 +59,41 @@ export default {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass
       }
-    }
-  },
-  mounted() {
-    // Check to see if we already have a value set, if not, set it to first option
-    // Also check if we have at least one option available
-    if(!this.value && this.options) {
-      this.content = this.options[0].value;
-      this.$emit('input', this.content)
-    }
+    },
+    selectOptions() {
+      return this.optionsFromDataSource;
+    },
+    optionsFromDataSource() {
+      const { jsonData, key, value, dataName } = this.options;
+      let options = [];
 
+      const convertToSelectOptions = option => ({
+        value: option[key || 'value'],
+        content: option[value || 'content'],
+      })
+
+      if (jsonData) {
+        try {
+          options = JSON.parse(jsonData)
+            .map(convertToSelectOptions)
+            .filter(removeInvalidOptions);
+        } catch (error) {
+          /* Ignore error */
+        }
+      }
+
+      if (dataName) {
+        try {
+          options = this.validationData[dataName]
+            .map(convertToSelectOptions)
+            .filter(removeInvalidOptions);
+        } catch (error) {
+          /* Ignore error */
+        }
+      }
+
+      return options;
+    },
   },
 }
 </script>
