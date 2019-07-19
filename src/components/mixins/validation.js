@@ -53,6 +53,11 @@ export default {
             } else {
                 this.validator = null
             }
+
+            // Show data type validation messages if exists
+            if (this.dataTypeValidator && !this.dataTypeValidatorPasses) {
+                this.validator = this.dataTypeValidator;
+            }
         }
     }
 }

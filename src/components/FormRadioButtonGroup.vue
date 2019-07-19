@@ -20,6 +20,7 @@
 
 <script>
 import {createUniqIdsMixin} from 'vue-uniq-ids'
+import DataFormatMixin from './mixins/DataFormat';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -30,7 +31,7 @@ function removeInvalidOptions(option) {
 
 export default {
   inheritAttrs: false,
-  mixins: [uniqIdsMixin],
+  mixins: [uniqIdsMixin, DataFormatMixin],
   props: [
     'name',
     'label',
