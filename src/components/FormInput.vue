@@ -25,12 +25,13 @@
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
+import DataFormatMixin from './mixins/DataFormat';
 
 const uniqIdsMixin = createUniqIdsMixin()
 
 export default {
   inheritAttrs: false,
-  mixins: [uniqIdsMixin, ValidationMixin],
+  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [
     'value',
     'label',

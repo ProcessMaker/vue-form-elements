@@ -11,12 +11,12 @@
                 :title="placeholder"
                 :placeholder="placeholder"
                 :week-start="weekStart"
-                :format="format"
+                :format="formatView"
                 :phrases="parsedPhrases"
                 :auto="auto"
         ></datetime>
 
-        <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
+        <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
             <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
             <div v-if="error">{{error}}</div>
         </div>
@@ -31,12 +31,13 @@
   import ValidationMixin from './mixins/validation';
   import {Datetime} from 'vue-datetime';
   import 'vue-datetime/dist/vue-datetime.css'
+  import DataFormatMixin from "./mixins/DataFormat";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
     inheritAttrs: false,
-    mixins: [uniqIdsMixin, ValidationMixin],
+    mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     components: {
       datetime: Datetime
     },
@@ -70,20 +71,7 @@
       },
       weekStart: {type: Number, default: 7},
       format: {
-        type: [String, Object],
-        default() {
-          if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user && ProcessMaker.user.calendar_format) {
-            return ProcessMaker.user.calendar_format;
-          }
-
-          return {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-          };
-        }
+        type: [String, Object]
       },
       phrases: {
         type: [String, Object],
@@ -112,7 +100,28 @@
         }
 
         return {ok: 'Continue', cancel: 'Exit'};
-      }
+      },
+      formatView() {
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user && ProcessMaker.user.calendar_format) {
+          let withoutTime = ProcessMaker.user.calendar_format.replace(/\s*HH:mm(:ss)?/, '');
+          return this.type === "date" ? withoutTime : ProcessMaker.user.calendar_format;
+        }
+        return this.format ? this.format : (
+          this.type==='date' ? 
+            {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric',
+            } :
+            {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+            }
+        );
+      },
     }
   };
 </script>
