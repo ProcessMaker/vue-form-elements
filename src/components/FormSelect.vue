@@ -61,6 +61,10 @@ export default {
       }
     },
     selectOptions() {
+      if (Array.isArray(this.options)) {
+        return this.options;
+      }
+
       return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
