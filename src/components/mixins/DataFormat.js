@@ -35,7 +35,7 @@ export default {
     },
     formatValue(value) {
       if (!value && this.dataFormat !== 'boolean') {
-        return '';
+        return value;
       }
       this.dataTypeValidatorPasses = this.validateRuleFormat(value);
       return this.dataTypeValidatorPasses ? this.formatValueIfValid(value) : value;
