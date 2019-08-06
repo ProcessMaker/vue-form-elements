@@ -45,9 +45,6 @@ import 'tinymce/skins/ui/oxide/content.inline.min.css';
 const uniqIdsMixin = createUniqIdsMixin()
 
 export default {
-  mounted() {
-    console.log("richttext prop", this.richtext)
-  },
   inheritAttrs: false,
   components: { Editor },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
@@ -70,11 +67,6 @@ export default {
         'richtext': this.richtext,
       }
     },
-  },
-  watch: {
-    richtext() {
-      console.log("RT Changed, now", this.richtext)
-    }
   },
   data() {
     return {
