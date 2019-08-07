@@ -20,14 +20,7 @@
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
-import Editor from '@tinymce/tinymce-vue';
 import Mustache from 'mustache';
-import 'tinymce/tinymce';
-import 'tinymce/themes/silver';
-import 'tinymce/plugins/link';
-import 'tinymce/plugins/lists';
-import 'tinymce/skins/ui/oxide/skin.min.css';
-import 'tinymce/skins/ui/oxide/content.inline.min.css';
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
@@ -36,7 +29,11 @@ export default {
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin],
   components: {
-    Editor
+    Editor: () => {
+      if (typeof window !== 'undefined') {
+        return import(/* webpackChunkName: "tinymce" */ './Editor');
+      }
+    }
   },
   props: [
     'error',

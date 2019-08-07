@@ -34,22 +34,17 @@ import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
 
-import Editor from '@tinymce/tinymce-vue';
-import 'tinymce/tinymce';
-import 'tinymce/themes/silver';
-import 'tinymce/plugins/link';
-import 'tinymce/plugins/lists';
-import 'tinymce/skins/ui/oxide/skin.min.css';
-import 'tinymce/skins/ui/oxide/content.inline.min.css';
-
 const uniqIdsMixin = createUniqIdsMixin()
 
 export default {
-  mounted() {
-    console.log("richttext prop", this.richtext)
-  },
   inheritAttrs: false,
-  components: { Editor },
+  components: {
+    Editor: () => {
+      if (typeof window !== 'undefined') {
+        return import(/* webpackChunkName: "tinymce" */ './Editor');
+      }
+    }
+  },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
 
   props: [
@@ -70,11 +65,6 @@ export default {
         'richtext': this.richtext,
       }
     },
-  },
-  watch: {
-    richtext() {
-      console.log("RT Changed, now", this.richtext)
-    }
   },
   data() {
     return {

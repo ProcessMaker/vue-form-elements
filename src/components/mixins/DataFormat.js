@@ -1,8 +1,12 @@
 import Validator from 'validatorjs';
 
 // To include another language in the Validator with variable processmaker
-if (window.ProcessMaker && window.ProcessMaker.user && window.ProcessMaker.user.lang) {
-  Validator.useLang(window.ProcessMaker.user.lang);
+let globalObject = typeof window === 'undefined'
+  ? global
+  : window;
+
+if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.ProcessMaker.user.lang) {
+  Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
 
 export default {
@@ -35,7 +39,7 @@ export default {
     },
     formatValue(value) {
       if (!value && this.dataFormat !== 'boolean') {
-        return '';
+        return value;
       }
       this.dataTypeValidatorPasses = this.validateRuleFormat(value);
       return this.dataTypeValidatorPasses ? this.formatValueIfValid(value) : value;
