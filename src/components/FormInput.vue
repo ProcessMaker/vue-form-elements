@@ -9,6 +9,7 @@
       :name="name"
       class="form-control"
       :class="classList"
+      v-on:blur="formatFloatValue()"
     >
       <template v-if="validator && validator.errorCount">
         <div class="invalid-feedback" v-for="(errors, index) in validator.errors.all()" :key="index">
