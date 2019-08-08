@@ -1,7 +1,7 @@
 <template>
   <div class='form-group'>
     <div :class="classList">
-      <component
+      <editor
         :is="component"
         v-on="$listeners"
         v-bind="$attrs"
@@ -17,12 +17,10 @@
   </div>
 </template>
 
-
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
 import Mustache from 'mustache';
-import FormHtmlEditorStatic from './FormHtmlEditorStatic';
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
@@ -31,12 +29,11 @@ export default {
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin],
   components: {
-    'tinymce': () => {
+    Editor: () => {
       if (typeof window !== 'undefined') {
         return import(/* webpackChunkName: "tinymce" */ './Editor');
       }
     },
-    'static': FormHtmlEditorStatic,
   },
   props: [
     'error',
@@ -49,12 +46,6 @@ export default {
     // 'value'
   ],
   computed:{
-    component() {
-      if (typeof window !== 'undefined') {
-        return 'tinymce'
-      }
-      return 'static'
-    },
     classList(){
       let classList = {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
