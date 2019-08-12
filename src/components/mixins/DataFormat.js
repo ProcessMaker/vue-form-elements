@@ -22,6 +22,7 @@ export default {
     return {
       dataTypeValidator: null,
       dataTypeValidatorPasses: true,
+      formatted: ''
     };
   },
   watch: {
@@ -57,6 +58,12 @@ export default {
       this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
       return this.dataTypeValidator.passes();
     },
+    formatFloatValue() {
+      if ( this.dataFormat == 'float' && this.dataTypeValidator.passes() ) {
+        this.value = Number(this.value);
+        return this.$emit('input', this.value);
+      }
+    },
     formatValueIfValid(newValue) {
       switch (this.dataFormat) {
         case 'string':
@@ -74,9 +81,6 @@ export default {
         case 'datetime':
           newValue = newValue.toString();
           break;
-        case 'float':
-          newValue = Number(newValue);
-          break;
         case 'int':
           newValue = parseInt(newValue);
           break;
@@ -86,5 +90,6 @@ export default {
       }
       return newValue;
     },
+    
   },
 };
