@@ -30,14 +30,11 @@
     "@tinymce/tinymce-vue": "^2.0.0",
     "bootstrap": "^4.2.1",
     "jquery": "^3.3.1",
-    "luxon": "^1.11.3",
     "popper.js": "^1.14.4",
     "tinymce": "^5.0.1",
     "v-calendar": "^0.9.7",
     "validatorjs": "^3.14.2",
-    "vue": "^2.5.16",
-    "vue-datetime": "^1.0.0-beta.10",
-    "weekstart": "^1.0.0"
+    "vue": "^2.5.16"
   },
   "devDependencies": {
     "@panter/vue-i18next": "^0.15.0",
