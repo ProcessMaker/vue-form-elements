@@ -1,6 +1,13 @@
 <template>
     <div class="container">
         <h1>vue-form-elements playground</h1>
+        <form-select name="sampleSelect"
+                     label="Sample Select"
+                     :options="multiOptions"
+                     v-model="data.sampleSelect"
+                     helper="XXXXXXXX"
+                     validation="in:red">
+        </form-select>
         <form-input name="sampleInput"
                     label="Sample Input with Validation"
                     helper="This is sample help text for the sample input field. This field is required and has a minimum length of 2 characters."
@@ -140,6 +147,15 @@
         textValidationRules: 'max:255',
         passwordValidationRules: 'required|regex:/(?=.{9,})(?=.*?[^\\w\\s])(?=.*?[0-9])(?=.*?[A-Z]).*?[a-z].*/',
         confirmPasswordValidationRules: 'required|same:password.value',
+        multiOptions: {
+          dataSource: null,
+          jsonData:[ { content: 'Green', value: 'green' }, { content: 'Red', value: 'red' }, { content: 'Blue', value: 'blue' }, { content: 'Yellow', value: 'yellow' }, ],
+          dataName: 'nombreDeDatos',
+          key: 'value',
+          value: 'content',
+          pmqlQuery: '',
+          renderAs: 'radio',
+        },
         selectOptions: [
           {
             content: 'Green',

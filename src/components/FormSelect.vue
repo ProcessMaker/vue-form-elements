@@ -3,6 +3,7 @@
     <label v-uni-for="name">{{label}}</label>
 
     <select
+      v-if="options.renderAs === 'dropdown'"
       v-bind="$attrs"
       v-uni-id="name"
       class="form-control"
@@ -12,7 +13,7 @@
     >
       <option :value="null">Select</option>
       <option
-        v-for="(option, index) in selectOptions"
+        v-for="(option, index) in options.jsonData"
         :selected="option.value == value"
         :value="option.value"
         :key="index"
@@ -20,6 +21,38 @@
         {{option.content}}
       </option>
     </select>
+
+    <div>
+      <div :class="divClass" :key="option.value" v-for="option in options.jsonData">
+        <input
+          v-bind="$attrs"
+          type="checkbox"
+          :class="inputClass"
+          :value="option.value"
+          v-uni-id="`${name}-${option.value}`"
+          :checked="option.value == selectedValue"
+          @change="$emit('input', $event.target.value)"
+        >
+        <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
+      </div>
+   </div>
+
+
+    <div>
+      <div :class="divClass" :key="option.value" v-for="option in options.jsonData">
+        <input
+          v-bind="$attrs"
+          type="radio"
+          :class="inputClass"
+          :value="option.value"
+          v-uni-id="`${name}-${option.value}`"
+          :checked="option.value == selectedValue"
+          @change="$emit('input', $event.target.value)"
+        >
+        <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
+      </div>
+    </div>
+
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
@@ -68,7 +101,8 @@ export default {
       return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
-      const { jsonData, key, value, dataName } = this.options;
+      const { jsonData, key, value, dataName, renderAs } = this.options;
+
       let options = [];
 
       const convertToSelectOptions = option => ({
