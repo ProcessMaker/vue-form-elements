@@ -9,7 +9,8 @@
       class="form-control"
       :class="classList"
       :name='name'
-      @change="$emit('input', $event.target.value)"
+      v-model="selectedOptions"
+      @change="sendSelectedOptions($event)"
     >
       <option :value="null">Select</option>
       <option
@@ -22,23 +23,25 @@
       </option>
     </select>
 
-    <div>
+
+    <div v-if="options.renderAs === 'checkbox'">
       <div :class="divClass" :key="option.value" v-for="option in options.jsonData">
         <input
           v-bind="$attrs"
           type="checkbox"
-          :class="inputClass"
           :value="option.value"
           v-uni-id="`${name}-${option.value}`"
+          :name="`${name}`"
           :checked="option.value == selectedValue"
-          @change="$emit('input', $event.target.value)"
+          v-model="selectedOptions"
+          @change="sendSelectedOptions($event)"
         >
         <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
       </div>
    </div>
 
 
-    <div>
+    <div v-if="options.renderAs === 'radio'">
       <div :class="divClass" :key="option.value" v-for="option in options.jsonData">
         <input
           v-bind="$attrs"
@@ -86,7 +89,38 @@ export default {
     'controlClass',
     'validationData',
   ],
+  data() {
+    return {
+      selectedOptions: [],
+    };
+  },
+  methods: {
+    sendSelectedOptions(event) {
+      let valueToSend = (this.selectedOptions.constructor === Array) 
+                        ? this.selectedOptions
+                        : [this.selectedOptions];
+
+      console.log('papapapapa');
+      console.log(event.target);
+      console.log(valueToSend);
+      this.$emit('input', valueToSend);
+      //$emit('input', $event.target.value)
+    }
+  },
   computed:{
+    divClass() {
+      return this.toggle ? 'custom-control custom-radio' : 'form-check';
+    },
+    labelClass() {
+      return this.toggle ? 'custom-control-label': 'form-check-label';
+    },
+    inputClass() {
+      return [
+        { [this.controlClass]: !!this.controlClass },
+        { 'is-invalid': (this.validator && this.validator.errorCount) || this.error },
+        this.toggle ? 'custom-control-input' : 'form-check-input'
+      ];
+    },
     classList() {
       return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
