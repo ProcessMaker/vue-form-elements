@@ -9,13 +9,13 @@
       class="form-control"
       :class="classList"
       :name='name'
-      v-model="selectedOptions"
+      v-model="selectedOptions[0]"
       @change="sendSelectedOptions($event)"
     >
       <option :value="null">Select</option>
       <option
-        v-for="(option, index) in options.jsonData"
-        :selected="option.value == value"
+        v-for="(option, index) in selectOptions"
+        :selected="option.value==='red'"
         :value="option.value"
         :key="index"
       >
@@ -25,14 +25,14 @@
 
 
     <div v-if="options.renderAs === 'checkbox'">
-      <div :class="divClass" :key="option.value" v-for="option in options.jsonData">
+      <div :class="divClass" :key="option.value" v-for="option in selectOptions">
         <input
           v-bind="$attrs"
           type="checkbox"
           :value="option.value"
           v-uni-id="`${name}-${option.value}`"
           :name="`${name}`"
-          :checked="option.value == selectedValue"
+          :checked="selectedOptions.indexOf(option.value)"
           v-model="selectedOptions"
           @change="sendSelectedOptions($event)"
         >
@@ -42,7 +42,7 @@
 
 
     <div v-if="options.renderAs === 'radio'">
-      <div :class="divClass" :key="option.value" v-for="option in options.jsonData">
+      <div :class="divClass" :key="option.value" v-for="option in selectOptions">
         <input
           v-bind="$attrs"
           type="radio"
@@ -92,7 +92,16 @@ export default {
   data() {
     return {
       selectedOptions: [],
+      renderAs: 'dropdown'
     };
+  },
+  mounted() {
+    this.selectedOptions = this.options.selectedOptions;
+    this.renderAs = this.options.renderAs;
+    console.log('FormSelect-opciones seleccionadas');
+    console.log(this.options);
+    console.log('FormSelect-Datoos');
+    console.log(this.data);
   },
   methods: {
     sendSelectedOptions(event) {
@@ -100,7 +109,7 @@ export default {
                         ? this.selectedOptions
                         : [this.selectedOptions];
 
-      console.log('papapapapa');
+      console.log('FormSelect - sendSelectedOptions');
       console.log(event.target);
       console.log(valueToSend);
       this.$emit('input', valueToSend);

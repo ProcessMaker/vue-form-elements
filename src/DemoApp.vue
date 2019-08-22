@@ -5,8 +5,8 @@
                      label="Sample Select"
                      :options="multiOptions"
                      v-model="data.sampleSelect"
-                     helper="XXXXXXXX"
-                     validation="in:red">
+                     helper="This is a sample of a select field."
+                     validation="in:red,blue">
         </form-select>
         <form-input name="sampleInput"
                     label="Sample Input with Validation"
@@ -52,7 +52,7 @@
         Current Character Count: {{data.sampleText.length}}
         <form-select name="sampleSelect"
                      label="Sample Select"
-                     :options="selectOptions"
+                     :options="multiOptions"
                      v-model="data.sampleSelect"
                      helper="This is a sample select field with a validation rule that it must match red"
                      validation="in:red">
@@ -149,13 +149,15 @@
         confirmPasswordValidationRules: 'required|same:password.value',
         multiOptions: {
           dataSource: null,
-          jsonData:[ { content: 'Green', value: 'green' }, { content: 'Red', value: 'red' }, { content: 'Blue', value: 'blue' }, { content: 'Yellow', value: 'yellow' }, ],
+          jsonData: JSON.stringify([ { content: 'Green', value: 'green' }, { content: 'Red', value: 'red' }, { content: 'Blue', value: 'blue' }, { content: 'Yellow', value: 'yellow' }, ]),
+          selectedOptions:['blue'],
           dataName: 'nombreDeDatos',
           key: 'value',
           value: 'content',
           pmqlQuery: '',
           renderAs: 'dropdown',
         },
+
         selectOptions: [
           {
             content: 'Green',
