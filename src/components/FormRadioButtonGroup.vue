@@ -46,6 +46,7 @@ export default {
   computed: {
     selectedValue() {
       if (!this.value && this.radioOptions.length > 0) {
+        this.$emit('input', this.radioOptions[0].value);
         return this.radioOptions[0].value;
       }
 
