@@ -155,7 +155,7 @@
           key: 'value',
           value: 'content',
           pmqlQuery: '',
-          renderAs: 'dropdown',
+          renderAs: 'radio',
         },
 
         selectOptions: [

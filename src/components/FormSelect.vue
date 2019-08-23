@@ -46,11 +46,12 @@
         <input
           v-bind="$attrs"
           type="radio"
-          :class="inputClass"
           :value="option.value"
           v-uni-id="`${name}-${option.value}`"
-          :checked="option.value == selectedValue"
-          @change="$emit('input', $event.target.value)"
+          :name="`${name}`"
+          :checked="selectedOptions.indexOf(option.value)"
+          v-model="selectedOptions"
+          @change="sendSelectedOptions($event)"
         >
         <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
       </div>
@@ -92,7 +93,7 @@ export default {
   data() {
     return {
       selectedOptions: [],
-      renderAs: 'dropdown'
+      renderAs: 'checkbox'
     };
   },
   mounted() {
@@ -109,8 +110,11 @@ export default {
                         ? this.selectedOptions
                         : [this.selectedOptions];
 
-      console.log('FormSelect - sendSelectedOptions');
-      console.log(event.target);
+      console.log('FormSelect - sendSelectedOptions - selectedOptions constructor');
+      console.log(this.selectedOptions.constructor);
+      console.log('FormSelect - sendSelectedOptions - selectedOptions');
+      console.log(this.selectedOptions);
+      console.log('FormSelect - sendSelectedOptions - valueToSend');
       console.log(valueToSend);
       this.$emit('input', valueToSend);
       //$emit('input', $event.target.value)
@@ -144,6 +148,8 @@ export default {
       return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
+      console.log('FormSelect - optionsFromDataSource - options');
+      console.log(this.options);
       const { jsonData, key, value, dataName, renderAs } = this.options;
 
       let options = [];
