@@ -48,6 +48,7 @@ export default {
     validateRuleFormat(value) {
       const rules = {
         'int': 'integer',
+        'array': 'array',
         'boolean': 'boolean',
         'string': 'string',
         'datetime': 'date',
@@ -55,6 +56,8 @@ export default {
         'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
       };
+      console.log('DataFormat mixin - validateRuleFormat -datatypeValidator');
+      console.log(this.dataFormat);
       this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
       return this.dataTypeValidator.passes();
     },
