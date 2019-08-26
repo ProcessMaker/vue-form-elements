@@ -2,7 +2,7 @@
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
     <select
-      v-if="options.renderAs === 'dropdown'"
+      v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
       v-bind="$attrs"
       v-uni-id="name"
       class="form-control"
@@ -11,7 +11,7 @@
       v-model="selectedOptions[0]"
       @change="sendSelectedOptions($event)"
     >
-      <option :value="null">Select</option>
+      <option :value="null"></option>
       <option
         v-for="(option, index) in selectOptions"
         :value="option.value"
@@ -21,15 +21,21 @@
       </option>
     </select>
 
+
     <multiselect
-      v-if="options.renderAs === 'dropdown'"
-      v-bind="$attrs"
-      v-on="$listeners"
-      :placeholder="$t('Select...')"
-      :show-labels="true"
-      :options="selectOptions.map(option => option.content)"
-      :class="classList"
-    >
+     track-by="value"
+     label="content"
+     v-model="selectedOptions"
+     v-bind:multiple="allowMultiSelect"
+     v-if="options.renderAs === 'dropdown' && allowMultiSelect"
+     v-bind="$attrs"
+     v-on="$listeners"
+     :placeholder="$t('Select...')"
+     :show-labels="false"
+     :options="selectOptions"
+     :class="classList"
+     @input="sendSelectedOptions"
+   >
       <template slot="noResult">
         {{ $t('No elements found. Consider changing the search query.') }}
       </template>
@@ -103,8 +109,13 @@ export default {
                             ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x=>x[1]) 
                             : [];
 
+    if (this.options.defaultOption && !this.value) {
+      this.selectedOptions = [this.options.defaultOption];
+    }
+
     this.renderAs = this.options.renderAs;
     this.allowMultiSelect = this.options.allowMultiSelect;
+
   },
   methods: {
     sendSelectedOptions(event) {
