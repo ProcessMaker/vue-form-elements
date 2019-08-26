@@ -1,6 +1,5 @@
 <template>
   <div class="form-group">
-sell2
     <label v-uni-for="name">{{label}}</label>
     <select
       v-if="options.renderAs === 'dropdown'"
@@ -97,7 +96,10 @@ export default {
     };
   },
   mounted() {
-    this.selectedOptions = this.options.selectedOptions;
+    this.selectedOptions = (this.value) 
+                            ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x=>x[1]) 
+                            : [];
+
     this.renderAs = this.options.renderAs;
     console.log('FormSelect-mount-opciones seleccionadas');
     console.log(this.options);
@@ -105,6 +107,10 @@ export default {
     console.log(this.data);
     console.log('FormSelect-mount-Data Format');
     console.log(this.dataFormat);
+    console.log('FormSelect-mount-value');
+    console.log(this.dataFormat);
+    console.log('FormSelect-mount-selected options');
+    console.log(this.selectedOptions);
   },
   methods: {
     sendSelectedOptions(event) {
