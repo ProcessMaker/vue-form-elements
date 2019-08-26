@@ -39,23 +39,6 @@
       </div>
    </div>
 
-
-    <div v-if="options.renderAs === 'radio'">
-      <div :class="divClass" :key="option.value" v-for="option in selectOptions">
-        <input
-          v-bind="$attrs"
-          type="radio"
-          :value="option.value"
-          v-uni-id="`${name}-${option.value}`"
-          :name="`${name}`"
-          :checked="selectedOptions.indexOf(option.value)"
-          v-model="selectedOptions"
-          @change="sendSelectedOptions($event)"
-        >
-        <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
-      </div>
-    </div>
-
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
@@ -92,7 +75,8 @@ export default {
   data() {
     return {
       selectedOptions: [],
-      renderAs: 'checkbox'
+      renderAs: 'dropdown',
+      allowMultiSelect: false,
     };
   },
   mounted() {
@@ -101,6 +85,7 @@ export default {
                             : [];
 
     this.renderAs = this.options.renderAs;
+    this.allowMultiSelect = this.options.allowMultiSelect;
     console.log('FormSelect-mount-opciones seleccionadas');
     console.log(this.options);
     console.log('FormSelect-mount-Datoos');
@@ -117,6 +102,11 @@ export default {
       let valueToSend = (this.selectedOptions.constructor === Array) 
                         ? this.selectedOptions
                         : [this.selectedOptions];
+     
+      if (!this.allowMultiSelect && valueToSend.length > 0) {
+        valueToSend = new Array(valueToSend[valueToSend.length-1]);
+        this.$set(this, 'selectedOptions',valueToSend);
+      }
 
       console.log('FormSelect - sendSelectedOptions - selectedOptions constructor');
       console.log(this.selectedOptions.constructor);
@@ -124,6 +114,8 @@ export default {
       console.log(this.selectedOptions);
       console.log('FormSelect - sendSelectedOptions - valueToSend');
       console.log(valueToSend);
+      console.log('FormSelect - sendSelectedOptions - allowMultiSelect');
+      console.log(this.allowMultiSelect);
       this.$emit('input', valueToSend);
       //$emit('input', $event.target.value)
     }
@@ -158,8 +150,9 @@ export default {
     optionsFromDataSource() {
       console.log('FormSelect - optionsFromDataSource - options');
       console.log(this.options);
-      const { jsonData, key, value, dataName, renderAs } = this.options;
+      const { jsonData, key, value, dataName, renderAs, allowMultiSelect } = this.options;
 
+      this.allowMultiSelect = allowMultiSelect;
       let options = [];
 
       const convertToSelectOptions = option => ({

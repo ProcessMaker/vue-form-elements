@@ -153,6 +153,7 @@
           value: 'content',
           pmqlQuery: '',
           renderAs: 'dropdown',
+          allowMultiSelect: false,
         },
 
         selectOptions: [
