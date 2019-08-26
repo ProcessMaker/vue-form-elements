@@ -56,10 +56,6 @@ export default {
         'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
       };
-      console.log('DataFormat mixin - validateRuleFormat -datatypeValidator');
-      console.log(this.dataFormat);
-      console.log('del elemento');
-      console.log(this.label);
       this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
       if (this.$options._componentTag === 'FormSelect') {
           return true;
