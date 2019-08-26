@@ -86,16 +86,6 @@ export default {
 
     this.renderAs = this.options.renderAs;
     this.allowMultiSelect = this.options.allowMultiSelect;
-    console.log('FormSelect-mount-opciones seleccionadas');
-    console.log(this.options);
-    console.log('FormSelect-mount-Datoos');
-    console.log(this.data);
-    console.log('FormSelect-mount-Data Format');
-    console.log(this.dataFormat);
-    console.log('FormSelect-mount-value');
-    console.log(this.dataFormat);
-    console.log('FormSelect-mount-selected options');
-    console.log(this.selectedOptions);
   },
   methods: {
     sendSelectedOptions(event) {
@@ -108,16 +98,7 @@ export default {
         this.$set(this, 'selectedOptions',valueToSend);
       }
 
-      console.log('FormSelect - sendSelectedOptions - selectedOptions constructor');
-      console.log(this.selectedOptions.constructor);
-      console.log('FormSelect - sendSelectedOptions - selectedOptions');
-      console.log(this.selectedOptions);
-      console.log('FormSelect - sendSelectedOptions - valueToSend');
-      console.log(valueToSend);
-      console.log('FormSelect - sendSelectedOptions - allowMultiSelect');
-      console.log(this.allowMultiSelect);
       this.$emit('input', valueToSend);
-      //$emit('input', $event.target.value)
     }
   },
   computed:{
@@ -148,8 +129,6 @@ export default {
       return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
-      console.log('FormSelect - optionsFromDataSource - options');
-      console.log(this.options);
       const { jsonData, key, value, dataName, renderAs, allowMultiSelect } = this.options;
 
       this.allowMultiSelect = allowMultiSelect;
