@@ -45,6 +45,7 @@ export default {
     },
     methods: {
         updateValidation() {
+            console.log('VFElements-mixin-validation.js');
             if (this.validation) {
                 let fieldName = this.validationField ? this.validationField : this.name;
                 let data = this.validationData ? this.validationData : {[fieldName]: this.value}

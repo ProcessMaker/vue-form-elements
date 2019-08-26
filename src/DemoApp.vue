@@ -4,7 +4,6 @@
         <form-select name="sampleSelect"
                      label="Sample Select"
                      :options="multiOptions"
-                     :dataFormat="multiOptions.selectDataType"
                      v-model="data.sampleSelect"
                      helper="This is a sample of a select field."
                      validation="in:red,blue">
@@ -149,15 +148,11 @@
         passwordValidationRules: 'required|regex:/(?=.{9,})(?=.*?[^\\w\\s])(?=.*?[0-9])(?=.*?[A-Z]).*?[a-z].*/',
         confirmPasswordValidationRules: 'required|same:password.value',
         multiOptions: {
-          dataSource: null,
-          jsonData: JSON.stringify([ { content: 'Green', value: 'green' }, { content: 'Red', value: 'red' }, { content: 'Blue', value: 'blue' }, { content: 'Yellow', value: 'yellow' }, ]),
-          selectedOptions:['blue'],
           dataName: 'nombreDeDatos',
           key: 'value',
           value: 'content',
           pmqlQuery: '',
           renderAs: 'dropdown',
-          selectDataType: 'array',
         },
 
         selectOptions: [

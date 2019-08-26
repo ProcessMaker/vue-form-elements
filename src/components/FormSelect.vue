@@ -1,7 +1,7 @@
 <template>
   <div class="form-group">
+sell2
     <label v-uni-for="name">{{label}}</label>
-
     <select
       v-if="options.renderAs === 'dropdown'"
       v-bind="$attrs"
@@ -99,10 +99,12 @@ export default {
   mounted() {
     this.selectedOptions = this.options.selectedOptions;
     this.renderAs = this.options.renderAs;
-    console.log('FormSelect-opciones seleccionadas');
+    console.log('FormSelect-mount-opciones seleccionadas');
     console.log(this.options);
-    console.log('FormSelect-Datoos');
+    console.log('FormSelect-mount-Datoos');
     console.log(this.data);
+    console.log('FormSelect-mount-Data Format');
+    console.log(this.dataFormat);
   },
   methods: {
     sendSelectedOptions(event) {

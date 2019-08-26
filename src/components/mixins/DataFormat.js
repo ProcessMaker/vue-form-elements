@@ -58,7 +58,12 @@ export default {
       };
       console.log('DataFormat mixin - validateRuleFormat -datatypeValidator');
       console.log(this.dataFormat);
+      console.log('del elemento');
+      console.log(this.label);
       this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
+      if (this.$options._componentTag === 'FormSelect') {
+          return true;
+      }
       return this.dataTypeValidator.passes();
     },
     formatFloatValue() {
@@ -74,6 +79,7 @@ export default {
           break;
         case 'boolean':
           newValue = Boolean(newValue);
+          newValue = newValue;
           break;
         case 'currency':
           newValue = newValue.toString();
@@ -86,6 +92,8 @@ export default {
           break;
         case 'int':
           newValue = parseInt(newValue);
+          break;
+        case 'array':
           break;
         default:
           newValue = newValue.toString();
