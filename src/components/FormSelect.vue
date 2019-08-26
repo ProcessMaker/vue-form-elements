@@ -14,7 +14,6 @@
       <option :value="null">Select</option>
       <option
         v-for="(option, index) in selectOptions"
-        :selected="option.value==='red'"
         :value="option.value"
         :key="index"
       >
@@ -22,7 +21,23 @@
       </option>
     </select>
 
-
+    <multiselect
+      v-if="options.renderAs === 'dropdown'"
+      v-bind="$attrs"
+      v-on="$listeners"
+      :placeholder="$t('Select...')"
+      :show-labels="true"
+      :options="selectOptions.map(option => option.content)"
+      :class="classList"
+    >
+      <template slot="noResult">
+        {{ $t('No elements found. Consider changing the search query.') }}
+      </template>
+      <template slot="noOptions">
+        {{ $t('No Data Available') }}
+      </template>
+    </multiselect>
+    
     <div v-if="options.renderAs === 'checkbox'">
       <div :class="divClass" :key="option.value" v-for="option in selectOptions">
         <input
@@ -48,6 +63,7 @@
 </template>
 
 <script>
+import Multiselect from 'vue-multiselect';
 import ValidationMixin from './mixins/validation'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
@@ -61,6 +77,9 @@ function removeInvalidOptions(option) {
 
 export default {
   inheritAttrs: false,
+  components: {
+    Multiselect,
+  },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [
     'label',
