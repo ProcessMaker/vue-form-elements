@@ -49,8 +49,7 @@
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.3",
     "vue-template-compiler": "^2.5.16",
-    "vue-uniq-ids": "^1.0.0",
-    "vue-multiselect": "^2.1.3"
+    "vue-uniq-ids": "^1.0.0"
   },
   "peerDependencies": {
     "mustache": "^3.0.1"

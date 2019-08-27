@@ -1,65 +1,25 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
+
     <select
-      v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
       v-bind="$attrs"
       v-uni-id="name"
       class="form-control"
       :class="classList"
       :name='name'
-      v-model="selectedOptions[0]"
-      @change="sendSelectedOptions($event)"
+      @change="$emit('input', $event.target.value)"
     >
-      <option :value="null"></option>
+      <option :value="null">Select</option>
       <option
         v-for="(option, index) in selectOptions"
+        :selected="option.value == value"
         :value="option.value"
         :key="index"
       >
         {{option.content}}
       </option>
     </select>
-
-
-    <multiselect
-     track-by="value"
-     label="content"
-     v-model="selectedOptions"
-     v-bind:multiple="allowMultiSelect"
-     v-if="options.renderAs === 'dropdown' && allowMultiSelect"
-     v-bind="$attrs"
-     v-on="$listeners"
-     :placeholder="$t('Select...')"
-     :show-labels="false"
-     :options="selectOptions"
-     :class="classList"
-     @input="sendSelectedOptions"
-   >
-      <template slot="noResult">
-        {{ $t('No elements found. Consider changing the search query.') }}
-      </template>
-      <template slot="noOptions">
-        {{ $t('No Data Available') }}
-      </template>
-    </multiselect>
-    
-    <div v-if="options.renderAs === 'checkbox'">
-      <div :class="divClass" :key="option.value" v-for="option in selectOptions">
-        <input
-          v-bind="$attrs"
-          type="checkbox"
-          :value="option.value"
-          v-uni-id="`${name}-${option.value}`"
-          :name="`${name}`"
-          :checked="selectedOptions.indexOf(option.value)"
-          v-model="selectedOptions"
-          @change="sendSelectedOptions($event)"
-        >
-        <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
-      </div>
-   </div>
-
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
@@ -69,7 +29,6 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect';
 import ValidationMixin from './mixins/validation'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
@@ -83,9 +42,6 @@ function removeInvalidOptions(option) {
 
 export default {
   inheritAttrs: false,
-  components: {
-    Multiselect,
-  },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [
     'label',
@@ -97,54 +53,7 @@ export default {
     'controlClass',
     'validationData',
   ],
-  data() {
-    return {
-      selectedOptions: [],
-      renderAs: 'dropdown',
-      allowMultiSelect: false,
-    };
-  },
-  mounted() {
-    this.selectedOptions = (this.value) 
-                            ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x=>x[1]) 
-                            : [];
-
-    if (this.options.defaultOption && !this.value) {
-      this.selectedOptions = [this.options.defaultOption];
-    }
-
-    this.renderAs = this.options.renderAs;
-    this.allowMultiSelect = this.options.allowMultiSelect;
-
-  },
-  methods: {
-    sendSelectedOptions(event) {
-      let valueToSend = (this.selectedOptions.constructor === Array) 
-                        ? this.selectedOptions
-                        : [this.selectedOptions];
-     
-      if (!this.allowMultiSelect && valueToSend.length > 0) {
-        valueToSend = new Array(valueToSend[valueToSend.length-1]);
-        this.$set(this, 'selectedOptions',valueToSend);
-      }
-
-      this.$emit('input', valueToSend);
-    }
-  },
   computed:{
-    divClass() {
-      return this.toggle ? 'custom-control custom-radio' : 'form-check';
-    },
-    labelClass() {
-      return this.toggle ? 'custom-control-label': 'form-check-label';
-    },
-    inputClass() {
-      return [
-        { [this.controlClass]: !!this.controlClass },
-        { 'is-invalid': (this.validator && this.validator.errorCount) || this.error },
-        this.toggle ? 'custom-control-input' : 'form-check-input'
-      ];
-    },
     classList() {
       return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
@@ -159,9 +68,7 @@ export default {
       return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
-      const { jsonData, key, value, dataName, renderAs, allowMultiSelect } = this.options;
-
-      this.allowMultiSelect = allowMultiSelect;
+      const { jsonData, key, value, dataName } = this.options;
       let options = [];
 
       const convertToSelectOptions = option => ({
