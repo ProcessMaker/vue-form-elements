@@ -10,7 +10,7 @@
         :value="option.value"
         v-uni-id="`${name}-${option.value}`"
         :checked="option.value == selectedValue"
-        @change="sendSelectedOptions($event)"
+        @change="$emit('input', $event.target.value)"
       >
       <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
     </div>
@@ -43,13 +43,6 @@ export default {
     'toggle',
     'validationData'
   ],
-  methods: {
-    sendSelectedOptions(event) {
-      console.log('Form Radio-sendSelectedOptions - valor:');
-      console.log(event.target.value);
-      this.$emit('input', event.target.value);
-    }
-  },
   computed: {
     selectedValue() {
       if (!this.value && this.radioOptions.length > 0) {
