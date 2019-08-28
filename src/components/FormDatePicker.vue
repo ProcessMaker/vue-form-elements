@@ -1,11 +1,11 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
-    <date-picker ref="datePicker" 
-            v-model="date" 
-            v-on="$listeners" 
+    <date-picker ref="datePicker"
+            v-model="date"
+            v-on="$listeners"
             v-bind="$attrs"
-            :config="config" 
+            :config="config"
             :class="{inputClass, 'is-invalid' : validator}"
             :placeholder="placeholder"
     ></date-picker>
@@ -25,7 +25,6 @@
   import DataFormatMixin from "./mixins/DataFormat";
   import datePicker from 'vue-bootstrap-datetimepicker';
   import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
-  import moment from 'moment-timezone'
 
   const uniqIdsMixin = createUniqIdsMixin();
 
@@ -82,10 +81,14 @@
         }
       },
       setTimezone() {
-        this.config.timeZone = ProcessMaker.user.timezone || 'local';
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          this.config.timeZone = ProcessMaker.user.timezone || 'local';
+        }
       },
       setLang() {
-        this.config.locale = ProcessMaker.user.lang || 'en';
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          this.config.locale = ProcessMaker.user.lang || 'en';
+        }
       }
      },
      mounted() {
