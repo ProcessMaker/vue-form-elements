@@ -39,29 +39,7 @@
     >
     </form-multi-select>
 
-    <!--<multiselect-->
-     <!--track-by="value"-->
-     <!--label="content"-->
-     <!--v-model="selectedOptions"-->
-     <!--v-bind:multiple="allowMultiSelect"-->
-     <!--v-if="options.renderAs === 'dropdown' && allowMultiSelect"-->
-     <!--v-bind="$attrs"-->
-     <!--v-on="$listeners"-->
-     <!--:placeholder="$t('Select...')"-->
-     <!--:show-labels="false"-->
-     <!--:options="selectOptions"-->
-     <!--:class="classList"-->
-     <!--@input="sendSelectedOptions"-->
-   <!-->-->
-      <!--<template slot="noResult">-->
-        <!--{{ $t('No elements found. Consider changing the search query.') }}-->
-      <!--</template>-->
-      <!--<template slot="noOptions">-->
-        <!--{{ $t('No Data Available') }}-->
-      <!--</template>-->
-    <!--</multiselect>-->
-    
-    <div v-if="options.renderAs === 'checkbox'">
+    <div v-if="options.renderAs === 'checkbox' && allowMultiSelect">
       <div :class="divClass" :key="option.value" v-for="option in selectOptions">
         <input
           v-bind="$attrs"
@@ -76,6 +54,23 @@
         <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
       </div>
    </div>
+
+   <div v-if="options.renderAs === 'checkbox' && !allowMultiSelect">
+      <div :class="divClass" :key="option.value" v-for="option in selectOptions">
+        <input
+          v-bind="$attrs"
+          type="radio"
+          :value="option.value"
+          v-uni-id="`${name}-${option.value}`"
+          :name="`${name}`"
+          :checked="selectedOptions.indexOf(option.value)"
+          v-model="selectedOptions"
+          @change="sendSelectedOptions($event)"
+        >
+        <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
+      </div>
+   </div>
+
 
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
