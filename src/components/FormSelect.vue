@@ -1,6 +1,7 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
+    sssss
     <select
       v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
       v-bind="$attrs"
@@ -21,28 +22,44 @@
       </option>
     </select>
 
-
-    <multiselect
-     track-by="value"
-     label="content"
-     v-model="selectedOptions"
-     v-bind:multiple="allowMultiSelect"
+    <form-multi-select
      v-if="options.renderAs === 'dropdown' && allowMultiSelect"
-     v-bind="$attrs"
-     v-on="$listeners"
-     :placeholder="$t('Select...')"
-     :show-labels="false"
-     :options="selectOptions"
-     :class="classList"
-     @input="sendSelectedOptions"
-   >
-      <template slot="noResult">
-        {{ $t('No elements found. Consider changing the search query.') }}
-      </template>
-      <template slot="noOptions">
-        {{ $t('No Data Available') }}
-      </template>
-    </multiselect>
+      :option-value="optionKey"
+      :option-content="optionValue"
+      v-uni-id="name"
+      v-bind="$attrs"
+      v-on="$listeners"
+      v-model="selectedOptions"
+      v-bind:multiple="allowMultiSelect"
+      :placeholder="$t('Select...')"
+      :show-labels="false"
+      :options="selectOptions"
+      :class="classList"
+      @input="sendSelectedOptions"
+    >
+    </form-multi-select>
+
+    <!--<multiselect-->
+     <!--track-by="value"-->
+     <!--label="content"-->
+     <!--v-model="selectedOptions"-->
+     <!--v-bind:multiple="allowMultiSelect"-->
+     <!--v-if="options.renderAs === 'dropdown' && allowMultiSelect"-->
+     <!--v-bind="$attrs"-->
+     <!--v-on="$listeners"-->
+     <!--:placeholder="$t('Select...')"-->
+     <!--:show-labels="false"-->
+     <!--:options="selectOptions"-->
+     <!--:class="classList"-->
+     <!--@input="sendSelectedOptions"-->
+   <!-->-->
+      <!--<template slot="noResult">-->
+        <!--{{ $t('No elements found. Consider changing the search query.') }}-->
+      <!--</template>-->
+      <!--<template slot="noOptions">-->
+        <!--{{ $t('No Data Available') }}-->
+      <!--</template>-->
+    <!--</multiselect>-->
     
     <div v-if="options.renderAs === 'checkbox'">
       <div :class="divClass" :key="option.value" v-for="option in selectOptions">
@@ -69,10 +86,10 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect';
 import ValidationMixin from './mixins/validation'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
+import FormMultiSelect from "./FormMultiSelect";
 
 const uniqIdsMixin = createUniqIdsMixin()
 
@@ -84,7 +101,7 @@ function removeInvalidOptions(option) {
 export default {
   inheritAttrs: false,
   components: {
-    Multiselect,
+    FormMultiSelect,
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [
@@ -99,10 +116,33 @@ export default {
   ],
   data() {
     return {
+      optionKey:'',
+      optionValue:'',
       selectedOptions: [],
       renderAs: 'dropdown',
       allowMultiSelect: false,
     };
+  },
+  watch: {
+    options: {
+      deep: true,
+      handler(value) {
+        this.renderAs = value.renderAs;
+        this.allowMultiSelect = value.allowMultiSelect;
+        if (value.defaultOption && !this.value) {
+          this.selectedOptions = [value.defaultOption];
+        }
+        this.optionKey = value.key || 'value';
+        this.optionValue = value.value || 'content';
+      }
+    },
+    value: {
+      handler() {
+        if (Array.isArray(this.value) && this.value.length !== 0 && this.selectedOptions.length === 0) {
+          this.selectedOptions = this.allowMultiSelect  ? this.value : [this.value[0]];
+        }
+      }
+    }
   },
   mounted() {
     this.selectedOptions = (this.value) 
@@ -123,6 +163,8 @@ export default {
                         ? this.selectedOptions
                         : [this.selectedOptions];
      
+      // If more than 1 item is selected but we are displaying a one selection control 
+      // show just the first selected item
       if (!this.allowMultiSelect && valueToSend.length > 0) {
         valueToSend = new Array(valueToSend[valueToSend.length-1]);
         this.$set(this, 'selectedOptions',valueToSend);
