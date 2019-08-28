@@ -1,7 +1,6 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
-    sssss
     <select
       v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
       v-bind="$attrs"
