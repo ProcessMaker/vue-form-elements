@@ -1,7 +1,6 @@
 export default {
-  props: ['defaultValue'],
   watch: {
-    defaultValue: {
+    'options.defaultOptionKey': {
       immediate: true,
       handler(value) {
         !this.value ? this.$emit('input', value) : null;

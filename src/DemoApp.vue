@@ -47,7 +47,6 @@
                      label="Sample Select"
                      :options="selectOptions"
                      v-model="data.sampleSelect"
-                     default-value="red"
                      helper="This is a sample select field with a validation rule that it must match red"
                      validation="in:red">
         </form-select>
@@ -141,32 +140,37 @@
         textValidationRules: 'max:255',
         passwordValidationRules: 'required|regex:/(?=.{9,})(?=.*?[^\\w\\s])(?=.*?[0-9])(?=.*?[A-Z]).*?[a-z].*/',
         confirmPasswordValidationRules: 'required|same:password.value',
-        selectOptions: [
-          {
-            content: 'Green',
-            value: 'green'
-          },
-          {
-            content: 'Red',
-            value: 'red'
-          },
-          {
-            content: 'Blue',
-            value: 'blue'
-          },
-          {
-            content: 'Yellow',
-            value: 'yellow'
-          },
-          {
-            content: 'White',
-            value: 'white'
-          },
-          {
-            content: 'Black',
-            value: 'black'
-          },
-        ],
+        selectOptions: {
+          defaultOptionKey: 'red',
+          key: 'value',
+          value: 'content',
+          jsonData: JSON.stringify([
+            {
+              content: 'Green',
+              value: 'green'
+            },
+            {
+              content: 'Red',
+              value: 'red'
+            },
+            {
+              content: 'Blue',
+              value: 'blue'
+            },
+            {
+              content: 'Yellow',
+              value: 'yellow'
+            },
+            {
+              content: 'White',
+              value: 'white'
+            },
+            {
+              content: 'Black',
+              value: 'black'
+            },
+          ])
+        },
         radioButtonOptions: [
           {
             content: 'Small',
