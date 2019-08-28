@@ -21,6 +21,7 @@
 <script>
 import {createUniqIdsMixin} from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
+import hasDefaultOptionKey from './mixins/hasDefaultOptionKey';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -31,7 +32,7 @@ function removeInvalidOptions(option) {
 
 export default {
   inheritAttrs: false,
-  mixins: [uniqIdsMixin, DataFormatMixin],
+  mixins: [uniqIdsMixin, DataFormatMixin, hasDefaultOptionKey],
   props: [
     'name',
     'label',

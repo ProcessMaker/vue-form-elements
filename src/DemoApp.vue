@@ -47,6 +47,7 @@
                      label="Sample Select"
                      :options="selectOptions"
                      v-model="data.sampleSelect"
+                     default-value="red"
                      helper="This is a sample select field with a validation rule that it must match red"
                      validation="in:red">
         </form-select>
