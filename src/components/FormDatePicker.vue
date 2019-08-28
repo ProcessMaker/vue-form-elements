@@ -5,9 +5,10 @@
             v-model="date"
             v-on="$listeners"
             v-bind="$attrs"
-            :config="config"
+            :config="configs" 
             :class="{inputClass, 'is-invalid' : validator}"
             :placeholder="placeholder"
+            :change="this.update()"
     ></date-picker>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
         <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
@@ -23,6 +24,7 @@
   import {createUniqIdsMixin} from 'vue-uniq-ids';
   import ValidationMixin from './mixins/validation';
   import DataFormatMixin from "./mixins/DataFormat";
+  import 'bootstrap/dist/css/bootstrap.css';
   import datePicker from 'vue-bootstrap-datetimepicker';
   import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
 
@@ -46,7 +48,7 @@
     data() {
       return {
         date: null,
-        config: {
+        configs: {
           format: '',
           timeZone: '',
           locale: '',
@@ -67,33 +69,34 @@
         },
       }
     },
-    watch: {
-      dataFormat() {
-        this.updateFormat();
+    methods: {
+      update() {
+        if (this.dataFormat === 'datetime') {
+          this.configs.format = 'MM/DD/YYYY h:mm:ss A';
+        } else {
+          this.configs.format = 'MM/DD/YYYY';
+        }
+
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          if (ProcessMaker.user.timezone) {
+            this.configs.timeZone = ProcessMaker.user.timezone;
+          }  else  {
+            this.configs.timeZone = 'local';
+          }
+          
+          if (ProcessMaker.user.app_timezone) {
+            this.configs.timeZone = ProcessMaker.user.app_timezone;
+          } else  {
+            this.configs.timeZone = 'UTC';  
+          }
+        }
+
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user && ProcessMaker.user.lang) {
+          this.configs.locale = ProcessMaker.user.lang;
+        } else  {
+          this.configs.locale = 'en';
+        }
       }
     },
-    methods: {
-      updateFormat() {
-        if (this.dataFormat == 'datetime') {
-          this.config.format = 'MM/DD/YYYY h:mm A';
-        } else {
-          this.config.format = 'MM/DD/YYYY';
-        }
-      },
-      setTimezone() {
-        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          this.config.timeZone = ProcessMaker.user.timezone || 'local';
-        }
-      },
-      setLang() {
-        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          this.config.locale = ProcessMaker.user.lang || 'en';
-        }
-      }
-     },
-     mounted() {
-       this.setTimezone();
-       this.setLang();
-     }
   };
 </script>
