@@ -3,6 +3,7 @@
     <button
       @click="showCollapse = !showCollapse"
       class="accordion-button text-left card-header d-flex align-items-center w-100"
+      :id="'accordion-button-' + config.name"
       >
         <i
           v-if="config.icon"
