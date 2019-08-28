@@ -9,7 +9,7 @@
         :class="inputClass"
         :value="option.value"
         v-uni-id="`${name}-${option.value}`"
-        :checked="option.value == (selectedValue || options.defaultOptionKey)"
+        :checked="option.value == valueOrDefault"
         @change="$emit('input', $event.target.value)"
       >
       <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
@@ -45,14 +45,6 @@ export default {
     'validationData'
   ],
   computed: {
-    selectedValue() {
-      if (!this.value && this.radioOptions.length > 0) {
-        this.$emit('input', this.radioOptions[0].value);
-        return this.radioOptions[0].value;
-      }
-
-      return this.value;
-    },
     radioOptions() {
       if (Array.isArray(this.options)) {
         return this.options;

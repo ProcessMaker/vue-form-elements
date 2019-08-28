@@ -1,4 +1,9 @@
 export default {
+  computed: {
+    valueOrDefault() {
+      return this.value || this.options.defaultOptionKey;
+    },
+  },
   watch: {
     'options.defaultOptionKey': {
       immediate: true,
