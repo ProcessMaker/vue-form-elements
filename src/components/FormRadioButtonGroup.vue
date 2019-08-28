@@ -9,7 +9,7 @@
         :class="inputClass"
         :value="option.value"
         v-uni-id="`${name}-${option.value}`"
-        :checked="option.value == selectedValue"
+        :checked="option.value == (selectedValue || options.defaultOptionKey)"
         @change="$emit('input', $event.target.value)"
       >
       <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>

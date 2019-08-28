@@ -13,7 +13,7 @@
       <option :value="null">Select</option>
       <option
         v-for="(option, index) in selectOptions"
-        :selected="option.value == value"
+        :selected="option.value == (value || options.defaultOptionKey)"
         :value="option.value"
         :key="index"
       >
