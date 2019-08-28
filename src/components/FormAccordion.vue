@@ -6,7 +6,7 @@
       >
         <i
           v-if="config.icon"
-          class="fas mr-1"
+          class="fas mr-1 fa-fw"
           :class="`fa-${config.icon}`"
         />
 
