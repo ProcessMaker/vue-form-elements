@@ -13,7 +13,7 @@
       <option :value="null">Select</option>
       <option
         v-for="(option, index) in selectOptions"
-        :selected="option.value == value"
+        :selected="option.value == valueOrDefault"
         :value="option.value"
         :key="index"
       >
@@ -32,6 +32,7 @@
 import ValidationMixin from './mixins/validation'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
+import hasDefaultOptionKey from './mixins/hasDefaultOptionKey';
 
 const uniqIdsMixin = createUniqIdsMixin()
 
@@ -42,7 +43,7 @@ function removeInvalidOptions(option) {
 
 export default {
   inheritAttrs: false,
-  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
+  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin, hasDefaultOptionKey],
   props: [
     'label',
     'error',
