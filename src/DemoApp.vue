@@ -1,6 +1,13 @@
 <template>
     <div class="container">
         <h1>vue-form-elements playground</h1>
+        <form-poly-select name="sampleSelect"
+                     label="Sample Poly Select"
+                     :options="selectOptions"
+                     v-model="data.sampleSelect"
+                     helper="This is a sample poly select field with a validation rule that it must match red"
+                     validation="in:red">
+        </form-poly-select>
         <form-input name="sampleInput"
                     label="Sample Input with Validation"
                     helper="This is sample help text for the sample input field. This field is required and has a minimum length of 2 characters."
