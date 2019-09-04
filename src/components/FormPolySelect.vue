@@ -164,7 +164,6 @@ export default {
         this.$set(this, 'selectedOptions',valueToSend);
       }
 
-      console.log('sendSelectedOptions');
       this.$emit('input', valueToSend);
     }
   },

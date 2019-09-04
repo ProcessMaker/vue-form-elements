@@ -54,6 +54,7 @@ export default {
         'date': 'date',
         'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
+        'array': 'array',
       };
       this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
       return this.dataTypeValidator.passes();
@@ -83,6 +84,8 @@ export default {
           break;
         case 'int':
           newValue = parseInt(newValue);
+          break;
+       case 'array':
           break;
         default:
           newValue = newValue.toString();
