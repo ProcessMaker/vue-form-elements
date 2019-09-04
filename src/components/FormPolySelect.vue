@@ -132,6 +132,9 @@ export default {
     },
     value: {
       handler() {
+        if (!this.value) {
+            this.selectedOptions = [];
+        }
         if (Array.isArray(this.value) && this.value.length !== 0 && this.selectedOptions.length === 0) {
           this.selectedOptions = this.allowMultiSelect  ? this.value : [this.value[0]];
         }
