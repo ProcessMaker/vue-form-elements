@@ -9,22 +9,22 @@
       :class="classList"
       :name='name'
       v-model="selectedOptions[0]"
-      @updateRender="sendSelectedOptions($event)"
+      @change="sendSelectedOptions($event)"
     >
       <option :value="null"></option>
       <option
         v-for="(option, index) in optionsList"
-        :value="option[optionValue]"
+        :value="option.value"
         :key="index"
       >
-        {{option[optionKey]}}-{{option[optionValue]}}-{{option['content']}}-{{option['value']}}-{{optionKey}}-{{optionValue}}-{{option}}
+        {{ option.content }}
       </option>
     </select>
 
     <form-multi-select
      v-if="options.renderAs === 'dropdown' && allowMultiSelect"
-      :option-value="optionKey"
-      :option-content="optionValue"
+      option-value="value"
+      option-content="content"
       v-uni-id="name"
       v-bind="$attrs"
       v-on="$listeners"
