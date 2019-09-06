@@ -56,6 +56,9 @@ export default {
         'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
         'array': 'array',
       };
+      if (this.$options._componentTag === 'PolySelect') {
+        return true;
+      }
       this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
       return this.dataTypeValidator.passes();
     },

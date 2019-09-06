@@ -1,5 +1,6 @@
 <template>
   <div class="form-group">
+    bbbbb
     <label v-uni-for="name">{{label}}</label>
     <select
       v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
@@ -46,7 +47,7 @@
           :value="option.value"
           v-uni-id="`${name}-${option.value}`"
           :name="`${name}`"
-          :checked="selectedOptions.indexOf(option.value)"
+          :checked="selectedOptions.indexOf(option.value)>=0"
           v-model="selectedOptions"
           @change="sendSelectedOptions($event)"
         >
@@ -62,8 +63,7 @@
           :value="option.value"
           v-uni-id="`${name}-${option.value}`"
           :name="`${name}`"
-          :checked="selectedOptions.indexOf(option.value)"
-          v-model="selectedOptions"
+          v-model="selectedOptions[0]"
           @change="sendSelectedOptions($event)"
         >
         <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
@@ -123,8 +123,8 @@ export default {
       handler(value) {
         this.renderAs = value.renderAs;
         this.allowMultiSelect = value.allowMultiSelect;
-        if (value.defaultOption && !this.value) {
-          this.selectedOptions = [value.defaultOption];
+        if (value.defaultOptionKey && !this.value) {
+          this.selectedOptions = [value.defaultOptionKey];
         }
         this.optionKey = value.key || 'value';
         this.optionValue = value.value || 'content';
@@ -146,8 +146,8 @@ export default {
                             ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x=>x[1]) 
                             : [];
 
-    if (this.options.defaultOption && !this.value) {
-      this.selectedOptions = [this.options.defaultOption];
+    if (this.options.defaultOptionKey && !this.value) {
+      this.selectedOptions = [this.options.defaultOptionKey];
     }
 
     this.renderAs = this.options.renderAs;
