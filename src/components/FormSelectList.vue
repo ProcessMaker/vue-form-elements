@@ -1,6 +1,5 @@
 <template>
   <div class="form-group">
-    bbbbb
     <label v-uni-for="name">{{label}}</label>
     <select
       v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
@@ -88,7 +87,7 @@ import FormMultiSelect from "./FormMultiSelect";
 const uniqIdsMixin = createUniqIdsMixin()
 
 function removeInvalidOptions(option) {
-  return Object.keys(option).includes('value', 'contemnt') &&
+  return Object.keys(option).includes('value', 'content') &&
     option.content != null;
 }
 
@@ -142,8 +141,8 @@ export default {
     }
   },
   mounted() {
-    this.selectedOptions = (this.value) 
-                            ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x=>x[1]) 
+    this.selectedOptions = (this.value)
+                            ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x=>x[1])
                             : [];
 
     if (this.options.defaultOptionKey && !this.value) {
@@ -156,11 +155,11 @@ export default {
   },
   methods: {
     sendSelectedOptions(event) {
-      let valueToSend = (this.selectedOptions.constructor === Array) 
+      let valueToSend = (this.selectedOptions.constructor === Array)
                         ? this.selectedOptions
                         : [this.selectedOptions];
-     
-      // If more than 1 item is selected but we are displaying a one selection control 
+
+      // If more than 1 item is selected but we are displaying a one selection control
       // show just the first selected item
       if (!this.allowMultiSelect && valueToSend.length > 0) {
         valueToSend = new Array(valueToSend[valueToSend.length-1]);
