@@ -1,13 +1,10 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
-    <date-picker ref="datePicker" 
-            v-model="date" 
-            v-on="$listeners" 
-            v-bind="$attrs"
-            :config="config" 
-            :class="{inputClass, 'is-invalid' : validator}"
-            :placeholder="placeholder"
+    <date-picker :config="config"
+                 v-model="date"
+                 :disabled="$attrs.disabled"
+                 :placeholder="placeholder"
     ></date-picker>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
         <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
@@ -42,6 +39,7 @@
       error: String,
       helper: String,
       dataFormat: String,
+      value: String,
       inputClass: {type: [String, Array, Object], default: 'form-control'},
     },
     data() {
@@ -51,9 +49,15 @@
           format: '',
           timeZone: '',
           locale: '',
-          useCurrent:false,
+          useCurrent: false,
           showClear: true,
           showClose: true,
+          widgetPositioning: {
+            horizontal: 'right',
+            vertical: 'auto'
+          },
+          widgetParent: '.page',
+          debug: true,
           icons: {
             time: 'far fa-clock',
             date: 'far fa-calendar',
@@ -71,26 +75,46 @@
     watch: {
       dataFormat() {
         this.updateFormat();
+      },
+      value() {
+        this.setDate();
+      },
+      date() {
+        if (typeof this.date === "string") {
+          this.$emit('input', this.date);
+        }
       }
     },
     methods: {
       updateFormat() {
         if (this.dataFormat == 'datetime') {
-          this.config.format = 'MM/DD/YYYY h:mm A';
-        } else {
-          this.config.format = 'MM/DD/YYYY';
+          this.config.format = 'MM/DD/YYYY h:mm A' ||  'MM/DD/YYYY';
         }
       },
       setTimezone() {
-        this.config.timeZone = ProcessMaker.user.timezone || 'local';
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          this.config.timeZone = ProcessMaker.user.timezone || 'local';  
+        } 
       },
       setLang() {
-        this.config.locale = ProcessMaker.user.lang || 'en';
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          this.config.locale = ProcessMaker.user.lang || 'en';  
+        }
+      },
+      setDate() {
+        this.date = moment(this.value);
       }
      },
      mounted() {
        this.setTimezone();
        this.setLang();
+       this.setDate();
      }
   };
 </script>
+<style>
+  .bootstrap-datetimepicker-widget.dropdown-menu {
+    font-size: 11px;
+  }
+</style>
+
