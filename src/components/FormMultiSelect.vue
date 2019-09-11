@@ -6,7 +6,7 @@
       :label="optionContent"
       :class="{'border border-danger':error}"
       :loading="loading"
-      :placeholder="$t('type here to search')"
+      :placeholder="placeholder ? placeholder : $t('type here to search')"
       :options="options"
       :searchable="true"
       :internal-search="false">
@@ -47,6 +47,7 @@
       'name',
       'controlClass',
       'validationData',
+      'placeholder',
     ],
     data() {
       return {

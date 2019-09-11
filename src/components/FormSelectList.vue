@@ -8,10 +8,11 @@
       class="form-control"
       :class="classList"
       :name='name'
+      :placeholder="placeholder ? placeholder : $t('Select')"
       v-model="selectedOptions[0]"
       @change="sendSelectedOptions($event)"
     >
-      <option :value="null"></option>
+      <option :value="selectedOptions[0] ? null : selectedOptions[0]">{{placeholder ? placeholder : $t('Select')}}</option>
       <option
         v-for="(option, index) in optionsList"
         :value="option.value"
@@ -30,7 +31,7 @@
       v-on="$listeners"
       v-model="selectedOptions"
       v-bind:multiple="allowMultiSelect"
-      :placeholder="$t('Select...')"
+      :placeholder="placeholder ? placeholder : $t('Select...')"
       :show-labels="false"
       :options="optionsList"
       :class="classList"
@@ -106,6 +107,7 @@ export default {
     'name',
     'controlClass',
     'validationData',
+    'placeholder',
   ],
   data() {
     return {

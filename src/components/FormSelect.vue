@@ -10,7 +10,7 @@
       :name='name'
       @change="$emit('input', $event.target.value)"
     >
-      <option :value="null">Select</option>
+      <option :value="null">{{placeholder ? placeholder : $t('Select')}}</option>
       <option
         v-for="(option, index) in selectOptions"
         :selected="option.value == valueOrDefault"
@@ -53,6 +53,7 @@ export default {
     'name',
     'controlClass',
     'validationData',
+    'placeholder',
   ],
   computed:{
     classList() {
