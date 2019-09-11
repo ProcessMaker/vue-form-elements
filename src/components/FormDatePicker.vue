@@ -5,6 +5,7 @@
                  v-model="date"
                  :disabled="$attrs.disabled"
                  :placeholder="placeholder"
+                 :data-test="$attrs['data-test']"
     ></date-picker>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
         <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
@@ -52,12 +53,7 @@
           useCurrent: false,
           showClear: true,
           showClose: true,
-          widgetPositioning: {
-            horizontal: 'right',
-            vertical: 'auto'
-          },
           widgetParent: '.page',
-          debug: true,
           icons: {
             time: 'far fa-clock',
             date: 'far fa-calendar',
@@ -87,8 +83,10 @@
     },
     methods: {
       updateFormat() {
-        if (this.dataFormat == 'datetime') {
-          this.config.format = 'MM/DD/YYYY h:mm A' ||  'MM/DD/YYYY';
+        if (this.dataFormat === 'datetime') {
+          this.config.format = 'MM/DD/YYYY h:mm A';
+        } else  {
+          this.config.format = 'MM/DD/YYYY';
         }
       },
       setTimezone() {
@@ -113,7 +111,7 @@
   };
 </script>
 <style>
-  .bootstrap-datetimepicker-widget.dropdown-menu {
+  .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
     font-size: 11px;
   }
 </style>
