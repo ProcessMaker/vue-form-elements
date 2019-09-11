@@ -10,17 +10,16 @@
         @input="$emit('input', $event)"
       />
     </div>
-    <div v-else>
-      <textarea
-        v-bind="$attrs"
-        v-uni-id="label"
-        class="form-control"
-        :class="classList"
-        :name="name"
-        :value="value"
-        @input="$emit('input', $event.target.value)"
-      />
-    </div>
+    <textarea
+      v-else
+      v-bind="$attrs"
+      v-uni-id="label"
+      class="form-control"
+      :class="classList"
+      :name="name"
+      :value="value"
+      @input="$emit('input', $event.target.value)"
+    />
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>

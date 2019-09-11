@@ -9,7 +9,7 @@
         :class="inputClass"
         :value="option.value"
         v-uni-id="`${name}-${option.value}`"
-        :checked="option.value == selectedValue"
+        :checked="option.value == valueOrDefault"
         @change="$emit('input', $event.target.value)"
       >
       <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
@@ -21,6 +21,7 @@
 <script>
 import {createUniqIdsMixin} from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
+import hasDefaultOptionKey from './mixins/hasDefaultOptionKey';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -31,7 +32,7 @@ function removeInvalidOptions(option) {
 
 export default {
   inheritAttrs: false,
-  mixins: [uniqIdsMixin, DataFormatMixin],
+  mixins: [uniqIdsMixin, DataFormatMixin, hasDefaultOptionKey],
   props: [
     'name',
     'label',
@@ -44,13 +45,6 @@ export default {
     'validationData'
   ],
   computed: {
-    selectedValue() {
-      if (!this.value && this.radioOptions.length > 0) {
-        return this.radioOptions[0].value;
-      }
-
-      return this.value;
-    },
     radioOptions() {
       if (Array.isArray(this.options)) {
         return this.options;

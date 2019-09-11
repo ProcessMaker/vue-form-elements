@@ -1,6 +1,6 @@
 {
   "name": "@processmaker/vue-form-elements",
-  "version": "0.10.6",
+  "version": "0.10.12",
   "description": "Reusable VueJS Based Form Elements styled with Bootstrap 4",
   "keywords": [
     "html",
@@ -21,7 +21,7 @@
     "*.js"
   ],
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "NODE_ENV=standalone vue-cli-service serve",
     "build": "vue-cli-service build",
     "build-bundle": "vue-cli-service build --target lib --name vue-form-elements ./src/components/index.js",
     "lint": "vue-cli-service lint"
@@ -30,14 +30,14 @@
     "@tinymce/tinymce-vue": "^2.0.0",
     "bootstrap": "^4.2.1",
     "jquery": "^3.3.1",
-    "luxon": "^1.17.2",
-    "moment-timezone": "^0.5.26",
+    "luxon": "^1.11.3",
     "popper.js": "^1.14.4",
     "tinymce": "^5.0.1",
     "v-calendar": "^0.9.7",
     "validatorjs": "^3.14.2",
     "vue": "^2.5.16",
-    "vue-bootstrap-datetimepicker": "^5.0.1"
+    "vue-datetime": "^1.0.0-beta.10",
+    "weekstart": "^1.0.0"
   },
   "devDependencies": {
     "@panter/vue-i18next": "^0.15.0",
