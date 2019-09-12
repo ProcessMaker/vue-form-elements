@@ -2,11 +2,13 @@
   <div class='form-group'>
     <div :class="classList">
       <editor
+        v-if="!$attrs.disabled"
         v-on="$listeners"
         v-bind="$attrs"
         :value="rendered"
         :init="editorSettings"
       />
+      <div v-else v-html="rendered"></div>
     </div>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>

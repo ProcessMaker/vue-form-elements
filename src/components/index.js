@@ -7,6 +7,7 @@ import FormTextArea from './FormTextArea'
 import FormDatePicker from './FormDatePicker'
 import FormAccordion from './FormAccordion'
 import FormHtmlEditor from './FormHtmlEditor'
+import FormHtmlViewer from './FormHtmlViewer'
 import FormDelayTimeControl from './FormDelayTimeControl'
 
 
@@ -20,6 +21,7 @@ let components = {
     FormDatePicker,
     FormAccordion,
     FormHtmlEditor,
+    FormHtmlViewer,
     FormDelayTimeControl,
 }
 
@@ -33,6 +35,7 @@ export {
     FormDatePicker,
     FormAccordion,
     FormHtmlEditor,
+    FormHtmlViewer,
     FormDelayTimeControl,
 }
 
