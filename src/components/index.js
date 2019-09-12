@@ -3,6 +3,7 @@ import FormInput from './FormInput'
 import FormCheckbox from './FormCheckbox'
 import FormRadioButtonGroup from './FormRadioButtonGroup'
 import FormSelect from './FormSelect'
+import FormSelectList from './FormSelectList'
 import FormTextArea from './FormTextArea'
 import FormDatePicker from './FormDatePicker'
 import FormAccordion from './FormAccordion'
@@ -17,6 +18,7 @@ let components = {
     FormCheckbox,
     FormRadioButtonGroup,
     FormSelect,
+    FormSelectList,
     FormTextArea,
     FormDatePicker,
     FormAccordion,
@@ -31,6 +33,7 @@ export {
     FormCheckbox,
     FormRadioButtonGroup,
     FormSelect,
+    FormSelectList,
     FormTextArea,
     FormDatePicker,
     FormAccordion,
