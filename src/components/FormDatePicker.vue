@@ -1,25 +1,15 @@
 <template>
-    <div class="form-group">
-        <label v-uni-for="name">{{label}}</label>
-        <datetime
-                v-on="$listeners"
-                v-bind="$attrs"
-                :type="type"
-                :input-class="inputClass"
-                :value-zone="valueZone"
-                :zone="zone"
-                :title="placeholder"
-                :placeholder="placeholder"
-                :week-start="weekStart"
-                :format="formatView"
-                :phrases="parsedPhrases"
-                :auto="auto"
-        ></datetime>
-
-        <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
-            <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-            <div v-if="error">{{error}}</div>
-        </div>
+  <div class="form-group">
+    <label v-uni-for="name">{{label}}</label>
+    <date-picker :config="config"
+                 v-model="date"
+                 :disabled="$attrs.disabled"
+                 :placeholder="placeholder"
+                 :data-test="$attrs['data-test']"
+    ></date-picker>
+    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
+        <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+        <div v-if="error">{{error}}</div>
         <small v-if="helper" class="form-text text-muted">{{helper}}</small>
     </div>
 </template>
@@ -47,48 +37,54 @@
       label: String,
       error: String,
       helper: String,
-      type: {type: String, default: 'datetime'},
+      dataFormat: String,
+      value: String,
       inputClass: {type: [String, Array, Object], default: 'form-control'},
-      valueZone: {
-        type: String,
-        default() {
-          if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user && ProcessMaker.user.app_timezone) {
-            return ProcessMaker.user.app_timezone;
-          }
-
-          return 'UTC';
-        }
-      },
-      zone: {
-        type: String,
-        default() {
-          if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user && ProcessMaker.user.timezone) {
-            return ProcessMaker.user.timezone;
-          }
-
-          return 'local';
-        }
-      },
-      weekStart: {type: Number, default: 7},
-      format: {
-        type: [String, Object]
-      },
-      phrases: {
-        type: [String, Object],
-        default() {
-          return {ok: 'Continue', cancel: 'Exit'};
-        }
-      },
-      auto: {type: Boolean, default: true},
     },
-    computed: {
-      parsedPhrases() {
-        if (typeof this.phrases === 'string') {
-          try {
-            return JSON.parse(this.phrases)
-          } catch (e) {
-            // Ignore string, use default prop
+    data() {
+      return {
+        date: null,
+        config: {
+          format: '',
+          timeZone: '',
+          locale: '',
+          useCurrent: false,
+          showClear: true,
+          showClose: true,
+          widgetParent: '.page',
+          icons: {
+            time: 'far fa-clock',
+            date: 'far fa-calendar',
+            up: 'fas fa-arrow-up',
+            down: 'fas fa-arrow-down',
+            previous: 'fas fa-chevron-left',
+            next: 'fas fa-chevron-right',
+            today: 'fas fa-calendar-check',
+            clear: 'far fa-trash-alt',
+            close: 'far fa-times-circle'
           }
+        },
+      }
+    },
+    watch: {
+      dataFormat() {
+        this.updateFormat();
+      },
+      value() {
+        this.setDate();
+      },
+      date() {
+        if (typeof this.date === "string") {
+          this.$emit('input', this.date);
+        }
+      }
+    },
+    methods: {
+      updateFormat() {
+        if (this.dataFormat === 'datetime') {
+          this.config.format = 'MM/DD/YYYY h:mm A';
+        } else  {
+          this.config.format = 'MM/DD/YYYY';
         }
 
         if (typeof this.phrases === "object") {
@@ -101,27 +97,30 @@
 
         return {ok: 'Continue', cancel: 'Exit'};
       },
-      formatView() {
-        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user && ProcessMaker.user.calendar_format) {
-          let withoutTime = ProcessMaker.user.calendar_format.replace(/\s*HH:mm(:ss)?/, '');
-          return this.type === "date" ? withoutTime : ProcessMaker.user.calendar_format;
-        }
-        return this.format ? this.format : (
-          this.type==='date' ? 
-            {
-              year: 'numeric',
-              month: 'numeric',
-              day: 'numeric',
-            } :
-            {
-              year: 'numeric',
-              month: 'numeric',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit',
-            }
-        );
+      setTimezone() {
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          this.config.timeZone = ProcessMaker.user.timezone || 'local';  
+        } 
       },
-    }
+      setLang() {
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          this.config.locale = ProcessMaker.user.lang || 'en';  
+        }
+      },
+      setDate() {
+        this.date = moment(this.value);
+      }
+     },
+     mounted() {
+       this.setTimezone();
+       this.setLang();
+       this.setDate();
+     }
   };
 </script>
+<style>
+  .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
+    font-size: 11px;
+  }
+</style>
+
