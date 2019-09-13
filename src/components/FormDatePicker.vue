@@ -22,7 +22,7 @@
   import ValidationMixin from './mixins/validation';
   import DataFormatMixin from "./mixins/DataFormat";
   import datePicker from 'vue-bootstrap-datetimepicker';
-  import 'bootstrap/dist/css/bootstrap.css';
+  import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
   import moment from 'moment-timezone';
 
   const uniqIdsMixin = createUniqIdsMixin();
