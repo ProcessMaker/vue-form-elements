@@ -20,6 +20,16 @@ export default {
   },
   data() {
     return {
+      validationRules: {
+        'int': 'integer',
+        'boolean': 'boolean',
+        'string': 'string',
+        'datetime': 'date',
+        'date': 'date',
+        'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
+        'currency': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
+        'array': 'array',
+      },
       dataTypeValidator: null,
       dataTypeValidatorPasses: true,
       formatted: ''
@@ -46,20 +56,10 @@ export default {
       return this.dataTypeValidatorPasses ? this.formatValueIfValid(value) : value;
     },
     validateRuleFormat(value) {
-      const rules = {
-        'int': 'integer',
-        'boolean': 'boolean',
-        'string': 'string',
-        'datetime': 'date',
-        'date': 'date',
-        'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
-        'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
-        'array': 'array',
-      };
       if (this.$options._componentTag === 'FormSelectList') {
         return true;
       }
-      this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
+      this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: this.validationRules[this.dataFormat]}, null);
       return this.dataTypeValidator.passes();
     },
     formatFloatValue() {
@@ -77,7 +77,10 @@ export default {
           newValue = Boolean(newValue);
           break;
         case 'currency':
-          newValue = newValue.toString();
+          newValue = parseFloat(newValue);
+          break;
+        case 'percentage':
+          newValue = parseFloat(newValue);
           break;
         case 'date':
           newValue = newValue.toString();
