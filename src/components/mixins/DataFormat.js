@@ -46,6 +46,9 @@ export default {
       return this.dataTypeValidatorPasses ? this.formatValueIfValid(value) : value;
     },
     validateRuleFormat(value) {
+      if (!this.dataFormat) {
+        return true;
+      }
       const rules = {
         'int': 'integer',
         'boolean': 'boolean',

@@ -1,5 +1,5 @@
 <template>
-  <div class="form-group">
+  <div class="form-group position-relative">
     <label v-uni-for="name">{{label}}</label>
     <date-picker :config="config"
                  v-model="date"
@@ -53,7 +53,6 @@
           useCurrent: false,
           showClear: true,
           showClose: true,
-          widgetParent: '.page',
           icons: {
             time: 'far fa-clock',
             date: 'far fa-calendar',
