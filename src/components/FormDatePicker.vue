@@ -12,6 +12,7 @@
         <div v-if="error">{{error}}</div>
         <small v-if="helper" class="form-text text-muted">{{helper}}</small>
     </div>
+  </div>
 </template>
 
 
@@ -19,9 +20,10 @@
   /* global ProcessMaker*/
   import {createUniqIdsMixin} from 'vue-uniq-ids';
   import ValidationMixin from './mixins/validation';
-  import {Datetime} from 'vue-datetime';
-  import 'vue-datetime/dist/vue-datetime.css'
   import DataFormatMixin from "./mixins/DataFormat";
+  import datePicker from 'vue-bootstrap-datetimepicker';
+  import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
+  import moment from 'moment-timezone';
 
   const uniqIdsMixin = createUniqIdsMixin();
 
@@ -29,7 +31,7 @@
     inheritAttrs: false,
     mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     components: {
-      datetime: Datetime
+      datePicker
     },
     props: {
       name: String,
@@ -86,16 +88,6 @@
         } else  {
           this.config.format = 'MM/DD/YYYY';
         }
-
-        if (typeof this.phrases === "object") {
-          try {
-            return this.phrases;
-          } catch (e) {
-            // Ignore string, use default prop
-          }
-        }
-
-        return {ok: 'Continue', cancel: 'Exit'};
       },
       setTimezone() {
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
