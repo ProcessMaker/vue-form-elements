@@ -56,6 +56,19 @@ export default {
       return this.dataTypeValidatorPasses ? this.formatValueIfValid(value) : value;
     },
     validateRuleFormat(value) {
+      if (!this.dataFormat) {
+        return true;
+      }
+      const rules = {
+        'int': 'integer',
+        'boolean': 'boolean',
+        'string': 'string',
+        'datetime': 'date',
+        'date': 'date',
+        'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
+        'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
+        'array': 'array',
+      };
       if (this.$options._componentTag === 'FormSelectList') {
         return true;
       }
