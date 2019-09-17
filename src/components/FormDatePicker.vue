@@ -21,6 +21,7 @@
   import {createUniqIdsMixin} from 'vue-uniq-ids';
   import ValidationMixin from './mixins/validation';
   import DataFormatMixin from "./mixins/DataFormat";
+  import datePicker from 'vue-bootstrap-datetimepicker';
   import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
   import moment from 'moment-timezone';
 
@@ -30,11 +31,7 @@
     inheritAttrs: false,
     mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     components: {
-      datePicker: () => {
-        if (typeof window !== 'undefined') {
-          return import(/* webpackChunkName: "datePicker" */ 'vue-bootstrap-datetimepicker');
-        }
-      }
+      datePicker
     },
     props: {
       name: String,
