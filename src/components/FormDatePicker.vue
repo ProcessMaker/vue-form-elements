@@ -99,7 +99,7 @@
         }
       },
       setDate() {
-        this.date = moment.utc(this.value).format();
+        this.date = moment(this.value);
       }
      },
      mounted() {
