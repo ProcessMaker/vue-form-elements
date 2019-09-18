@@ -33,6 +33,7 @@ import ValidationMixin from './mixins/validation'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
 import hasDefaultOptionKey from './mixins/hasDefaultOptionKey';
+import _ from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin()
 
@@ -74,8 +75,8 @@ export default {
       let options = [];
 
       const convertToSelectOptions = option => ({
-        value: option[key || 'value'],
-        content: option[value || 'content'],
+        value: _.get(option, key || 'value'),
+        content: _.get(option, value || 'content'),
       })
 
       if (jsonData) {
