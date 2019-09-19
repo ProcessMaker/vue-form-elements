@@ -156,7 +156,7 @@ export default {
 
   },
   methods: {
-    sendSelectedOptions(event) {
+    sendSelectedOptions() {
       let valueToSend = (this.selectedOptions.constructor === Array)
                         ? this.selectedOptions
                         : [this.selectedOptions];
@@ -199,7 +199,7 @@ export default {
       return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
-      const { jsonData, key, value, dataName, renderAs, allowMultiSelect } = this.options;
+      const { jsonData, key, value, dataName, allowMultiSelect } = this.options;
 
       this.allowMultiSelect = allowMultiSelect;
       let options = [];
