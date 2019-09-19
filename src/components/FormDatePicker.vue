@@ -90,12 +90,12 @@
       },
       setTimezone() {
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          this.config.timeZone = ProcessMaker.user.timezone || 'local';  
-        } 
+          this.config.timeZone = ProcessMaker.user.timezone || 'local';
+        }
       },
       setLang() {
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          this.config.locale = ProcessMaker.user.lang || 'en';  
+          this.config.locale = ProcessMaker.user.lang || 'en';
         }
       },
       setDate() {
