@@ -1,12 +1,13 @@
 <template>
   <div class="form-group position-relative">
     <label v-uni-for="name">{{label}}</label>
-    <date-picker :config="config"
-                 v-model="date"
-                 :disabled="$attrs.disabled"
-                 :placeholder="placeholder"
-                 :data-test="$attrs['data-test']"
-    ></date-picker>
+    <date-picker
+      :config="config"
+      v-model="date"
+      :disabled="disabled"
+      :placeholder="placeholder"
+      :data-test="dataTest"
+    />
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
         <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
         <div v-if="error">{{error}}</div>
@@ -28,7 +29,6 @@
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    inheritAttrs: false,
     mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     components: {
       datePicker
@@ -42,6 +42,8 @@
       dataFormat: String,
       value: String,
       inputClass: {type: [String, Array, Object], default: 'form-control'},
+      dataTest: String,
+      disabled: null,
     },
     data() {
       return {
@@ -68,24 +70,23 @@
       }
     },
     watch: {
-      dataFormat() {
-        this.updateFormat();
+      dataFormat: {
+        handler() { this.updateFormat() },
+        immediate: true,
       },
       value() {
         this.setDate();
       },
       date() {
-        if (typeof this.date === "string") {
-          this.$emit('input', this.date);
-        }
+        this.$emit('input', moment(this.date).toISOString());
       }
     },
     methods: {
       updateFormat() {
+        this.config.format = 'MM/DD/YYYY';
+
         if (this.dataFormat === 'datetime') {
-          this.config.format = 'MM/DD/YYYY h:mm A';
-        } else  {
-          this.config.format = 'MM/DD/YYYY';
+          this.config.format += ' h:mm A';
         }
       },
       setTimezone() {

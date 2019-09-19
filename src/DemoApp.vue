@@ -88,12 +88,9 @@
                 label="Sample calendar"
                 placeholder="Placeholder Sample Calendar"
                 helper="Helper Sample Calendar, Theming is supported by overwriting CSS classes."
-                format="yyyy-MM-dd tttt"
-                :use12-hour="true"
-                :minuteStep="2"
-                :phrases="{ ok: 'Save', cancel: 'Cancel' }"
-                v-model="data.sampleDatePicker">
-        </form-date-picker>
+                data-format="datetime"
+                v-model="data.sampleDatePicker"
+        />
         <form-html-editor
             name="sampleHtmlText"
             label="Sample Html Editor"
