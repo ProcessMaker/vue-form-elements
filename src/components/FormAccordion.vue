@@ -33,7 +33,7 @@
           v-bind="element.config"
           :is="element.component"
           v-model="transientData[element.config.name]"
-          class="pl-4 pr-4 pt-3 pb-3 border-bottom m-0"
+          class="pl-3 pr-3 pt-2 pb-2 border-bottom m-0"
         />
       </div>
     </b-collapse>
