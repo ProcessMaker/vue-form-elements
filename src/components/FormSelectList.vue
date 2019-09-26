@@ -165,7 +165,6 @@ export default {
       // show just the first selected item
       if (!this.allowMultiSelect && valueToSend.length > 0) {
         valueToSend = new Array(valueToSend[valueToSend.length-1]);
-        this.$set(this, 'selectedOptions',valueToSend);
       }
 
       this.$emit('input', valueToSend);
