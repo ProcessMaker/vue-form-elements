@@ -1,12 +1,13 @@
 <template>
   <div class="form-group position-relative">
     <label v-uni-for="name">{{label}}</label>
-    <date-picker :config="config"
-                 v-model="date"
-                 :disabled="$attrs.disabled"
-                 :placeholder="placeholder"
-                 :data-test="$attrs['data-test']"
-    ></date-picker>
+    <date-picker
+      :config="config"
+      v-model="date"
+      :disabled="disabled"
+      :placeholder="placeholder"
+      :data-test="dataTest"
+    />
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
         <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
         <div v-if="error">{{error}}</div>
@@ -21,6 +22,7 @@
   import {createUniqIdsMixin} from 'vue-uniq-ids';
   import ValidationMixin from './mixins/validation';
   import DataFormatMixin from "./mixins/DataFormat";
+  import datePicker from 'vue-bootstrap-datetimepicker';
   import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
   import moment from 'moment-timezone';
 
@@ -30,14 +32,9 @@
   const dateStdFormat = 'YYYY-MM-DD';
 
   export default {
-    inheritAttrs: false,
     mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     components: {
-      datePicker: () => {
-        if (typeof window !== 'undefined') {
-          return import('vue-bootstrap-datetimepicker');
-        }
-      }
+      datePicker
     },
     props: {
       name: String,
@@ -48,6 +45,8 @@
       dataFormat: String,
       value: String,
       inputClass: {type: [String, Array, Object], default: 'form-control'},
+      dataTest: String,
+      disabled: null,
     },
     data() {
       return {
@@ -102,12 +101,12 @@
       },
       setTimezone() {
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          this.config.timeZone = ProcessMaker.user.timezone || 'local';  
-        } 
+          this.config.timeZone = ProcessMaker.user.timezone || 'local';
+        }
       },
       setLang() {
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          this.config.locale = ProcessMaker.user.lang || 'en';  
+          this.config.locale = ProcessMaker.user.lang || 'en';
         }
       }
      },
