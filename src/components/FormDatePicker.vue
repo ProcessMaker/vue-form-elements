@@ -91,10 +91,18 @@
     },
     methods: {
       getUserDateFormat() {
-        return ProcessMaker.user.datetime_format.replace(/ |H|:|m|s|z|Z/g, '');
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          return ProcessMaker.user.datetime_format.replace(/ |H|:|m|s|z|Z/g, '');
+        } else {
+          return dateStdFormat;
+        }
       },
       getUserDateTimeFormat() {
-        return ProcessMaker.user.datetime_format;
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          return ProcessMaker.user.datetime_format;
+        } else {
+          return datetimeStdFormat;
+        }
       },
       stdValue (value) {
         return moment(value).format(this.dataFormat === 'datetime' ? datetimeStdFormat : dateStdFormat);
