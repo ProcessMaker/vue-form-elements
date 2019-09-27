@@ -28,6 +28,9 @@
 
   const uniqIdsMixin = createUniqIdsMixin();
 
+  const datetimeStdFormat = 'YYYY-MM-DDThh:mm:ssZZ';
+  const dateStdFormat = 'YYYY-MM-DD';
+
   export default {
     mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     components: {
@@ -49,7 +52,7 @@
       return {
         date: null,
         config: {
-          format: '',
+          format: datetimeStdFormat,
           timeZone: '',
           locale: '',
           useCurrent: false,
@@ -71,23 +74,38 @@
     },
     watch: {
       dataFormat: {
-        handler() { this.updateFormat() },
         immediate: true,
+        handler() {
+          this.config.format = this.dataFormat === 'datetime' ? this.getUserDateTimeFormat() : this.getUserDateFormat();
+          this.date = this.stdValue(this.value);
+        }
       },
-      value() {
-        this.setDate();
+      value(value) {
+        this.date = this.stdValue(value);
       },
       date() {
-        this.$emit('input', moment(this.date).toISOString());
+        if (typeof this.date === "string") {
+          this.stdValue(this.value) !== this.stdValue(this.date) ? this.$emit('input', this.stdValue(this.date)) : null;
+        }
       }
     },
     methods: {
-      updateFormat() {
-        this.config.format = 'MM/DD/YYYY';
-
-        if (this.dataFormat === 'datetime') {
-          this.config.format += ' h:mm A';
+      getUserDateFormat() {
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          return ProcessMaker.user.datetime_format.replace(/ |H|:|m|s|z|Z/g, '');
+        } else {
+          return "MM/DD/YYYY";
         }
+      },
+      getUserDateTimeFormat() {
+        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
+          return ProcessMaker.user.datetime_format;
+        } else {
+          return "MM/DD/YYYY HH:SS A";
+        }
+      },
+      stdValue (value) {
+        return moment(value).format(this.dataFormat === 'datetime' ? datetimeStdFormat : dateStdFormat);
       },
       setTimezone() {
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
@@ -98,9 +116,6 @@
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
           this.config.locale = ProcessMaker.user.lang || 'en';
         }
-      },
-      setDate() {
-        this.date = moment(this.value);
       }
      },
      mounted() {
