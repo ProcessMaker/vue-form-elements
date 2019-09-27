@@ -94,14 +94,14 @@
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
           return ProcessMaker.user.datetime_format.replace(/ |H|:|m|s|z|Z/g, '');
         } else {
-          return dateStdFormat;
+          return "MM/DD/YYYY";
         }
       },
       getUserDateTimeFormat() {
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
           return ProcessMaker.user.datetime_format;
         } else {
-          return datetimeStdFormat;
+          return "MM/DD/YYYY HH:SS A";
         }
       },
       stdValue (value) {
