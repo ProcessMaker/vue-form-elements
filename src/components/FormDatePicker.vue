@@ -58,7 +58,6 @@
           useCurrent: false,
           showClear: true,
           showClose: true,
-          debug: true,
           icons: {
             time: 'far fa-clock',
             date: 'far fa-calendar',
