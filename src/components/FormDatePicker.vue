@@ -101,7 +101,7 @@
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
           return ProcessMaker.user.datetime_format;
         } else {
-          return "MM/DD/YYYY HH:SS A";
+          return "MM/DD/YYYY h:mm A";
         }
       },
       stdValue (value) {
