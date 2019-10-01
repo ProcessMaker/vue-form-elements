@@ -76,20 +76,27 @@
       dataFormat: {
         immediate: true,
         handler() {
-          this.config.format = this.dataFormat === 'datetime' ? this.getUserDateTimeFormat() : this.getUserDateFormat();
-          this.date = this.stdValue(this.value);
+          this.date = this.pickerValue(this.value);
         }
       },
-      value(value) {
-        this.date = this.stdValue(value);
+      value: {
+        immediate: true,
+        handler(value) {
+          this.date = this.pickerValue(value);
+        }
       },
-      date() {
+      date(date) {
         if (typeof this.date === "string") {
-          this.stdValue(this.value) !== this.stdValue(this.date) ? this.$emit('input', this.stdValue(this.date)) : null;
+          date = moment(date, this.config.format).format(datetimeStdFormat);
+          this.stdValue(this.value) !== this.stdValue() ? this.$emit('input', this.stdValue(date)) : null;
         }
       }
     },
     methods: {
+      pickerValue(value) {
+          this.config.format = this.dataFormat === 'datetime' ? this.getUserDateTimeFormat() : this.getUserDateFormat();
+          return moment(value).format(this.config.format);
+      },
       getUserDateFormat() {
         if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
           return ProcessMaker.user.datetime_format.replace(/ |H|:|m|s|z|Z/g, '');
@@ -119,9 +126,9 @@
       }
      },
      mounted() {
-       this.setTimezone();
-       this.setLang();
-       this.setDate();
+      this.setTimezone();
+      this.setLang();
+      this.date = this.pickerValue(this.value);
      }
   };
 </script>
