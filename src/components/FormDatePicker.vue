@@ -88,7 +88,7 @@
       date(date) {
         if (typeof this.date === "string") {
           date = moment(date, this.config.format).format(datetimeStdFormat);
-          this.stdValue(this.value) !== this.stdValue() ? this.$emit('input', this.stdValue(date)) : null;
+          this.stdValue(this.value) !== this.stdValue(date) ? this.$emit('input', this.stdValue(date)) : null;
         }
       }
     },
