@@ -2,7 +2,7 @@
   <div>
     <button
       @click="showCollapse = !showCollapse"
-      class="accordion-button text-left card-header d-flex align-items-center w-100"
+      class="accordion-button text-left card-header d-flex align-items-center w-100 pl-3"
       :id="'accordion-button-' + config.name"
       >
         <i
@@ -11,7 +11,7 @@
           :class="`fa-${config.icon}`"
         />
 
-        <span class="button-label">{{ config.label }}</span>
+        <span class="ml-1 mr-auto">{{ config.label }}</span>
 
         <i
           v-if="showCollapse"
@@ -69,10 +69,5 @@ export default {
   outline: none;
   border: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-
-  .button-label {
-    margin-right: auto;
-    margin-left: 1rem;
-  }
 }
 </style>
