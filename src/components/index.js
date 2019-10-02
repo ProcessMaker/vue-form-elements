@@ -10,7 +10,7 @@ import FormAccordion from './FormAccordion'
 import FormHtmlEditor from './FormHtmlEditor'
 import FormHtmlViewer from './FormHtmlViewer'
 import FormDelayTimeControl from './FormDelayTimeControl'
-
+import FormMultiSelect from './FormMultiSelect';
 
 // Export our components
 let components = {
@@ -25,6 +25,7 @@ let components = {
     FormHtmlEditor,
     FormHtmlViewer,
     FormDelayTimeControl,
+    FormMultiSelect,
 }
 
 // Export our named exports
@@ -40,6 +41,7 @@ export {
     FormHtmlEditor,
     FormHtmlViewer,
     FormDelayTimeControl,
+    FormMultiSelect,
 }
 
 // Export our Vue plugin as our default
