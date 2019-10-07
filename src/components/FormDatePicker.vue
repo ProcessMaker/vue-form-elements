@@ -80,12 +80,10 @@
         handler() {
           this.config.format = this.dataFormat === 'datetime' ? this.getUserDateTimeFormat() : this.getUserDateFormat();
           this.date = this.stdValue(this.value);
-          // this.date = moment(value);
         }
       },
       value(value) {
         this.date = this.stdValue(value);
-        // this.date = moment(value);
       },
       date() {
         if (typeof this.date === "string") {
