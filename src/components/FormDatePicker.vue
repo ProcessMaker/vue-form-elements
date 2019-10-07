@@ -3,7 +3,8 @@
     <label v-uni-for="name">{{label}}</label>
     <date-picker
       :config="config"
-      v-model="date"
+      :value="moment(date)"
+      @input="date = $event"
       :disabled="disabled"
       :placeholder="placeholder"
       :data-test="dataTest"
@@ -28,7 +29,7 @@
 
   const uniqIdsMixin = createUniqIdsMixin();
 
-  const datetimeStdFormat = 'YYYY-MM-DDThh:mm:ssZZ';
+  const datetimeStdFormat = 'YYYY-MM-DDTHH:mm:ssZZ';
   const dateStdFormat = 'YYYY-MM-DD';
 
   export default {
@@ -50,6 +51,7 @@
     },
     data() {
       return {
+        moment,
         date: null,
         config: {
           format: datetimeStdFormat,
@@ -78,10 +80,12 @@
         handler() {
           this.config.format = this.dataFormat === 'datetime' ? this.getUserDateTimeFormat() : this.getUserDateFormat();
           this.date = this.stdValue(this.value);
+          // this.date = moment(value);
         }
       },
       value(value) {
         this.date = this.stdValue(value);
+        // this.date = moment(value);
       },
       date() {
         if (typeof this.date === "string") {
@@ -121,7 +125,6 @@
      mounted() {
        this.setTimezone();
        this.setLang();
-       this.setDate();
      }
   };
 </script>
