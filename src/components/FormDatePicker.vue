@@ -3,8 +3,8 @@
     <label v-uni-for="name">{{label}}</label>
     <date-picker
       :config="config"
-      :value="moment(date)"
-      @input="date = $event"
+      :value="momentWrappedValue"
+      @input="setDate"
       :disabled="disabled"
       :placeholder="placeholder"
       :data-test="dataTest"
@@ -19,18 +19,16 @@
 
 
 <script>
-  /* global ProcessMaker*/
   import {createUniqIdsMixin} from 'vue-uniq-ids';
   import ValidationMixin from './mixins/validation';
   import DataFormatMixin from "./mixins/DataFormat";
   import datePicker from 'vue-bootstrap-datetimepicker';
   import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
   import moment from 'moment-timezone';
+  import { getTimezone, getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
 
   const uniqIdsMixin = createUniqIdsMixin();
-
   const datetimeStdFormat = 'YYYY-MM-DDTHH:mm:ssZZ';
-  const dateStdFormat = 'YYYY-MM-DD';
 
   export default {
     mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
@@ -38,6 +36,7 @@
       datePicker
     },
     props: {
+      emitIso: Boolean,
       name: String,
       placeholder: String,
       label: String,
@@ -51,12 +50,11 @@
     },
     data() {
       return {
-        moment,
         date: null,
         config: {
           format: datetimeStdFormat,
-          timeZone: '',
-          locale: '',
+          timeZone: getTimezone(),
+          locale: getLang(),
           useCurrent: false,
           showClear: true,
           showClose: true,
@@ -74,58 +72,42 @@
         },
       }
     },
+    computed: {
+      momentWrappedValue() {
+        return moment(this.date).tz(this.config.timeZone);
+      }
+    },
     watch: {
       dataFormat: {
         immediate: true,
         handler() {
-          this.config.format = this.dataFormat === 'datetime' ? this.getUserDateTimeFormat() : this.getUserDateFormat();
-          this.date = this.stdValue(this.value);
+          this.config.format = this.dataFormat === 'datetime'
+            ? getUserDateTimeFormat()
+            : getUserDateFormat();
+
+          this.date = moment(this.value).tz(this.config.timeZone);
         }
       },
       value(value) {
-        this.date = this.stdValue(value);
+        this.date = moment(value).tz(this.config.timeZone);
       },
-      date() {
-        if (typeof this.date === "string") {
-          this.stdValue(this.value) !== this.stdValue(this.date) ? this.$emit('input', this.stdValue(this.date)) : null;
-        }
-      }
     },
     methods: {
-      getUserDateFormat() {
-        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          return ProcessMaker.user.datetime_format.replace(/ |H|:|m|s|z|Z/g, '');
-        } else {
-          return "MM/DD/YYYY";
+      setDate(date) {
+        const currentDate = moment(this.date).tz(this.config.timeZone)
+        const newDate = moment.tz(moment(date).format('YYYY-MM-DDTHH:mm:ss'), 'YYYY-MM-DDTHH:mm:ss', this.config.timeZone);
+
+        if (newDate.isSame(currentDate, 'minute')) {
+          return;
         }
-      },
-      getUserDateTimeFormat() {
-        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          return ProcessMaker.user.datetime_format;
-        } else {
-          return "MM/DD/YYYY h:mm A";
-        }
-      },
-      stdValue (value) {
-        return moment(value).format(this.dataFormat === 'datetime' ? datetimeStdFormat : dateStdFormat);
-      },
-      setTimezone() {
-        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          this.config.timeZone = ProcessMaker.user.timezone || 'local';
-        }
-      },
-      setLang() {
-        if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-          this.config.locale = ProcessMaker.user.lang || 'en';
-        }
+
+        this.date = newDate;
+        this.$emit('input', this.emitIso ? newDate.toISOString() : newDate.format(this.config.format));
       }
-     },
-     mounted() {
-       this.setTimezone();
-       this.setLang();
-     }
+    },
   };
 </script>
+
 <style>
   .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
     font-size: 11px;
