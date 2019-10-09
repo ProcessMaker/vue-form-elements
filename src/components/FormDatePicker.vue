@@ -3,7 +3,7 @@
     <label v-uni-for="name">{{label}}</label>
     <date-picker
       :config="config"
-      :value="momentWrappedValue"
+      :value="date"
       @input="setDate"
       :disabled="disabled"
       :placeholder="placeholder"
@@ -16,7 +16,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
   import {createUniqIdsMixin} from 'vue-uniq-ids';
@@ -72,11 +71,6 @@
         },
       }
     },
-    computed: {
-      momentWrappedValue() {
-        return moment(this.date).tz(this.config.timeZone);
-      }
-    },
     watch: {
       dataFormat: {
         immediate: true,
@@ -113,4 +107,3 @@
     font-size: 11px;
   }
 </style>
-
