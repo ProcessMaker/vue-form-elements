@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@panter/vue-i18next": "^0.15.0",
+    "@types/jest": "^24.0.18",
     "@vue/cli-plugin-babel": "^3.0.0-beta.15",
     "@vue/cli-plugin-eslint": "^3.0.0-beta.15",
     "@vue/cli-plugin-unit-jest": "^3.12.0",
