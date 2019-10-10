@@ -1,4 +1,5 @@
 import Validator from 'validatorjs';
+import { isValidDate, getUserDateFormat } from '../../dateUtils';
 
 // To include another language in the Validator with variable processmaker
 let globalObject = typeof window === 'undefined'
@@ -8,6 +9,8 @@ let globalObject = typeof window === 'undefined'
 if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.ProcessMaker.user.lang) {
   Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
+
+Validator.register('dateFormat', isValidDate, `The :attribute is not a valid date with format ${getUserDateFormat()}`);
 
 export default {
   props: {
@@ -54,7 +57,7 @@ export default {
         'boolean': 'boolean',
         'string': 'string',
         'datetime': 'date',
-        'date': 'date',
+        'date': 'dateFormat',
         'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
         'array': 'array',
