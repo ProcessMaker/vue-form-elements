@@ -17,7 +17,7 @@ export function getLang() {
 
 export function getUserDateFormat() {
   if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
-    return ProcessMaker.user.datetime_format.replace(/ |H|:|m|s|z|Z/g, '');
+    return ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, '');
   }
 
   return 'MM/DD/YYYY';
