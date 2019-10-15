@@ -26,3 +26,7 @@ export function getUserDateFormat() {
 export function getUserDateTimeFormat() {
   return getProcessMakerUserValue('datetime_format') || 'MM/DD/YYYY h:mm A';
 }
+
+export function isValidDate(date, format = getUserDateFormat()) {
+  return moment(date, format).isValid();
+}
