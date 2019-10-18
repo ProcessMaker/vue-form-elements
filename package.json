@@ -5,9 +5,9 @@
   "scripts": {
     "serve": "NODE_ENV=standalone vue-cli-service serve",
     "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "build-bundle": "vue-cli-service build --target lib --name vue-form-elements ./src/components/index.js",
-    "test:unit": "vue-cli-service test:unit"
+    "build-bundle": "vue-cli-service build --target lib --name vue-form-elements ./src/components/index.js"
   },
   "main": "./dist/vue-form-elements.common.js",
   "files": [
@@ -33,12 +33,15 @@
   },
   "devDependencies": {
     "@panter/vue-i18next": "^0.15.0",
-    "@vue/cli-plugin-babel": "^3.0.0-beta.15",
-    "@vue/cli-plugin-eslint": "^3.0.0-beta.15",
+    "@vue/cli-plugin-babel": "^4.0.4",
+    "@vue/cli-plugin-eslint": "^4.0.4",
     "@vue/cli-plugin-unit-jest": "^4.0.4",
-    "@vue/cli-service": "^3.0.0-beta.15",
+    "@vue/cli-service": "^4.0.4",
     "@vue/test-utils": "1.0.0-beta.29",
+    "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.2.3",
     "i18next": "^15.1.1",
     "mustache": "^3.0.1",
     "node-sass": "^4.9.0",
@@ -64,6 +67,15 @@
       "parser": "babel-eslint"
     },
     "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      },
       {
         "files": [
           "**/__tests__/*.{j,t}s?(x)",
