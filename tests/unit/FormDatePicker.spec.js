@@ -36,16 +36,18 @@ describe('FormDatePicker', () => {
       placeholder: placeholderText,
       helper: helperText,
       error: errorText,
-      disabled: readOnly
+      disabled: readOnly,
+      validation: 'required'
     });
-    expect(wrapper.name()).toBe(nameText);
-    expect(wrapper.vm.dataFormat).toBe(dataType);
     expect(wrapper.html()).toContain(label);
     expect(wrapper.vm.placeholder).toBe(placeholder);
     expect(wrapper.find('.invalid-feedback').text()).toContain(helperText);
     expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
     expect(wrapper.vm.disabled).toBe(true);
     expect(wrapper.find('date-picker-stub').vm.props.config.format).toBe('MM/DD/YYYY');
+
+    expect(wrapper.name()).toBe(nameText);
+    expect(wrapper.vm.dataFormat).toBe(dataType);
 
     wrapper.setProps({
       dataFormat: 'datetime'
@@ -117,7 +119,6 @@ describe('FormDatePicker', () => {
   it('runs validation for datetime', () => {
     const requiredText = 'The birthdate field is required.';
     const invalidText = 'The birthdate is not a valid format.';
-    // const invalidInputText = 'The birthdate is not a valid date with format MM/DD/YYYY';
 
     wrapper.setProps({
       name: 'birthdate',
