@@ -24,9 +24,24 @@ describe('FormSelect', () => {
         }); 
     });
 
-    it('render the component', () => {
+    it('renders the component', () => {
         expect(wrapper.html()).toContain('select');
         expect(wrapper.findAll('option').length).toBe(optionsArray.length + 1); 
+    });
+
+    it('renders the component from a data source', () => {
+        const wrapper = shallowMount(FormSelect, {
+            mocks: {$t},
+            propsData: {
+                options: {
+                    dataSource: 'provideData',
+                    jsonData: JSON.stringify(optionsArray),
+                }    
+            },
+        });
+        expect(wrapper.html()).toContain('select');
+        expect(wrapper.findAll('option')).toHaveLength(optionsArray.length + 1); 
+        expect(wrapper.emitted().input).toBeTruthy();
     });
 
     it('should render all configured props', () => {
@@ -98,60 +113,4 @@ describe('FormSelect', () => {
         expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
         expect(wrapper.find('select').classes('is-invalid')).toBe(false);
     });
-
-    // it('can create the component using an data source of provideData', () => {
-    //     const wrapper = shallowMount(FormSelect, {
-    //         mocks: {$t},
-    //         propsData: {
-    //             options: {
-    //                 dataSource: 'provideData',
-    //                 jsonData: JSON.stringify(optionsArray),
-    //             }    
-    //         },
-    //     });
-    //     expect(wrapper.html()).toContain('select');
-    //     expect(wrapper.findAll('option')).toHaveLength(optionsArray.length + 1); 
-    //     expect(wrapper.emitted().input).toBeTruthy();
-    // });
-
-//   it('can create the component using an data source of dataObject', () => {
-//     const wrapper = shallowMount(FormSelect, {
-//         mocks: {$t},
-//         propsData: {
-//             options: {
-//                 dataSource: 'dataObject',
-//                 dataName: 'optionArray',
-//                 optionList: optionsArray
-//             }    
-//         },
-//     });
-//     debugger;
-//     expect(wrapper.html()).toContain('select');
-//     expect(wrapper.findAll('option')).toHaveLength(optionsArray.length + 1); 
-//     expect(wrapper.emitted().input).toBeTruthy();
-//   });
-
-
-//   it('can set a default option', () => {
-//     const wrapper = shallowMount(FormSelect, {
-//         mocks: {$t},
-//         propsData: {
-//             options: {
-//                 defaultOptionKey: null,
-//                 jsonData: JSON.stringify(optionsArray),
-//             },
-//         },
-//     }); 
-//     wrapper.setProps({
-//         options: {
-//             defaultOptionKey: 'bar',
-//             jsonData: JSON.stringify(optionsArray)
-
-//         }
-//     });
-//     expect(wrapper.props().options.defaultOptionKey).toBe('bar');
-//     expect(wrapper.find('select').element.value).toBe('bar');
-//     expect(wrapper.props().value).toBe('bar');
-//     expect(wrapper.emitted().input[1]).toEqual(['bar']);
-//   });
 });
