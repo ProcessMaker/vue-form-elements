@@ -3,11 +3,7 @@ import FormInput from '../../src/components/FormInput.vue';
 
 describe('FormInput', () => {
   const factory = (propsData) => {
-    return shallowMount(FormInput, {
-      propsData: {
-        ...propsData
-      }
-    });
+    return shallowMount(FormInput, { propsData });
   }
 
   it('renders the component', () => {
@@ -37,7 +33,7 @@ describe('FormInput', () => {
     const wrapper = factory();
     const value = 'Hello World';
 
-    wrapper.setProps({value: value});
+    wrapper.setProps({ value });
     expect(wrapper.find('input').element.value).toBe(value);
   });
 
@@ -100,13 +96,14 @@ describe('FormInput', () => {
 
   it('removes the validation error messages when the field is valid.', () => {
     const errorText = 'This field has an error';
+    const value = 'Hello World';
     const wrapper = factory({
       name: 'formInputName',
       error: errorText,
       validation: 'required'
     });
     
-    wrapper.setProps({value: "Hello World"});
+    wrapper.setProps({ value });
     
     expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
     expect(wrapper.find('input').classes('is-invalid')).toBe(false);
