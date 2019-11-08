@@ -168,45 +168,7 @@ export default {
       }
 
       this.$emit('input', valueToSend);
-    },
-    getDataSourceList()
-    {
-       ProcessMaker.apiClient
-                    .get("/datasourcelist", {
-                        params: {}
-                    })
-                    .then(response => {
-
-                        console.log('éxito');
-                    })
-                    .catch(err => {
-                        console.log('fracaso');
-                    });
-      var elem = {};
-      elem['id']=1;
-      elem['name']='data source 1';
-      return [elem];
-    },
-    callDataSource()
-    {
-      //API CALL
-       ProcessMaker.apiClient
-                    .get("/collections", {
-                        params: {}
-                    })
-                    .then(response => {
-
-                        console.log('éxito');
-                    })
-                    .catch(err => {
-                        console.log('fracaso');
-                    });
-
-      var elem = {};
-      elem['valor']=1;
-      elem['contenido']='este es mi valor';
-      return [elem];
-    },
+    }
   },
   computed:{
     divClass() {
@@ -236,7 +198,7 @@ export default {
       return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
-      const { jsonData, key, value, dataName, dataSource, allowMultiSelect } = this.options;
+      const { jsonData, key, value, dataName, allowMultiSelect } = this.options;
 
       this.allowMultiSelect = allowMultiSelect;
       let options = [];
@@ -248,7 +210,6 @@ export default {
 
       if (jsonData) {
         try {
-          //console.log(JSON.parse(jsonData));
           options = JSON.parse(jsonData)
             .map(convertToSelectOptions)
             .filter(removeInvalidOptions);
@@ -257,16 +218,15 @@ export default {
         }
       }
 
-      if (dataName && dataSource === 'dataObject') {
+      if (dataName) {
         try {
-          options = this.callDataSource()
+          options = this.validationData[dataName]
             .map(convertToSelectOptions)
             .filter(removeInvalidOptions);
         } catch (error) {
           /* Ignore error */
         }
       }
-      console.log(options)
 
       return options;
     },
