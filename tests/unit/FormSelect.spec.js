@@ -84,7 +84,6 @@ describe('FormSelect', () => {
     expect(selectOptions.at(2).element.selected).toBe(true);
   });
 
-
   it('should render all configured props', () => {
     const label = 'Form Select Label';
     const helper = 'This is some text';

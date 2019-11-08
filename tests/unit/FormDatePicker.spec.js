@@ -1,26 +1,45 @@
-import { shallowMount } from '@vue/test-utils'
+import { shallowMount, mount } from '@vue/test-utils'
 import FormDatePicker from '../../src/components/FormDatePicker.vue';
 
 describe('FormDatePicker', () => {
-  let wrapper;
-  beforeEach(() => {
-    wrapper = shallowMount(FormDatePicker, {
-      propsData: {
-        dataFormat: 'date'
-      }
-    });
-  });
-
-  it('can create the component', () => {
+  let dataFormat = 'date';
+  const factory = (propsData) => {
+    return shallowMount(FormDatePicker, { propsData });
+  }
+  
+  it('renders the component', () => {
+    const wrapper = factory({ dataFormat });
     expect(wrapper.html()).toContain('date-picker-stub');
 
     const value = wrapper.find('date-picker-stub').vm.value;
     const dateDisplayed = new Date(value).setUTCMilliseconds(0);
     const today = new Date().setUTCMilliseconds(0);
-
     expect(dateDisplayed).toBe(today);
   });
 
+  it('should emit a value on mount', () => {
+    const wrapper = factory({ dataFormat });
+    expect(wrapper.emitted().input).toBeTruthy();
+  });
+
+  it('should emit the value when input changes', () => {
+    const wrapper = factory({ dataFormat });
+    const value = '10/20/2020';
+
+    wrapper.find('date-picker-stub').setProps({ value });
+    expect(wrapper.emitted().input[1]).toEqual([value]);
+  });
+
+  it('sets the value on input', () => {
+    const wrapper = factory({ dataFormat });
+    const value = '10/20/2020';
+
+    wrapper.setProps({ value });
+    const elValue = new Date(wrapper.find('date-picker-stub').vm.value).setUTCMilliseconds(0);
+    const setValue = new Date(value).setUTCMilliseconds(0);
+
+    expect(elValue).toBe(setValue);
+  });
 
   it('should render all configured props', () => {
     const nameText = 'birthdate';
@@ -29,16 +48,17 @@ describe('FormDatePicker', () => {
     const helperText = 'This is some text';
     const errorText = 'This field has an error';
     const readOnly = true;
-
-    wrapper.setProps({
+    const wrapper = factory({
       name: nameText,
       label: labelText,
       placeholder: placeholderText,
       helper: helperText,
       error: errorText,
       disabled: readOnly,
-      validation: 'required'
+      validation: 'required',
+      value: ''
     });
+
     expect(wrapper.html()).toContain(label);
     expect(wrapper.vm.placeholder).toBe(placeholder);
     expect(wrapper.find('.invalid-feedback').text()).toContain(helperText);
@@ -55,46 +75,39 @@ describe('FormDatePicker', () => {
     expect(wrapper.find('date-picker-stub').vm.props.config.format).toBe('MM/DD/YYYY h:mm A');
   });
 
-  it('updates and emits values', async () => {
-    let date = new Date('10/20/2020').toISOString();
-    // Should emit on mount
-    expect(wrapper.emitted().input).toBeTruthy();
-    
-    
-    wrapper.setProps({value: date});
-    
-    expect(wrapper.emitted().input.length).toBe(2);
-    expect(wrapper.emitted().input[1]).toEqual(['10/20/2020']);
-    expect(wrapper.vm.value).toBe(date);
-
-    date = new Date('10/20/2020 10:00 AM').toISOString();
-    wrapper.setProps({
-      dataFormat: 'datetime',
-      value: date
+  it('displays validation error messages when the field is invalid', () => {
+    const requiredText = 'The FormDatePicker field is required.';
+    const errorText = 'This field has an error';
+    const wrapper = factory({
+      name: 'FormDatePicker',
+      error: errorText,
+      validation: 'required',
+      value: ''
     });
-    expect(wrapper.emitted().input.length).toBe(3);
-    expect(wrapper.emitted().input[2]).toBe('10/20/20 10:00 AM');
-    expect(wrapper.vm.value).toBe(date);
+
+    expect(wrapper.find('date-picker-stub').classes('is-invalid')).toBe(true);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(requiredText);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
   });
 
-  it('runs validation for date', () => {
-    const requiredText = 'The birthdate field is required.';
-    const invalidText = 'The birthdate is not a valid format.';
-
-    wrapper.setProps({
-      name: 'birthdate',
-      validation: 'required'
+  it('removes the validation error messages when the field is valid.', () => {
+    const errorText = 'This field has an error';
+    const value = 'bar';
+    const wrapper = factory({
+      name: 'FormDatePicker',
+      error: errorText,
+      validation: 'required',
+      value: '10/20/2020',
     });
     
-    // Test  validation by removing values
-    wrapper.vm.value = null;
-    wrapper.find('date-picker-stub').vm.value = null;
-    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toBe(requiredText);
-    expect(wrapper.find('.is-invalid').exists()).toBe(true);
-    
-    // Test the given input is a valid format
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
+    expect(wrapper.find('date-picker-stub').classes('is-invalid')).toBe(false);
+  });
+
+  it('runs validation for invalid date formats', () => {
+    const wrapper = factory({dateFormat});
+
     wrapper.setProps({value: '2020/24/10'});
     expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
     expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
@@ -116,25 +129,10 @@ describe('FormDatePicker', () => {
     expect(wrapper.find('.is-invalid').exists()).toBe(false);
   });
 
-  it('runs validation for datetime', () => {
-    const requiredText = 'The birthdate field is required.';
-    const invalidText = 'The birthdate is not a valid format.';
+  it('runs validation for invalid datetime formats', () => {
+    let dataFormat = 'datetime';
+    const wrapper = factor({dataFormat});
 
-    wrapper.setProps({
-      name: 'birthdate',
-      dataFormat: 'datetime',
-      validation: 'required'
-    });
-    
-    // Test validation by removing values
-    wrapper.vm.value = null;
-    wrapper.find('date-picker-stub').vm.value = null; 
-    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toBe(requiredText);
-    expect(wrapper.find('.is-invalid').exists()).toBe(true);
-
-    // Test the given input is a valid format
     wrapper.setProps({value: '2020/24/10 10:00 AM'});
     expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
     expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
