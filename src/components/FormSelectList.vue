@@ -220,7 +220,7 @@ export default {
 
       if (dataName) {
         try {
-          options = this.validationData[dataName]
+          options = Object.values(this.validationData[dataName])
             .map(convertToSelectOptions)
             .filter(removeInvalidOptions);
         } catch (error) {
