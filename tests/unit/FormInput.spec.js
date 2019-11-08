@@ -40,9 +40,7 @@ describe('FormInput', () => {
   it('should update the value when a initial value is set and the input changes', () => {
     const value = 'Hello World';
     const newVal = 'Goodbye World';
-    const wrapper = factory({
-      value: value
-    });
+    const wrapper = factory({ value });
     expect(wrapper.find('input').element.value).toBe(value);
     
     wrapper.setProps({
@@ -83,7 +81,7 @@ describe('FormInput', () => {
     const requiredText = 'The FormInput field is required.';
     const errorText = 'This field has an error';
     const wrapper = factory({
-      name: 'formInputName',
+      name: 'FormInput',
       error: errorText,
       validation: 'required'
     });
