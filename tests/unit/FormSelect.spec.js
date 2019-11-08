@@ -2,115 +2,151 @@ import { shallowMount } from '@vue/test-utils'
 import FormSelect from '../../src/components/FormSelect.vue';
 
 describe('FormSelect', () => {
-    let wrapper;
-    const $t = () => {};
-    const optionsArray =  [
-        {
-            'value': 'foo',
-            'content': 'Foo'
-        }, 
-        {
-            'value': 'bar',
-            'content': 'Bar'
-        }
-    ];
+  const $t = () => {};
+  const factory = (propsData) => {
+    return shallowMount(FormSelect, {
+      mocks: {$t},
+      propsData: {
+        ...propsData
+      }
+    });
+  }
+  const options =  [
+    {
+        'value': 'foo',
+        'content': 'Foo'
+    }, 
+    {
+        'value': 'bar',
+        'content': 'Bar'
+    }
+  ];
 
-    beforeEach(() => {
-        wrapper = shallowMount(FormSelect, {
-            mocks: {$t},
-            propsData: {
-                options: optionsArray,
-            },
-        }); 
+  it('renders the component', () => {
+    const wrapper = factory({ options });
+    expect(wrapper.html()).toContain('select');
+    expect(wrapper.findAll('option').length).toBe(options.length + 1); 
+  });
+
+  it('renders the component from a data source', () => {
+    const wrapper = factory({
+      options: {
+        dataSource: 'provideData',
+        jsonData: JSON.stringify(options)
+      }
     });
 
-    it('renders the component', () => {
-        expect(wrapper.html()).toContain('select');
-        expect(wrapper.findAll('option').length).toBe(optionsArray.length + 1); 
+    expect(wrapper.html()).toContain('select');
+    expect(wrapper.findAll('option')).toHaveLength(options.length + 1); 
+  });
+
+  it('should have an empty value on mount', () => {
+    const wrapper = factory({ options });
+    expect(wrapper.find('select').element.value).toBe("");
+  });
+
+  it('should emit a value on mount', () => {
+    const wrapper = factory({ options });
+    expect(wrapper.emitted().input).toBeTruthy();
+  });
+
+  it('should emit the value when input changes', () => {
+    const wrapper = factory({ options });
+    const selectOptions = wrapper.findAll('option');
+    const value = selectOptions.at(1);
+    
+    value.setSelected();
+    expect(wrapper.emitted().input[1]).toEqual([value.element.value]);
+  });
+
+  it('sets the value on input', () => {
+    const wrapper = factory({ options });
+    const value = 'foo';
+
+    wrapper.setProps({ value });
+    const selectOptions = wrapper.findAll('option');
+    expect(selectOptions.at(1).element.selected).toBe(true);
+  });
+
+  it('should update the value when a initial value is set and the input changes', () => {
+    const value = 'foo';
+    const newVal = 'bar';
+    const wrapper = factory({ 
+      options: options,
+      value: value
+     });
+    const selectOptions = wrapper.findAll('option');
+    expect(selectOptions.at(1).element.selected).toBe(true);
+    
+    wrapper.setProps({
+      value: newVal
+    });
+    expect(selectOptions.at(2).element.selected).toBe(true);
+  });
+
+
+  it('should render all configured props', () => {
+    const label = 'Form Select Label';
+    const helper = 'This is some text';
+    const name = 'FormSelect';
+    const errorText = 'This field has an error';
+    const placeholder = 'select an option';
+
+    const wrapper = factory({
+      label: label,
+      helper: helper,
+      name: name,
+      error: errorText,
+      placeholder: placeholder,
+      disabled: true,
+      validation: 'required',
+      options: options,
+      defaultOptionKey: 'bar'
     });
 
-    it('renders the component from a data source', () => {
-        const wrapper = shallowMount(FormSelect, {
-            mocks: {$t},
-            propsData: {
-                options: {
-                    dataSource: 'provideData',
-                    jsonData: JSON.stringify(optionsArray),
-                }    
-            },
-        });
-        expect(wrapper.html()).toContain('select');
-        expect(wrapper.findAll('option')).toHaveLength(optionsArray.length + 1); 
-        expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.html()).toContain(label);
+    expect(wrapper.html()).toContain(helper);
+    expect(wrapper.find('select').attributes().name).toBe(name);
+
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').text()).toBe(errorText);
+    expect(wrapper.find('select').classes('is-invalid')).toBe(true);
+    
+    const selectOptions = wrapper.findAll('option');
+    expect(selectOptions.at(0).text()).toEqual(placeholder);
+    expect(selectOptions.at(2).element.selected).toBe(true);
+    expect(wrapper.find('select').attributes().disabled).toBe('disabled');
+  });
+
+  it('displays validation error messages when the field is invalid', () => {
+    const requiredText = 'The FormSelect field is required.';
+    const errorText = 'This field has an error';
+    const wrapper = factory({
+      name: 'FormSelect',
+      error: errorText,
+      validation: 'required',
+      options: options
     });
 
-    it('should render all configured props', () => {
-        const label = 'Form Select Label';
-        const helper = 'This is some text';
-        const name = 'FormSelect';
-        const errorText = 'This field has an error';
-        const placeholder = 'select an option';
-        const readOnly = true;
+    expect(wrapper.find('select').classes('is-invalid')).toBe(true);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(requiredText);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
+  });
 
-        wrapper.setProps({
-            label: label,
-            helper: helper,
-            name: name,
-            error: errorText,
-            placeholder: placeholder,
-            disabled: readOnly,
-            validation: 'required',
-        });
-        debugger;
-        expect(wrapper.html()).toContain(label);
-        expect(wrapper.html()).toContain(helper);
-        expect(wrapper.find('select').attributes().name).toBe(name);
-
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').text()).toBe(errorText);
-        expect(wrapper.find('input').classes('is-invalid')).toBe(true);
-        
-        expect(wrapper.findAll('option').at(0).text()).toEqual(placeholder);
-        expect(wrapper.find('select').attributes().disabled).toBe('disabled');
+  it('removes the validation error messages when the field is valid.', () => {
+    const errorText = 'This field has an error';
+    const value = 'bar';
+    const wrapper = factory({
+      name: 'FormSelect',
+      error: errorText,
+      validation: 'required',
+      options: options
     });
-
-    it('updates and emits values', () => {
-        // Should emit on mount
-        expect(wrapper.emitted().input).toBeTruthy();
-        
-        const label = 'Form Select Label';
-        wrapper.setProps({
-            label: label,
-            name: name,
-        });
-        
-        const selectOptions = wrapper.findAll('option');
-        selectOptions.at(1).setSelected();
-        expect(selectOptions.at(1).element.selected).toBe(true);
-        expect(selectOptions.at(2).element.selected).toBe(false);
-        expect(wrapper.emitted().input.length).toBe(2);
-        expect(wrapper.emitted().input[1]).toEqual(['foo']);
-        expect(wrapper.vm.value).toBe('foo');
-        
-    });
-
-    it('runs validation', () => {
-        const invalidFeedback = 'The selected FormSelect is invalid.';
-
-        wrapper.setProps({
-            name: 'FormSelect',
-            validation: 'in:bar',
-            value: 'foo'
-        });
-        
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').text()).toBe(invalidFeedback);
-        expect(wrapper.find('select').classes('is-invalid')).toBe(true);
-        
-        wrapper.find('select').setValue('bar');
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
-        expect(wrapper.find('select').classes('is-invalid')).toBe(false);
-    });
+    
+    wrapper.setProps({ value });
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
+    expect(wrapper.find('select').classes('is-invalid')).toBe(false);
+  });
 });
