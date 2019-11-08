@@ -2,259 +2,246 @@ import { shallowMount } from '@vue/test-utils'
 import FormSelectList from '../../src/components/FormSelectList.vue';
 
 describe('FormSelectList', () => {
-    let wrapper;
-    const $t = () => {};
-    const optionsArray = [
-        {
-            "value": "foo",
-            "content": "Foo"
-        },
-        {
-            "value": "bar",
-            "content": "Bar"
+  const $t = () => {};
+  const factory = (propsData) => {
+    return shallowMount(FormSelectList, {
+      mocks: {$t},
+      propsData: {
+        ...propsData
+      }
+    });
+  }
+  const options =  [
+    {
+        'value': 'foo',
+        'content': 'Foo'
+    }, 
+    {
+        'value': 'bar',
+        'content': 'Bar'
+    }
+  ];
+  const json = JSON.stringify(options);
+
+  it('renders the component', () => {
+    const wrapper = factory({ options });
+    expect(wrapper.html()).toContain('select');
+    expect(wrapper.findAll('option').length).toBe(options.length + 1); 
+    
+  });
+
+  it('renders the component as a data source dropdown', () => {
+    const wrapper = factory({
+        options: {
+          renderAs: 'dropdown',
+          jsonData: json
         }
-    ];
-    const json = JSON.stringify(optionsArray);
+    });
+    expect(wrapper.html()).toContain('select');
+    expect(wrapper.findAll('option').length).toBe(options.length + 1);
+  });
 
-    beforeEach(() => {
-        wrapper = shallowMount(FormSelectList,{
-            mocks: {$t},
-            propsData: {
-                options: optionsArray,
-            }
-        });
+  it('can render the component as a data source multiselect dropdown', () => {
+    const wrapper = factory({
+        options: {
+            renderAs: 'dropdown',
+            jsonData: json,
+            allowMultiSelect: true,
+        }
     });
 
-    it('renders the component', () => {
-        expect(wrapper.html()).toContain('select');
-        expect(wrapper.findAll('option').length).toBe(optionsArray.length + 1);
+    expect(wrapper.find('select').exists()).toBe(false);
+    expect(wrapper.html()).toContain('form-multi-select-stub');
+    expect(wrapper.find('form-multi-select-stub').vm.$attrs.options.length).toBe(2);
+  });
+
+  it('can render the component as a data source checkbox', () => {
+    const wrapper = factory({
+        options: {
+            renderAs: 'checkbox',
+            jsonData: json
+        }
     });
+    expect(wrapper.html()).toContain('input');
+    expect(wrapper.findAll('input[type="radio"]').length).toBe(options.length);
+  });
 
-    it('renders the component as a dropdown', () => {
-        wrapper.setProps({
-            options: {
-                renderAs: 'dropdown',
-                jsonData: json
-            }
-        });
-        expect(wrapper.html()).toContain('select');
-        expect(wrapper.findAll('option').length).toBe(optionsArray.length + 1);
+  it('can render the component as a data source multiselect checkbox', () => {
+    const wrapper = factory({
+        options: {
+            renderAs: 'checkbox',
+            jsonData: json,
+            allowMultiSelect: true,
+        }
     });
+    expect(wrapper.find('input').attributes().type).toBe('checkbox');
+    expect(wrapper.findAll('input[type="checkbox"]').length).toBe(options.length);
+  });
 
-    it('can render the component as a multiselect dropdown', () => {
-        wrapper.setProps({
-            options: {
-                renderAs: 'dropdown',
-                jsonData: json,
-                allowMultiSelect: true,
-            }
-        });
-        expect(wrapper.find('select').exists()).toBe(false);
-        expect(wrapper.html()).toContain('form-multi-select-stub');
-        expect(wrapper.find('form-multi-select-stub').vm.$attrs.options.length).toBe(2);
-
+  it('should have an empty value on mount', () => {
+    const wrapper = factory({ 
+      options: {
+        renderAs: 'dropdown',
+        jsonData: json
+      }
     });
+    expect(wrapper.find('select').element.value).toBe("");
+  });
 
-    it('can render the component as a checkbox', () => {
-        wrapper.setProps({
-            options: {
-                renderAs: 'checkbox',
-                jsonData: json
-            }
-        });
-        expect(wrapper.html()).toContain('input');
-        expect(wrapper.findAll('input[type="radio"]').length).toBe(optionsArray.length);
+  it('should emit a value on mount', () => {
+    const wrapper = factory({ 
+      options: {
+        renderAs: 'dropdown',
+        jsonData: json
+      }
     });
+    expect(wrapper.emitted().input).toBeTruthy();
+  });
 
-    it('can render the component as a multiselect checkbox', () => {
-        wrapper.setProps({
-            options: {
-                renderAs: 'checkbox',
-                jsonData: json,
-                allowMultiSelect: true,
-            }
-        });
-        expect(wrapper.find('input').attributes().type).toBe('checkbox');
-        expect(wrapper.findAll('input').length).toBe(optionsArray.length);
+  it('should emit the value when input changes', () => {
+    const wrapper = factory({ 
+      options: {
+        renderAs: 'dropdown',
+        jsonData: json
+      }
+    });
+    const selectOptions = wrapper.findAll('option');
+    const value = selectOptions.at(1);
+    
+    value.setSelected();
+    expect(wrapper.emitted().input[1]).toEqual([value.element.value]);
+  });
+
+  it('sets the value on input', () => {
+    const wrapper = factory({ 
+      options: {
+        renderAs: 'dropdown',
+        jsonData: json
+      }
+    });
+    const value = 'foo';
+
+    wrapper.setProps({ value });
+    const selectOptions = wrapper.findAll('option');
+    expect(selectOptions.at(1).element.selected).toBe(true);
+  });
+
+  it('should update the value when a initial value is set and the input changes', () => {
+    const value = 'foo';
+    const newVal = 'bar';
+    const wrapper = factory({ 
+      value: value,
+      options: {
+        renderAs: 'dropdown',
+        jsonData: json
+      }
+    });
+    const selectOptions = wrapper.findAll('option');
+    expect(selectOptions.at(1).element.selected).toBe(true);
+    
+    wrapper.setProps({
+      value: newVal
+    });
+    expect(selectOptions.at(2).element.selected).toBe(true);
+  });
+
+  it('should allow mulitple values to be selected when multiselect is enabled', () => {
+    const value = ['foo', 'bar'];
+    const wrapper = factory({
+      options: {
+        renderAs: 'checkbox',
+        jsonData: json,
+        allowMultiSelect: true
+      }
     });
     
-    it('can render all configured properties', () => {
-        const label = 'Form Select Label';
-        const helper = 'This is some text';
-        const name = 'FormSelect';
-        const errorText = 'This field has an error';
-        const dataName = 'dataSelectList';
-        const dataSource = 'provideData';
-        const pmql = "";
-        const defaultOption = 'foo';
+    wrapper.setProps({ value });
+    const checkBoxInputs = wrapper.findAll('input');
+    expect(checkBoxInputs.at(0).element.checked).toBe(true);
+    expect(checkBoxInputs.at(1).element.checked).toBe(true);
+  });
+    
+  it('should render all configured props', () => {
+    const label = 'Form Select Label';
+    const helper = 'This is some text';
+    const name = 'FormSelect';
+    const dataName = 'dataSelectList';
+    const dataSource = 'provideData';
+    const pmql = "";
+    const wrapper = factory({
+      label: label,
+      helper: helper,
+      name: name,
+      options: {
+          allowMultiSelect: true, 
+          dataName: dataName,
+          dataSource: dataSource,
+          defaultOptionKey: defaultOption,
+          jsonData: json,
+          pmqlQuery: pmql,
+          renderAs: 'checkbox',
+      }
+    });
 
-        wrapper.setProps({
-            label: label,
-            helper: helper,
-            name: name,
-            error: errorText,
-            options: {
-                allowMultiSelect: true, 
-                dataName: dataName,
-                dataSource: dataSource,
-                defaultOptionKey: defaultOption,
-                jsonData: json,
-                pmqlQuery: pmql,
-                renderAs: 'checkbox',
-            }
-        });
-        expect(wrapper.html()).toContain(label);
-        expect(wrapper.html()).toContain(helper);
-        
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').text()).toBe(errorText);
-        expect(wrapper.find('input').classes('is-invalid')).toBe(true);
+    expect(wrapper.html()).toContain(label);
+    expect(wrapper.html()).toContain(helper);
 
-        expect(wrapper.find('input').attributes().type).toBe('checkbox');
-        expect(wrapper.props().options.dataName).toBe(dataName);
-        expect(wrapper.props().options.dataSource).toBe(dataSource);
-        
-        // Checks that the default value has been set
-        const checkboxInputs = wrapper.findAll('input');
-        expect(checkboxInputs.at(0).element.checked).toBe(true);
-        expect(wrapper.vm.value).toBe(defaultOption);
-        expect(wrapper.props().options.jsonData).toBe(JSON.stringify(optionsArray));
-        expect(wrapper.props().options.pmqlQuery).toBe(pmql);
+    expect(wrapper.find('input').attributes().type).toBe('checkbox');
+    expect(wrapper.props().options.dataName).toBe(dataName);
+    expect(wrapper.props().options.dataSource).toBe(dataSource);
+    expect(wrapper.props().options.jsonData).toBe(JSON.stringify(optionsArray));
+    expect(wrapper.props().options.pmqlQuery).toBe(pmql);
+  });
+
+  it('should set the default value', () => {
+    const defaultOption = 'foo';
+    const wrapper = factory({
+      options: {
+        defaultOptionKey: defaultOption,
+        jsonData: json,
+        renderAs: 'checkbox'
+      }
+    });
+    const checkboxInputs = wrapper.findAll('input');
+    expect(checkboxInputs.at(0).element.checked).toBe(true);
+  });
+
+  it('displays validation error messages when the field is invalid', () => {
+    const requiredText = 'The FormSelectList field is required.';
+    const errorText = 'This field has an error';
+    const wrapper = factory({
+      name: 'FormSelectList',
+      error: errorText,
+      validation: 'required',
+      options: {
+        defaultOptionKey: defaultOption,
+        jsonData: json,
+        renderAs: 'dropdown'
+      }
+    });
+
+    expect(wrapper.find('select').classes('is-invalid')).toBe(true);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(requiredText);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
+  });
+
+  it('removes the validation error messages when the field is valid.', () => {
+    const errorText = 'This field has an error';
+    const value = 'bar';
+    const wrapper = factory({
+      name: 'FormSelectList',
+      error: errorText,
+      validation: 'required',
+      options: {
+        defaultOptionKey: defaultOption,
+        jsonData: json,
+        renderAs: 'dropdown'
+      }
     });
     
-    it('runs validation on the checkbox field', () => {
-        const requiredText = 'The checkboxField field is required.';
-        const invalidSelectText = 'The selected checkboxField is invalid.';
-
-        wrapper.setProps({
-            name: 'checkboxField',
-            options: {
-                renderAs: 'checkbox',
-                jsonData: json
-            },
-            validation: 'required|in:bar'    
-        });
-    
-        expect(wrapper.find('.is-invalid').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').text()).toBe(requiredText);
-        
-        const checkboxInputs = wrapper.findAll('input');
-        checkboxInputs.at(0).setChecked();
-        expect(wrapper.find('.is-invalid').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').text()).toBe(invalidSelectText);
-
-        checkboxInputs.at(1).setChecked()
-        expect(wrapper.find('.is-invalid').exists()).toBe(false);
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
-    });
-
-    it('runs validation on the dropdown field', () => {
-        const requiredText = 'The dropdownField field is required.';
-        const invalidSelection = 'The selected dropdownField is invalid.';
-
-        wrapper.setProps({
-            name: 'dropdownField',
-            options: {
-                renderAs: 'dropdown',
-                jsonData: json
-            },
-            validation: 'required|in:bar'
-        });
-
-        expect(wrapper.find('.is-invalid').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').text()).toBe(requiredText);
-        
-        const dropdownOptions = wrapper.findAll('option');
-        dropdownOptions.at(1).setSelected();
-        expect(wrapper.find('.is-invalid').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-        expect(wrapper.find('.invalid-feedback').text()).toBe(invalidSelection);
-
-        dropdownOptions.at(2).setSelected()
-        expect(wrapper.find('.is-invalid').exists()).toBe(false);
-        expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
-    });
-    
-    it('should update the checkbox v-model',  function () {
-        expect(wrapper.emitted()).toBeTruthy();
-
-        wrapper.setProps({
-            options: {
-                renderAs: 'checkbox',
-                jsonData: json
-            }
-        });
-
-        const checkBoxInputs = wrapper.findAll('input');
-        checkBoxInputs.at(1).setChecked();
-        expect(wrapper.vm.value).toBe('foo');
-        expect(wrapper.emitted().input.length).toBe(2);
-        expect(wrapper.emitted().input[1]).toEqual(['foo']);
-    });
-
-    it('should update the multiselect checkbox v-model',  function () {
-        expect(wrapper.emitted()).toBeTruthy();
-        
-        wrapper.setProps({
-            options: {
-                renderAs: 'checkbox',
-                jsonData: json,
-                allowMultiSelect: true
-            }
-        });
-
-        const checkBoxInputs = wrapper.findAll('input');
-        checkBoxInputs.at(0).setChecked();
-        checkBoxInputs.at(1).setChecked();
-        expect(wrapper.vm.value).toBe(['foo','bar']);
-        expect(wrapper.emitted().input.length).toBe(3);
-        expect(wrapper.emitted().input[2]).toEqual(['foo', 'bar']);
-    });
-
-    it('should update and emit the dropdown v-model',  function () {
-        expect(wrapper.emitted()).toBeTruthy();
-        
-        wrapper.setProps({
-            options: {
-                renderAs: 'dropdown',
-                jsonData: json
-            }
-        });
-
-        const dropDownOptions = wrapper.findAll('option');
-        dropDownOptions.at(1).setSelected();
-        expect(wrapper.vm.value).toBe('foo');
-        expect(wrapper.emitted().input.length).toBe(2);
-        expect(wrapper.emitted().input[1]).toEqual(['foo']);
-    });
-
-    it('should update the multiselect dropdown v-model',  function () {
-        expect(wrapper.emitted()).toBeTruthy();
-
-        wrapper.setProps({
-            options: {
-                renderAs: 'dropdown',
-                jsonData: json,
-                allowMultiSelect: true,
-            }
-        });
-        
-        const firstValue = wrapper.vm.optionsList[0].value;
-        const secondValue = wrapper.vm.optionsList[1].value;
-        const optionsList = [firstValue, secondValue];
-        wrapper.vm.selectedOptions = optionsList;
-        wrapper.vm.sendSelectedOptions();
-        
-        expect(wrapper.emitted().input.length).toBe(2);
-        expect(wrapper.emitted().input).toEqual([[['foo','bar']]]);
-        expect(wrapper.vm.value).toBe(['foo', 'bar']);
-    });
+    wrapper.setProps({ value });
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
+    expect(wrapper.find('select').classes('is-invalid')).toBe(false);
+  });
 });
