@@ -158,8 +158,8 @@ export default {
   methods: {
     sendSelectedOptions() {
       let valueToSend = (this.selectedOptions.constructor === Array)
-                        ? this.selectedOptions
-                        : [this.selectedOptions];
+                      ? this.selectedOptions
+                      : [this.selectedOptions];
 
       // If more than 1 item is selected but we are displaying a one selection control
       // show just the first selected item
@@ -169,42 +169,32 @@ export default {
 
       this.$emit('input', valueToSend);
     },
-    getDataSourceList()
-    {
-       ProcessMaker.apiClient
-                    .get("/datasourcelist", {
-                        params: {}
-                    })
-                    .then(response => {
 
-                        console.log('éxito');
-                    })
-                    .catch(err => {
-                        console.log('fracaso');
-                    });
-      var elem = {};
-      elem['id']=1;
-      elem['name']='data source 1';
-      return [elem];
-    },
     callDataSource()
     {
+      console.log('llamada a data source')
       //API CALL
-       ProcessMaker.apiClient
-                    .get("/collections", {
-                        params: {}
-                    })
-                    .then(response => {
-
-                        console.log('éxito');
-                    })
-                    .catch(err => {
-                        console.log('fracaso');
-                    });
+      //  ProcessMaker.apiClient
+      //               .post("requests/data_sources/1", {
+      //                   config: {
+      //                     endpoint:"list"
+      //                   }
+      //               })
+      //               .then(response => {
+      //                   var elem = {};
+      //                   elem['valor']=1;
+      //                   elem['contenido']='este es mi valor';
+      //                   this.optionsList = [elem]
+      //                    console.log('éxito');
+      //               })
+      //               .catch(err => {
+      //                   console.log('fracaso');
+      //               });
 
       var elem = {};
       elem['valor']=1;
       elem['contenido']='este es mi valor';
+      this.optionsList = [elem];
       return [elem];
     },
   },
@@ -236,7 +226,13 @@ export default {
       return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
-      const { jsonData, key, value, dataName, dataSource, allowMultiSelect } = this.options;
+      const { jsonData,
+              key,
+              value,
+              dataSource,
+              allowMultiSelect,
+              selectedDataSource,
+              selectedEndPoint } = this.options;
 
       this.allowMultiSelect = allowMultiSelect;
       let options = [];
@@ -248,7 +244,6 @@ export default {
 
       if (jsonData) {
         try {
-          //console.log(JSON.parse(jsonData));
           options = JSON.parse(jsonData)
             .map(convertToSelectOptions)
             .filter(removeInvalidOptions);
@@ -257,7 +252,8 @@ export default {
         }
       }
 
-      if (dataName && dataSource === 'dataObject') {
+      //if (selectedDataSource && selectedEndPoint && dataSource === 'dataObject') {
+      if (dataSource === 'dataObject') {
         try {
           options = this.callDataSource()
             .map(convertToSelectOptions)
