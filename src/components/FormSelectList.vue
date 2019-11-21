@@ -116,6 +116,7 @@ export default {
       selectedOptions: [],
       renderAs: 'dropdown',
       allowMultiSelect: false,
+      optionsListLocal: [],
     };
   },
   watch: {
@@ -174,28 +175,39 @@ export default {
     {
       console.log('llamada a data source')
       //API CALL
-      //  ProcessMaker.apiClient
-      //               .post("requests/data_sources/1", {
-      //                   config: {
-      //                     endpoint:"list"
-      //                   }
-      //               })
-      //               .then(response => {
-      //                   var elem = {};
-      //                   elem['valor']=1;
-      //                   elem['contenido']='este es mi valor';
-      //                   this.optionsList = [elem]
-      //                    console.log('éxito');
-      //               })
-      //               .catch(err => {
-      //                   console.log('fracaso');
-      //               });
+       return ProcessMaker.apiClient
+                    .post("requests/data_sources/2", {
+                        config: {
+                          endpoint:"GetAll"
+                        }
+                    })
+                    .then(response => {
+                        // var elem = {};
+                        // elem['valor']=1;
+                        // elem['contenido']='este es mi valor';
+                        // this.optionsList = [elem]
+                        console.log('éxito');
+                        this.optionsListLocal =  JSON.parse(JSON.stringify(response.data));
+                    })
+                    .catch(err => {
+                        console.log('fracaso');
+                    });
 
-      var elem = {};
-      elem['valor']=1;
-      elem['contenido']='este es mi valor';
-      this.optionsList = [elem];
-      return [elem];
+      // return await ProcessMaker.apiClient
+      //   .post("requests/data_sources/1", {
+      //     config: {
+      //       endpoint:"list"
+      //     }
+      //   });
+
+      // var elem = {
+      //   value:1,
+      //   content:'lalalaal'
+      // };
+      // elem['value']=1;
+      // elem['content']='este es mi valor';
+      //this.optionsList = [elem];
+      // return [elem];
     },
   },
   computed:{
@@ -218,13 +230,22 @@ export default {
         [this.controlClass]: !!this.controlClass
       }
     },
-    optionsList() {
-      if (Array.isArray(this.options)) {
-        return this.options;
-      }
 
-      return this.optionsFromDataSource;
+    optionsList: {
+      get: function () {
+          if (Array.isArray(this.options)) {
+            return this.options;
+          }
+          return this.optionsFromDataSource;
+      }
     },
+    // optionsList() {
+    //   if (Array.isArray(this.options)) {
+    //     return this.options;
+    //   }
+    //
+    //   return this.optionsFromDataSource;
+    // },
     optionsFromDataSource() {
       const { jsonData,
               key,
@@ -255,16 +276,21 @@ export default {
       //if (selectedDataSource && selectedEndPoint && dataSource === 'dataObject') {
       if (dataSource === 'dataObject') {
         try {
-          options = this.callDataSource()
-            .map(convertToSelectOptions)
-            .filter(removeInvalidOptions);
+           this.callDataSource().then((result) => {
+             console.log('respuesta del data source');
+             console.log(result);
+             options = this.optionsListLocal.map(convertToSelectOptions)
+                            .filter(removeInvalidOptions);
+             return options;
+          });
         } catch (error) {
           /* Ignore error */
         }
       }
-      console.log(options)
-
-      return options;
+      else {
+        console.log('POR opciones manuales')
+        return options;
+      }
     },
   },
 }
