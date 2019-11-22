@@ -108,6 +108,7 @@ export default {
     'controlClass',
     'validationData',
     'placeholder',
+    'dataSourceId',
     'dataSourceEndpoint',
     'rootElement',
   ],
@@ -204,14 +205,14 @@ export default {
 
       if (selectedDataSource && selectedEndPoint && dataSource === 'dataObject') {
         ProcessMaker.apiClient
-          .post("requests/data_sources/1", {
+          .post("requests/data_sources/" + this.dataSourceId, {
             config: {
-              endpoint:"list"
+              endpoint: this.dataSourceEndpoint;
             }
           })
           .then(response => {
-            let list = JSON.parse(JSON.stringify(response.data.response));
-            options = list.map(convertToSelectOptions).filter(removeInvalidOptions);
+             let list = (this.rootElement) ? response.data[this.rootElement] : response.data;
+             options = list.map(convertToSelectOptions).filter(removeInvalidOptions);
              this.optionsList = options;
           })
           .catch(err => {
