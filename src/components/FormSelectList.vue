@@ -108,6 +108,8 @@ export default {
     'controlClass',
     'validationData',
     'placeholder',
+    'dataSourceEndpoint',
+    'rootElement',
   ],
   data() {
     return {
@@ -116,7 +118,7 @@ export default {
       selectedOptions: [],
       renderAs: 'dropdown',
       allowMultiSelect: false,
-      optionsListLocal: [],
+      optionsList: [],
     };
   },
   watch: {
@@ -130,6 +132,7 @@ export default {
         }
         this.optionKey = value.key || 'value';
         this.optionValue = value.value || 'content';
+        this.optionsFromDataSource();
       }
     },
     value: {
@@ -141,7 +144,7 @@ export default {
           this.selectedOptions = this.allowMultiSelect  ? this.value : [this.value[0]];
         }
       }
-    }
+    },
   },
   mounted() {
     this.selectedOptions = (this.value)
@@ -171,44 +174,52 @@ export default {
       this.$emit('input', valueToSend);
     },
 
-    callDataSource()
-    {
-      console.log('llamada a data source')
-      //API CALL
-       return ProcessMaker.apiClient
-                    .post("requests/data_sources/2", {
-                        config: {
-                          endpoint:"GetAll"
-                        }
-                    })
-                    .then(response => {
-                        // var elem = {};
-                        // elem['valor']=1;
-                        // elem['contenido']='este es mi valor';
-                        // this.optionsList = [elem]
-                        console.log('éxito');
-                        this.optionsListLocal =  JSON.parse(JSON.stringify(response.data));
-                    })
-                    .catch(err => {
-                        console.log('fracaso');
-                    });
+    optionsFromDataSource() {
+      const { jsonData,
+        key,
+        value,
+        dataSource,
+        allowMultiSelect,
+        selectedDataSource,
+        selectedEndPoint } = this.options;
 
-      // return await ProcessMaker.apiClient
-      //   .post("requests/data_sources/1", {
-      //     config: {
-      //       endpoint:"list"
-      //     }
-      //   });
+      this.allowMultiSelect = allowMultiSelect;
+      let options = [];
 
-      // var elem = {
-      //   value:1,
-      //   content:'lalalaal'
-      // };
-      // elem['value']=1;
-      // elem['content']='este es mi valor';
-      //this.optionsList = [elem];
-      // return [elem];
+      const convertToSelectOptions = option => ({
+        value: (option[key || 'value']).toString(),
+        content: (option[value || 'content']).toString(),
+      })
+
+      if (jsonData) {
+        try {
+          options = JSON.parse(jsonData)
+            .map(convertToSelectOptions)
+            .filter(removeInvalidOptions);
+          this.optionsList= options;
+        } catch (error) {
+          /* Ignore error */
+        }
+      }
+
+      if (selectedDataSource && selectedEndPoint && dataSource === 'dataObject') {
+        ProcessMaker.apiClient
+          .post("requests/data_sources/1", {
+            config: {
+              endpoint:"list"
+            }
+          })
+          .then(response => {
+            let list = JSON.parse(JSON.stringify(response.data.response));
+            options = list.map(convertToSelectOptions).filter(removeInvalidOptions);
+             this.optionsList = options;
+          })
+          .catch(err => {
+            /* Ignore error */
+           });
+      }
     },
+
   },
   computed:{
     divClass() {
@@ -228,68 +239,6 @@ export default {
       return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass
-      }
-    },
-
-    optionsList: {
-      get: function () {
-          if (Array.isArray(this.options)) {
-            return this.options;
-          }
-          return this.optionsFromDataSource;
-      }
-    },
-    // optionsList() {
-    //   if (Array.isArray(this.options)) {
-    //     return this.options;
-    //   }
-    //
-    //   return this.optionsFromDataSource;
-    // },
-    optionsFromDataSource() {
-      const { jsonData,
-              key,
-              value,
-              dataSource,
-              allowMultiSelect,
-              selectedDataSource,
-              selectedEndPoint } = this.options;
-
-      this.allowMultiSelect = allowMultiSelect;
-      let options = [];
-
-      const convertToSelectOptions = option => ({
-        value: option[key || 'value'],
-        content: option[value || 'content'],
-      })
-
-      if (jsonData) {
-        try {
-          options = JSON.parse(jsonData)
-            .map(convertToSelectOptions)
-            .filter(removeInvalidOptions);
-        } catch (error) {
-          /* Ignore error */
-        }
-      }
-
-      //if (selectedDataSource && selectedEndPoint && dataSource === 'dataObject') {
-      if (dataSource === 'dataObject') {
-        try {
-           this.callDataSource().then((result) => {
-             console.log('respuesta del data source');
-             console.log(result);
-             options = this.optionsListLocal.map(convertToSelectOptions)
-                            .filter(removeInvalidOptions);
-             return options;
-          });
-        } catch (error) {
-          /* Ignore error */
-        }
-      }
-      else {
-        console.log('POR opciones manuales')
-        return options;
       }
     },
   },
