@@ -207,7 +207,7 @@ export default {
         ProcessMaker.apiClient
           .post("requests/data_sources/" + this.dataSourceId, {
             config: {
-              endpoint: this.dataSourceEndpoint;
+              endpoint: this.dataSourceEndpoint,
             }
           })
           .then(response => {
