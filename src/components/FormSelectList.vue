@@ -84,6 +84,8 @@ import ValidationMixin from './mixins/validation'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
 import FormMultiSelect from "./FormMultiSelect";
+import Mustache from "mustache";
+
 
 const uniqIdsMixin = createUniqIdsMixin()
 
@@ -108,9 +110,6 @@ export default {
     'controlClass',
     'validationData',
     'placeholder',
-    'dataSourceId',
-    'dataSourceEndpoint',
-    'rootElement',
   ],
   data() {
     return {
@@ -176,17 +175,18 @@ export default {
     },
 
     optionsFromDataSource() {
-      const { jsonData,
+      const { 
+        jsonData,
         key,
         value,
         dataSource,
         allowMultiSelect,
         selectedDataSource,
-        selectedEndPoint } = this.options;
+        selectedEndPoint,
+        elementName} = this.options;
 
       this.allowMultiSelect = allowMultiSelect;
       let options = [];
-
       const convertToSelectOptions = option => ({
         value: (option[key || 'value']).toString(),
         content: (option[value || 'content']).toString(),
@@ -205,15 +205,27 @@ export default {
 
       if (selectedDataSource && selectedEndPoint && dataSource === 'dataObject') {
         ProcessMaker.apiClient
-          .post("requests/data_sources/" + this.dataSourceId, {
+          .post('/requests/data_sources/' + selectedDataSource, {
             config: {
-              endpoint: this.dataSourceEndpoint,
+              endpoint: selectedEndPoint,
             }
           })
           .then(response => {
-             let list = (this.rootElement) ? response.data[this.rootElement] : response.data;
-             options = list.map(convertToSelectOptions).filter(removeInvalidOptions);
-             this.optionsList = options;
+            let list = (elementName) ? response.data[elementName] : response.data;
+            list.forEach(item => {
+              // if the content has a mustache expression
+              let itemContent = (value.indexOf('{{') >= 0)
+                    ? Mustache.render(value, item)
+                    : item[value || 'content'].toString();
+
+              let itemValue = (item[key || 'value']).toString();
+             
+              options.push({
+                value: itemValue, 
+                content: itemContent
+              });
+            });
+            this.optionsList = options;
           })
           .catch(err => {
             /* Ignore error */
