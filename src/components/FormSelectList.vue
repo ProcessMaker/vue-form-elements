@@ -133,6 +133,7 @@ export default {
         this.optionKey = value.key || 'value';
         this.optionValue = value.value || 'content';
         this.optionsFromDataSource();
+
       }
     },
     value: {
@@ -157,7 +158,6 @@ export default {
 
     this.renderAs = this.options.renderAs;
     this.allowMultiSelect = this.options.allowMultiSelect;
-
   },
   methods: {
     sendSelectedOptions() {
@@ -203,6 +203,7 @@ export default {
         }
       }
 
+      let currentValue = this.value;
       if (selectedDataSource && selectedEndPoint && dataSource === 'dataObject') {
         ProcessMaker.apiClient
           .post('/requests/data_sources/' + selectedDataSource, {
@@ -226,6 +227,13 @@ export default {
               });
             });
             this.optionsList = options;
+
+            if (!currentValue) {
+                this.selectedOptions = [];
+            }
+            if (Array.isArray(currentValue) && currentValue.length !== 0) {
+              this.selectedOptions = this.allowMultiSelect  ? currentValue : [currentValue[0]];
+            }
           })
           .catch(err => {
             /* Ignore error */
