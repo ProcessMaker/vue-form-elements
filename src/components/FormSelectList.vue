@@ -114,6 +114,7 @@
     ],
     data() {
       return {
+        formData: {},
         optionKey: '',
         optionValue: '',
         selectedOptions: [],
@@ -128,8 +129,14 @@
             return;
           }
 
+          let dataSourceUrl = '/requests/data_sources/' + selectedDataSource;
+          if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
+            let pmql = Mustache.render(this.options.pmqlQuery, {data: this.formData});
+            dataSourceUrl += '&pmql=' + pmql;
+          } 
+
           ProcessMaker.apiClient
-            .post('/requests/data_sources/' + selectedDataSource, {
+            .post(dataSourceUrl, {
               config: {
                 endpoint: selectedEndPoint,
               }
@@ -201,6 +208,11 @@
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
       this.optionsFromDataSource();
+      if (typeof ProcessMaker !== 'undefined') {
+        ProcessMaker.EventBus.$on('form-data-updated', (newData) => {
+          this.formData=newData;
+        });
+      }
     },
     methods: {
       sendSelectedOptions() {
