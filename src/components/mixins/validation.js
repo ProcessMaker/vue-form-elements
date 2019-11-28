@@ -45,6 +45,10 @@ export default {
     },
     methods: {
         updateValidation() {
+            if (!this.value) {
+                this.validator = null;
+                return;
+            }
             if (this.validation) {
                 let fieldName = this.validationField ? this.validationField : this.name;
                 let data = this.validationData ? this.validationData : {[fieldName]: this.value}
