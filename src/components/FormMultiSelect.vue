@@ -64,9 +64,3 @@
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-
-<style >
-  .multiselect__content-wrapper {
-    position: relative !important;
-  }
-</style>
