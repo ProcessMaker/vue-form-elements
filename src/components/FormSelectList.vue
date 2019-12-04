@@ -259,7 +259,7 @@
           }
         }
 
-        if (selectedDataSource && selectedEndPoint && dataSource === 'dataObject') {
+        if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
           this.debounceGetDataSource(selectedDataSource, selectedEndPoint, elementName, this.value, key, value);
         }
       },
