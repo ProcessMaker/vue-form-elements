@@ -133,7 +133,7 @@
           if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
             let pmql = Mustache.render(this.options.pmqlQuery, {data: this.formData});
             dataSourceUrl += '&pmql=' + pmql;
-          } 
+          }
 
           ProcessMaker.apiClient
             .post(dataSourceUrl, {
@@ -238,7 +238,8 @@
           allowMultiSelect,
           selectedDataSource,
           selectedEndPoint,
-          elementName
+          elementName,
+          dataName
         } = this.options;
 
         this.allowMultiSelect = allowMultiSelect;
@@ -262,6 +263,24 @@
         if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
           this.debounceGetDataSource(selectedDataSource, selectedEndPoint, elementName, this.value, key, value);
         }
+
+        console.log('antes de ingresar a dataname');
+        console.log(dataName);
+        console.log(dataSource);
+        if (dataSource === 'dataObject') {
+          console.log('por data name');
+          try {
+            options = Object.values(this.formData[elementName])
+              .map(convertToSelectOptions)
+              .filter(removeInvalidOptions);
+            this.optionsList = options;
+            console.log(options);
+          } catch (error) {
+            console.log(error)
+            /* Ignore error */
+          }
+        }
+
       },
 
     },
