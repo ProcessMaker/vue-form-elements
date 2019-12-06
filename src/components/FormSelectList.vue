@@ -172,6 +172,11 @@
       };
     },
     watch: {
+      validationData: {
+        handler(value) {
+          this.optionsFromDataSource();
+        }
+      },
       options: {
         deep: true,
         handler(value) {
@@ -263,7 +268,7 @@
           this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value);
         }
 
-        if (dataSource === 'dataObject') {
+        if (dataName) {
           try {
             options = Object.values(this.validationData[dataName])
               .map(convertToSelectOptions)
