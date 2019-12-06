@@ -264,19 +264,13 @@
           this.debounceGetDataSource(selectedDataSource, selectedEndPoint, elementName, this.value, key, value);
         }
 
-        console.log('antes de ingresar a dataname');
-        console.log(dataName);
-        console.log(dataSource);
         if (dataSource === 'dataObject') {
-          console.log('por data name');
           try {
-            options = Object.values(this.formData[elementName])
+            options = Object.values(this.validationData[elementName])
               .map(convertToSelectOptions)
               .filter(removeInvalidOptions);
             this.optionsList = options;
-            console.log(options);
           } catch (error) {
-            console.log(error)
             /* Ignore error */
           }
         }
