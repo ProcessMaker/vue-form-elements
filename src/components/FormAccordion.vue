@@ -1,9 +1,9 @@
 <template>
   <div>
     <button
-      @click="showCollapse = !showCollapse"
+      v-b-toggle="`collapse-${config.label}`"
       class="accordion-button text-left card-header d-flex align-items-center w-100 pl-3"
-      :id="'accordion-button-' + config.name"
+      :id="`accordion-button-${config.label}`"
       >
         <i
           v-if="config.icon"
@@ -13,20 +13,14 @@
 
         <span class="ml-1 mr-auto">{{ config.label }}</span>
 
-        <i
-          v-if="showCollapse"
-          class="fas fa-chevron-down accordion-arrow ml-auto"
-        />
-
-        <i
-          v-else
-          class="fas fa-chevron-right accordion-arrow ml-auto"
-        />
+        <i class="when-opened fas fa-chevron-down accordion-arrow ml-auto" />
+        <i class="when-closed fas fa-chevron-right accordion-arrow ml-auto" />
     </button>
 
     <b-collapse
-      v-model="showCollapse"
-      :id="'collapse-' + config.name"
+      :visible="initiallyOpen"
+      :id="`collapse-${config.label}`"
+      :accordion="`accordion-${config.name}`"
     >
       <div v-for="element in items" :key="element.config.name">
         <component
@@ -45,7 +39,7 @@ export default {
   props: ['transientData', 'value', 'name', 'config', 'selected'],
   data() {
     return {
-      showCollapse: Boolean(this.config.initiallyOpen),
+      initiallyOpen: Boolean(this.config.initiallyOpen),
       items: [],
     }
   },
@@ -69,5 +63,10 @@ export default {
   outline: none;
   border: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+  display: none;
 }
 </style>
