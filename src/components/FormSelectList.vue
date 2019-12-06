@@ -121,7 +121,7 @@
         renderAs: 'dropdown',
         allowMultiSelect: false,
         optionsList: [],
-        debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, elementName, currentValue, key, value) => {
+        debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value) => {
           let options = [];
 
           // If no ProcessMaker object is available return and do nothing
@@ -142,7 +142,7 @@
               }
             })
             .then(response => {
-              let list = (elementName) ? response.data[elementName] : response.data;
+              let list = (dataName) ? response.data[dataName] : response.data;
               list.forEach(item => {
                 // if the content has a mustache expression
                 let itemContent = (value.indexOf('{{') >= 0)
@@ -238,7 +238,6 @@
           allowMultiSelect,
           selectedDataSource,
           selectedEndPoint,
-          elementName,
           dataName
         } = this.options;
 
@@ -261,12 +260,12 @@
         }
 
         if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
-          this.debounceGetDataSource(selectedDataSource, selectedEndPoint, elementName, this.value, key, value);
+          this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value);
         }
 
         if (dataSource === 'dataObject') {
           try {
-            options = Object.values(this.validationData[elementName])
+            options = Object.values(this.validationData[dataName])
               .map(convertToSelectOptions)
               .filter(removeInvalidOptions);
             this.optionsList = options;
