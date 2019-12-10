@@ -43,6 +43,7 @@
       <div :class="divClass" :key="option.value" v-for="option in optionsList">
         <input
           v-bind="$attrs"
+          :class="inputClass"
           type="checkbox"
           :value="option.value"
           v-uni-id="`${name}-${option.value}`"
@@ -60,6 +61,7 @@
         <input
           v-bind="$attrs"
           type="radio"
+          :class="inputClass"
           :value="option.value"
           v-uni-id="`${name}-${option.value}`"
           :name="`${name}`"
