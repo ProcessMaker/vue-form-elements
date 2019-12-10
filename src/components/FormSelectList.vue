@@ -114,6 +114,7 @@
     ],
     data() {
       return {
+        cachedSelOptions: null,
         formData: {},
         optionKey: '',
         optionValue: '',
@@ -121,7 +122,8 @@
         renderAs: 'dropdown',
         allowMultiSelect: false,
         optionsList: [],
-        debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value) => {
+        debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
+                                           selOptions) => {
           let options = [];
 
           // If no ProcessMaker object is available return and do nothing
@@ -164,6 +166,7 @@
               if (Array.isArray(currentValue) && currentValue.length !== 0) {
                 this.selectedOptions = this.allowMultiSelect ? currentValue : [currentValue[0]];
               }
+              this.selectedOptions = selOptions;
             })
             .catch(err => {
               /* Ignore error */
@@ -218,6 +221,7 @@
           this.formData=newData;
         });
       }
+      this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
       sendSelectedOptions() {
@@ -265,7 +269,7 @@
         }
 
         if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
-          this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value);
+          this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value, this.cachedSelOptions);
         }
 
         if (dataName) {
