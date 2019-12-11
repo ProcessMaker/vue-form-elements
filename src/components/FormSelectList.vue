@@ -43,14 +43,15 @@
     <div v-if="options.renderAs === 'checkbox' && allowMultiSelect">
       <div :class="divClass" :key="option.value" v-for="option in optionsList">
         <input
-                v-bind="$attrs"
-                type="checkbox"
-                :value="option.value"
-                v-uni-id="`${name}-${option.value}`"
-                :name="`${name}`"
-                :checked="selectedOptions.indexOf(option.value)>=0"
-                v-model="selectedOptions"
-                @change="sendSelectedOptions($event)"
+          v-bind="$attrs"
+          :class="inputClass"
+          type="checkbox"
+          :value="option.value"
+          v-uni-id="`${name}-${option.value}`"
+          :name="`${name}`"
+          :checked="selectedOptions.indexOf(option.value)>=0"
+          v-model="selectedOptions"
+          @change="sendSelectedOptions($event)"
         >
         <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
       </div>
@@ -59,13 +60,14 @@
     <div v-if="options.renderAs === 'checkbox' && !allowMultiSelect">
       <div :class="divClass" :key="option.value" v-for="option in optionsList">
         <input
-                v-bind="$attrs"
-                type="radio"
-                :value="option.value"
-                v-uni-id="`${name}-${option.value}`"
-                :name="`${name}`"
-                v-model="selectedOptions[0]"
-                @change="sendSelectedOptions($event)"
+          v-bind="$attrs"
+          type="radio"
+          :class="inputClass"
+          :value="option.value"
+          v-uni-id="`${name}-${option.value}`"
+          :name="`${name}`"
+          v-model="selectedOptions[0]"
+          @change="sendSelectedOptions($event)"
         >
         <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
       </div>
@@ -225,6 +227,7 @@
     },
     methods: {
       sendSelectedOptions() {
+        console.log(this.selectedOptions);
         let valueToSend = (this.selectedOptions.constructor === Array)
           ? this.selectedOptions
           : [this.selectedOptions];
@@ -235,7 +238,7 @@
           valueToSend = new Array(valueToSend[valueToSend.length - 1]);
         }
 
-        this.$emit('input', valueToSend);
+        this.$emit('input', val);
       },
 
       optionsFromDataSource() {
