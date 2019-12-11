@@ -166,7 +166,7 @@
               if (Array.isArray(currentValue) && currentValue.length !== 0) {
                 this.selectedOptions = this.allowMultiSelect ? currentValue : [currentValue[0]];
               }
-              this.selectedOptions = selOptions;
+              this.selectedOptions = selOptions || [];
             })
             .catch(err => {
               /* Ignore error */
