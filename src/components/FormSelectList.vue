@@ -2,40 +2,41 @@
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
     <select
-      v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
-      v-bind="$attrs"
-      v-uni-id="name"
-      class="form-control"
-      :class="classList"
-      :name='name'
-      :placeholder="placeholder ? placeholder : $t('Select')"
-      v-model="selectedOptions[0]"
-      @change="sendSelectedOptions($event)"
+            v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
+            v-bind="$attrs"
+            v-uni-id="name"
+            class="form-control"
+            :class="classList"
+            :name='name'
+            :placeholder="placeholder ? placeholder : $t('Select')"
+            v-model="selectedOptions[0]"
+            @change="sendSelectedOptions($event)"
     >
-      <option :value="selectedOptions[0] ? null : selectedOptions[0]">{{placeholder ? placeholder : $t('Select')}}</option>
+      <option :value="selectedOptions[0] ? null : selectedOptions[0]">{{placeholder ? placeholder : $t('Select')}}
+      </option>
       <option
-        v-for="(option, index) in optionsList"
-        :value="option.value"
-        :key="index"
+              v-for="(option, index) in optionsList"
+              :value="option.value"
+              :key="index"
       >
         {{ option.content }}
       </option>
     </select>
 
     <form-multi-select
-     v-if="options.renderAs === 'dropdown' && allowMultiSelect"
-      option-value="value"
-      option-content="content"
-      v-uni-id="name"
-      v-bind="$attrs"
-      v-on="$listeners"
-      v-model="selectedOptions"
-      v-bind:multiple="allowMultiSelect"
-      :placeholder="placeholder ? placeholder : $t('Select...')"
-      :show-labels="false"
-      :options="optionsList"
-      :class="classList"
-      @input="sendSelectedOptions"
+            v-if="options.renderAs === 'dropdown' && allowMultiSelect"
+            option-value="value"
+            option-content="content"
+            v-uni-id="name"
+            v-bind="$attrs"
+            v-on="$listeners"
+            v-model="selectedOptions"
+            v-bind:multiple="allowMultiSelect"
+            :placeholder="placeholder ? placeholder : $t('Select...')"
+            :show-labels="false"
+            :options="optionsList"
+            :class="classList"
+            @input="sendSelectedOptions"
     >
     </form-multi-select>
 
@@ -54,9 +55,9 @@
         >
         <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
       </div>
-   </div>
+    </div>
 
-   <div v-if="options.renderAs === 'checkbox' && !allowMultiSelect">
+    <div v-if="options.renderAs === 'checkbox' && !allowMultiSelect">
       <div :class="divClass" :key="option.value" v-for="option in optionsList">
         <input
           v-bind="$attrs"
@@ -70,7 +71,7 @@
         >
         <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
       </div>
-   </div>
+    </div>
 
 
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
@@ -82,156 +83,233 @@
 </template>
 
 <script>
-import ValidationMixin from './mixins/validation'
-import { createUniqIdsMixin } from 'vue-uniq-ids'
-import DataFormatMixin from './mixins/DataFormat';
-import FormMultiSelect from "./FormMultiSelect";
+  import ValidationMixin from './mixins/validation'
+  import {createUniqIdsMixin} from 'vue-uniq-ids'
+  import DataFormatMixin from './mixins/DataFormat';
+  import FormMultiSelect from "./FormMultiSelect";
+  import Mustache from "mustache";
 
-const uniqIdsMixin = createUniqIdsMixin()
 
-function removeInvalidOptions(option) {
-  return Object.keys(option).includes('value', 'content') &&
-    option.content != null;
-}
+  const uniqIdsMixin = createUniqIdsMixin()
 
-export default {
-  inheritAttrs: false,
-  components: {
-    FormMultiSelect,
-  },
-  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
-  props: [
-    'label',
-    'error',
-    'value',
-    'options',
-    'helper',
-    'name',
-    'controlClass',
-    'validationData',
-    'placeholder',
-  ],
-  data() {
-    return {
-      optionKey:'',
-      optionValue:'',
-      selectedOptions: [],
-      renderAs: 'dropdown',
-      allowMultiSelect: false,
-    };
-  },
-  watch: {
-    options: {
-      deep: true,
-      handler(value) {
-        this.renderAs = value.renderAs;
-        this.allowMultiSelect = value.allowMultiSelect;
-        if (value.defaultOptionKey && !this.value) {
-          this.selectedOptions = [value.defaultOptionKey];
-        }
-        this.optionKey = value.key || 'value';
-        this.optionValue = value.value || 'content';
-      }
+  function removeInvalidOptions(option) {
+    return Object.keys(option).includes('value', 'content') &&
+      option.content != null;
+  }
+
+  export default {
+    inheritAttrs: false,
+    components: {
+      FormMultiSelect,
     },
-    value: {
-      handler() {
-        if (!this.value) {
-            this.selectedOptions = [];
-        }
-        if (Array.isArray(this.value) && this.value.length !== 0 && this.selectedOptions.length === 0) {
-          this.selectedOptions = this.allowMultiSelect  ? this.value : [this.value[0]];
-        }
-      }
-    }
-  },
-  mounted() {
-    this.selectedOptions = (this.value)
-                            ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x=>x[1])
-                            : [];
-
-    if (this.options.defaultOptionKey && !this.value) {
-      this.selectedOptions = [this.options.defaultOptionKey];
-    }
-
-    this.renderAs = this.options.renderAs;
-    this.allowMultiSelect = this.options.allowMultiSelect;
-
-  },
-  methods: {
-    sendSelectedOptions() {
-      let valueToSend = (this.selectedOptions.constructor === Array)
-                        ? this.selectedOptions
-                        : [this.selectedOptions];
-
-      // If more than 1 item is selected but we are displaying a one selection control
-      // show just the first selected item
-      if (!this.allowMultiSelect && valueToSend.length > 0) {
-        valueToSend = new Array(valueToSend[valueToSend.length-1]);
-      }
-
-      this.$emit('input', valueToSend);
-    }
-  },
-  computed:{
-    divClass() {
-      return this.toggle ? 'custom-control custom-radio' : 'form-check';
-    },
-    labelClass() {
-      return this.toggle ? 'custom-control-label': 'form-check-label';
-    },
-    inputClass() {
-      return [
-        { [this.controlClass]: !!this.controlClass },
-        { 'is-invalid': (this.validator && this.validator.errorCount) || this.error },
-        this.toggle ? 'custom-control-input' : 'form-check-input'
-      ];
-    },
-    classList() {
+    mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
+    props: [
+      'label',
+      'error',
+      'value',
+      'options',
+      'helper',
+      'name',
+      'controlClass',
+      'validationData',
+      'placeholder',
+    ],
+    data() {
       return {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
-        [this.controlClass]: !!this.controlClass
-      }
+        cachedSelOptions: null,
+        formData: {},
+        optionKey: '',
+        optionValue: '',
+        selectedOptions: [],
+        renderAs: 'dropdown',
+        allowMultiSelect: false,
+        optionsList: [],
+        debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
+                                           selOptions) => {
+          let options = [];
+
+          // If no ProcessMaker object is available return and do nothing
+          if (typeof ProcessMaker === 'undefined') {
+            return;
+          }
+
+          let dataSourceUrl = '/requests/data_sources/' + selectedDataSource;
+          if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
+            let pmql = Mustache.render(this.options.pmqlQuery, {data: this.formData});
+            dataSourceUrl += '&pmql=' + pmql;
+          }
+
+          ProcessMaker.apiClient
+            .post(dataSourceUrl, {
+              config: {
+                endpoint: selectedEndPoint,
+              }
+            })
+            .then(response => {
+              let list = (dataName) ? response.data[dataName] : response.data;
+              list.forEach(item => {
+                // if the content has a mustache expression
+                let itemContent = (value.indexOf('{{') >= 0)
+                  ? Mustache.render(value, item)
+                  : item[value || 'content'].toString();
+
+                let itemValue = (item[key || 'value']).toString();
+
+                options.push({
+                  value: itemValue,
+                  content: itemContent
+                });
+              });
+              this.optionsList = options;
+
+              if (!currentValue) {
+                this.selectedOptions = [];
+              }
+              if (Array.isArray(currentValue) && currentValue.length !== 0) {
+                this.selectedOptions = this.allowMultiSelect ? currentValue : [currentValue[0]];
+              }
+              this.selectedOptions = selOptions || [];
+            })
+            .catch(err => {
+              /* Ignore error */
+            });
+        }, 750),
+      };
     },
-    optionsList() {
-      if (Array.isArray(this.options)) {
-        return this.options;
-      }
-
-      return this.optionsFromDataSource;
-    },
-    optionsFromDataSource() {
-      const { jsonData, key, value, dataName, allowMultiSelect } = this.options;
-
-      this.allowMultiSelect = allowMultiSelect;
-      let options = [];
-
-      const convertToSelectOptions = option => ({
-        value: option[key || 'value'],
-        content: option[value || 'content'],
-      })
-
-      if (jsonData) {
-        try {
-          options = JSON.parse(jsonData)
-            .map(convertToSelectOptions)
-            .filter(removeInvalidOptions);
-        } catch (error) {
-          /* Ignore error */
+    watch: {
+      validationData: {
+        handler(value) {
+          this.optionsFromDataSource();
         }
-      }
-
-      if (dataName) {
-        try {
-          options = Object.values(this.validationData[dataName])
-            .map(convertToSelectOptions)
-            .filter(removeInvalidOptions);
-        } catch (error) {
-          /* Ignore error */
+      },
+      options: {
+        deep: true,
+        handler(value) {
+          this.renderAs = value.renderAs;
+          this.allowMultiSelect = value.allowMultiSelect;
+          if (value.defaultOptionKey && !this.value) {
+            this.selectedOptions = [value.defaultOptionKey];
+          }
+          this.optionKey = value.key || 'value';
+          this.optionValue = value.value || 'content';
+          this.optionsFromDataSource();
         }
+      },
+      value: {
+        handler() {
+          if (!this.value) {
+            this.selectedOptions = [];
+          }
+          if (Array.isArray(this.value) && this.value.length !== 0 && this.selectedOptions.length === 0) {
+            this.selectedOptions = this.allowMultiSelect ? this.value : [this.value[0]];
+          }
+        }
+      },
+    },
+    mounted() {
+      this.selectedOptions = (this.value)
+        ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1])
+        : [];
+
+      if (this.options.defaultOptionKey && !this.value) {
+        this.selectedOptions = [this.options.defaultOptionKey];
       }
 
-      return options;
+      this.renderAs = this.options.renderAs;
+      this.allowMultiSelect = this.options.allowMultiSelect;
+      this.optionsFromDataSource();
+      if (typeof ProcessMaker !== 'undefined') {
+        ProcessMaker.EventBus.$on('form-data-updated', (newData) => {
+          this.formData=newData;
+        });
+      }
+      this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
-  },
-}
+    methods: {
+      sendSelectedOptions() {
+        console.log(this.selectedOptions);
+        let valueToSend = (this.selectedOptions.constructor === Array)
+          ? this.selectedOptions
+          : [this.selectedOptions];
+
+        // If more than 1 item is selected but we are displaying a one selection control
+        // show just the first selected item
+        if (!this.allowMultiSelect && valueToSend.length > 0) {
+          valueToSend = new Array(valueToSend[valueToSend.length - 1]);
+        }
+
+        this.$emit('input', val);
+      },
+
+      optionsFromDataSource() {
+        const {
+          jsonData,
+          key,
+          value,
+          dataSource,
+          allowMultiSelect,
+          selectedDataSource,
+          selectedEndPoint,
+          dataName
+        } = this.options;
+
+        this.allowMultiSelect = allowMultiSelect;
+        let options = [];
+        const convertToSelectOptions = option => ({
+          value: (option[key || 'value']).toString(),
+          content: (option[value || 'content']).toString(),
+        })
+
+        if (jsonData) {
+          try {
+            options = JSON.parse(jsonData)
+              .map(convertToSelectOptions)
+              .filter(removeInvalidOptions);
+            this.optionsList = options;
+          } catch (error) {
+            /* Ignore error */
+          }
+        }
+
+        if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
+          this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value, this.cachedSelOptions);
+        }
+
+        if (dataName) {
+          try {
+            options = Object.values(this.validationData[dataName])
+              .map(convertToSelectOptions)
+              .filter(removeInvalidOptions);
+            this.optionsList = options;
+          } catch (error) {
+            /* Ignore error */
+          }
+        }
+
+      },
+
+    },
+    computed: {
+      divClass() {
+        return this.toggle ? 'custom-control custom-radio' : 'form-check';
+      },
+      labelClass() {
+        return this.toggle ? 'custom-control-label' : 'form-check-label';
+      },
+      inputClass() {
+        return [
+          {[this.controlClass]: !!this.controlClass},
+          {'is-invalid': (this.validator && this.validator.errorCount) || this.error},
+          this.toggle ? 'custom-control-input' : 'form-check-input'
+        ];
+      },
+      classList() {
+        return {
+          'is-invalid': (this.validator && this.validator.errorCount) || this.error,
+          [this.controlClass]: !!this.controlClass
+        }
+      },
+    },
+  }
 </script>
+
