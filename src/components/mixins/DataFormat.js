@@ -59,7 +59,7 @@ export default {
         'datetime': 'date',
         'date': 'dateFormat',
         'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
-        'currency': 'regex:/^\\d{1,3}(,\\d{3})*(\\.\\d\\d)?(\\D{0,3})$/',
+        'currency': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'array': 'array',
       };
       if (this.$options._componentTag === 'FormSelectList') {
@@ -83,7 +83,7 @@ export default {
           newValue = Boolean(newValue);
           break;
         case 'currency':
-          newValue = newValue.toString();
+          newValue = parseFloat(newValue);
           break;
         case 'date':
           newValue = newValue.toString();
