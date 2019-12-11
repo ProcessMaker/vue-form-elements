@@ -19,7 +19,7 @@
         </div>
       </template>
       <div class="invalid-feedback" v-if="error">{{error}}</div>
-    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+    <small v-if="helper" class="form-text text-muted" v-html="helper"/>
   </div>
 </template>
 
