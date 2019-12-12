@@ -239,7 +239,7 @@
           valueToSend = new Array(valueToSend[valueToSend.length - 1]);
         }
 
-        this.$emit('input', val);
+        this.$emit('input', valueToSend);
       },
 
       optionsFromDataSource() {
