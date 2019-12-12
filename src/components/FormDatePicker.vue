@@ -2,12 +2,12 @@
     <div class="form-group position-relative">
         <label v-uni-for="name">{{label}}</label>
         <date-picker
-              :config="config"
-              :value="date"
-              @input="setDate"
-              :disabled="disabled"
-              :placeholder="placeholder"
-              :data-test="dataTest"
+          v-model="date"
+          :config="config"
+          :value="date"
+          :disabled="disabled"
+          :placeholder="placeholder"
+          :data-test="dataTest"
         />
         <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
             <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
@@ -72,6 +72,17 @@ export default {
     }
   },
   watch: {
+      date: {
+          deep:true,
+        handler(value) {
+            let current = value;
+            if (typeof value === 'object') {
+            } else if (typeof value === 'string') {
+                current = moment(value);
+            }
+            this.$emit('input', this.emitIso ? current.toISOString() : current.format(this.config.format));
+        }
+      },
     dataFormat: {
       immediate: true,
       handler() {
@@ -82,13 +93,17 @@ export default {
         this.date = moment(this.value).tz(this.config.timeZone);
       }
     },
-    value(value) {
-      this.date = moment(value).tz(this.config.timeZone);
+    value: {
+        deep:true,
+        handler(value)
+        {
+            //this.date = moment(value).tz(this.config.timeZone);
+        }
     },
   },
   methods: {
     setDate(date) {
-      const currentDate = moment(this.date).tz(this.config.timeZone)
+      const currentDate = moment(this.date).tz(this.config.timeZone);
       const newDate = moment.tz(moment(date).format('YYYY-MM-DDTHH:mm:ss'), 'YYYY-MM-DDTHH:mm:ss', this.config.timeZone);
 
       if (newDate.isSame(currentDate, 'minute')) {
