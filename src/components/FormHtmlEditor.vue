@@ -63,7 +63,7 @@ export default {
       }
 
       try {
-        return Mustache.render(this.content, Object.assign({}, this.customFunctions, this.validationData));
+        return Mustache.render(this.content, {...this.customFunctions, ...this.validationData});
       } catch (error) {
         return this.content;
       }
