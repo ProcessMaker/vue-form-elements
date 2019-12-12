@@ -63,14 +63,20 @@ export default {
       }
 
       try {
-        return Mustache.render(this.content, this.validationData);
+        return Mustache.render(this.content, Object.assign({}, this.customFunctions, this.validationData));
       } catch (error) {
         return this.content;
       }
     }
   },
+  methods: {
+    registerCustomFunction(name, implementation) {
+      this.customFunctions[name] = implementation;
+    },
+  },
   data() {
     return {
+      customFunctions: {},
       editorSettings: {
         inline: true,
         menubar: false,
