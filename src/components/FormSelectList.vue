@@ -146,14 +146,16 @@
               }
             })
             .then(response => {
-              let list = (dataName) ? response.data[dataName] : response.data;
+              var list = dataName ? eval('response.data.' + dataName) : response.data;
               list.forEach(item => {
                 // if the content has a mustache expression
                 let itemContent = (value.indexOf('{{') >= 0)
                   ? Mustache.render(value, item)
                   : item[value || 'content'].toString();
 
-                let itemValue = (item[key || 'value']).toString();
+                let itemValue = (key.indexOf('{{') >= 0)
+                  ? Mustache.render(key, item)
+                  : item[key || 'value'].toString();
 
                 options.push({
                   value: itemValue,
@@ -227,7 +229,6 @@
     },
     methods: {
       sendSelectedOptions() {
-        console.log(this.selectedOptions);
         let valueToSend = (this.selectedOptions.constructor === Array)
           ? this.selectedOptions
           : [this.selectedOptions];
@@ -238,7 +239,7 @@
           valueToSend = new Array(valueToSend[valueToSend.length - 1]);
         }
 
-        this.$emit('input', val);
+        this.$emit('input', valueToSend);
       },
 
       optionsFromDataSource() {
