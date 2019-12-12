@@ -2,12 +2,12 @@
     <div class="form-group position-relative">
         <label v-uni-for="name">{{label}}</label>
         <date-picker
-              :config="config"
-              :value="date"
-              @input="setDate"
-              :disabled="disabled"
-              :placeholder="placeholder"
-              :data-test="dataTest"
+          v-model="date"
+          :config="config"
+          :value="date"
+          :disabled="disabled"
+          :placeholder="placeholder"
+          :data-test="dataTest"
         />
         <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
             <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
@@ -72,23 +72,53 @@ export default {
     }
   },
   watch: {
+      date: {
+          deep:true,
+        handler(value) {
+            console.info('Watch date');
+            let current = value;
+            if (typeof value === 'object') {
+                console.info('emit input by object');
+                console.log(typeof value);
+            } else if (typeof value === 'string') {
+                console.info('emit input by string');
+                current = moment(value);
+                console.log(typeof current);
+            }
+            console.log(current);
+            console.log(typeof current);
+            this.$emit('input', this.emitIso ? current.toISOString() : current.format(this.config.format));
+        }
+      },
     dataFormat: {
       immediate: true,
       handler() {
+          console.info('watch date format');
         this.config.format = this.dataFormat === 'datetime'
           ? getUserDateTimeFormat()
           : getUserDateFormat();
+        console.log(this.config.format);
+        //moment.tz.setDefault(this.config.timeZone);
 
         this.date = moment(this.value).tz(this.config.timeZone);
+        console.log(this.date);
       }
     },
-    value(value) {
-      this.date = moment(value).tz(this.config.timeZone);
+    value: {
+          deep:true,
+        handler(value)
+        {
+            console.info('watch value');
+            console.log(value);
+            //this.date = moment(value).tz(this.config.timeZone);
+        }
     },
   },
   methods: {
     setDate(date) {
-      const currentDate = moment(this.date).tz(this.config.timeZone)
+        console.info('set date');
+        console.log(date);
+      const currentDate = moment(this.date).tz(this.config.timeZone);
       const newDate = moment.tz(moment(date).format('YYYY-MM-DDTHH:mm:ss'), 'YYYY-MM-DDTHH:mm:ss', this.config.timeZone);
 
       if (newDate.isSame(currentDate, 'minute')) {
