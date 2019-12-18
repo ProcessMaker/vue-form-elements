@@ -79,28 +79,36 @@
                             ? getUserDateTimeFormat()
                             : getUserDateFormat();
 
+                    // console.log('watch-dataFormat: ', this.value);
                     this.emitOrSetDate(this.value);
                 }
             },
             value(_value) {
+                // console.log('****Watch-value: ', _value);
+                //this.$emit('input', 'poto');
                 this.emitOrSetDate(_value);
             }
         },
         methods: {
             emitOrSetDate(date) {
+                // console.log('__emitOrSetDate', date )
                 moment.tz.setDefault(this.config.timeZone);
                 if (typeof (date) === 'undefined') {
+                    // console.log('____ por emit', moment().toString());
                     this.emitDate(moment());
                 }
                 else {
+                    // console.log('____ por set date ', date);
                     this.setDate(date);
                 }
             },
             emitDate: function (date) {
+                // console.log('______ emitDate ', date.toString());
                 var toEmit = this.emitIso ? date.toISOString() : date.format(this.config.format);
                 this.$emit('input', toEmit);
             },
             dateInUserTimeZone: function(dateString) {
+                // console.log('______ dateInUserTimeZone ', dateString);
                 moment.tz.setDefault(this.config.timeZone);
                 if (dateString) {
                     return moment(dateString, this.config.format).tz(this.config.timeZone);
@@ -110,7 +118,9 @@
                 }
             },
             setDate(date) {
+                // console.log('______ setDate ', date);
                 if (typeof (date) === 'undefined') {
+                    // console.log('_________ por typeof undefined ', date);
                     this.emitDate(moment());
                     return;
                 }
