@@ -22,7 +22,7 @@
     import ValidationMixin from './mixins/validation';
     import DataFormatMixin from "./mixins/DataFormat";
     import datePicker from 'vue-bootstrap-datetimepicker';
-    import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
+    //import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
     import moment from 'moment-timezone';
     import {getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat} from '../dateUtils';
 
@@ -83,7 +83,7 @@
                 }
             },
             value(_value) {
-              this.emitOrSetDate(_value);
+                this.emitOrSetDate(_value);
             }
         },
         methods: {
@@ -115,8 +115,23 @@
                     return;
                 }
                 moment.tz.setDefault(this.config.timeZone);
-                var currentDate = moment(this.date, this.config.format).tz(this.config.timeZone);
+                var currentDate = this.date
+                                    ? moment(this.date, this.config.format).tz(this.config.timeZone)
+                                    : moment();
                 var newDate = moment.tz(moment(date, this.config.format).format('YYYY-MM-DDTHH:mm:ss'), 'YYYY-MM-DDTHH:mm:ss', this.config.timeZone);
+
+                if (!currentDate.isValid()) {
+                    currentDate = moment(this.date).tz(this.config.timeZone);
+                }
+
+                if (!newDate.isValid()) {
+                    newDate = moment.tz(moment(date).format('YYYY-MM-DDTHH:mm:ss'), 'YYYY-MM-DDTHH:mm:ss', this.config.timeZone);
+                }
+
+                if (!newDate.isValid || !currentDate.isValid()) {
+                    this.emitDate(moment());
+                    return;
+                }
 
                 if (newDate.isSame(currentDate, 'minute') || !newDate.isValid()) {
                     this.emitDate(currentDate);
