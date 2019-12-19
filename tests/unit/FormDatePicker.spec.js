@@ -6,16 +6,16 @@ describe('FormDatePicker', () => {
   const factory = (propsData) => {
     return shallowMount(FormDatePicker, { propsData });
   }
+  
+  it('renders the component', () => {
+    const wrapper = factory({ dataFormat });
+    expect(wrapper.html()).toContain('date-picker-stub');
 
-  // it('renders the component', () => {
-  //   const wrapper = factory({ dataFormat });
-  //   expect(wrapper.html()).toContain('date-picker-stub');
-  //
-  //   const value = wrapper.find('date-picker-stub').vm.value;
-  //   const dateDisplayed = new Date(value).setUTCMilliseconds(0);
-  //   const today = new Date().setUTCMilliseconds(0);
-  //   expect(dateDisplayed).toBe(today);
-  // });
+    const value = wrapper.find('date-picker-stub').vm.value;
+    const dateDisplayed = new Date(value).setUTCMilliseconds(0);
+    const today = new Date().setUTCMilliseconds(0);
+    expect(dateDisplayed).toBe(today);
+  });
 
   it('should emit a value on mount', () => {
     const wrapper = factory({ dataFormat });
@@ -26,7 +26,7 @@ describe('FormDatePicker', () => {
     const wrapper = factory({ dataFormat });
     const value = '10/20/2020';
 
-    wrapper.setProps({ value });
+    wrapper.find('date-picker-stub').setProps({ value });
     expect(wrapper.emitted().input[1]).toEqual([value]);
   });
 
@@ -44,36 +44,35 @@ describe('FormDatePicker', () => {
   it('should render all configured props', () => {
     const nameText = 'birthdate';
     const labelText = 'Enter Your Birthday';
-    const placeholderText = 'Input a Date Time';
+    const placeholderText = 'MM/DD/YYYY';
     const helperText = 'This is some text';
+    const errorText = 'This field has an error';
     const readOnly = true;
     const wrapper = factory({
       name: nameText,
       label: labelText,
       placeholder: placeholderText,
-      dataFormat: 'date',
       helper: helperText,
+      error: errorText,
       disabled: readOnly,
       validation: 'required',
       value: ''
     });
 
-
-    expect(wrapper.html()).toContain(labelText);
-    expect(wrapper.vm.placeholder).toBe(placeholderText);
-    // expect(wrapper.find('.invalid-feedback').text()).toContain(helperText);
-    // expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
+    expect(wrapper.html()).toContain(label);
+    expect(wrapper.vm.placeholder).toBe(placeholder);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(helperText);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
     expect(wrapper.vm.disabled).toBe(true);
-    expect(wrapper.vm.name).toBe(nameText);
-    expect(wrapper.vm._data.config.format).toBe('MM/DD/YYYY');
+    expect(wrapper.find('date-picker-stub').vm.props.config.format).toBe('MM/DD/YYYY');
 
+    expect(wrapper.name()).toBe(nameText);
+    expect(wrapper.vm.dataFormat).toBe(dataType);
 
     wrapper.setProps({
       dataFormat: 'datetime'
     });
-
-    wrapper.setData({ prueba: 'pruebita' });
-    expect(wrapper.vm._data.config.format).toBe('MM/DD/YYYY h:mm A');
+    expect(wrapper.find('date-picker-stub').vm.props.config.format).toBe('MM/DD/YYYY h:mm A');
   });
 
   it('displays validation error messages when the field is invalid', () => {
@@ -81,79 +80,76 @@ describe('FormDatePicker', () => {
     const errorText = 'This field has an error';
     const wrapper = factory({
       name: 'FormDatePicker',
-      error: '',
+      error: errorText,
       validation: 'required',
       value: ''
     });
 
-    wrapper.setProps({errorCount: 1, validator:{errors: {errors: { FormDatePicker: [errorText]} }}});
-
-    console.log('-*-*-*- HTML:', wrapper.html())
-    expect(wrapper.classes('is-invalid')).toBe(true);
-    // expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    // expect(wrapper.find('.invalid-feedback').text()).toContain(requiredText);
-    // expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
+    expect(wrapper.find('date-picker-stub').classes('is-invalid')).toBe(true);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(requiredText);
+    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
   });
 
-  // it('removes the validation error messages when the field is valid.', () => {
-  //   const errorText = 'This field has an error';
-  //   const value = 'bar';
-  //   const wrapper = factory({
-  //     name: 'FormDatePicker',
-  //     error: errorText,
-  //     validation: 'required',
-  //     value: '10/20/2020',
-  //   });
-  //
-  //   expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
-  //   expect(wrapper.find('date-picker-stub').classes('is-invalid')).toBe(false);
-  // });
-  //
-  // it('runs validation for invalid date formats', () => {
-  //   const wrapper = factory({dateFormat});
-  //
-  //   wrapper.setProps({value: '2020/24/10'});
-  //   expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
-  //   expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-  //   expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-  //   expect(wrapper.find('.invalid-feedback').text()).toBe(invalidText);
-  //   expect(wrapper.find('.is-invalid').exists()).toBe(true);
-  //
-  //   wrapper.setProps({value: '10/24/2020 10:00 AM'});
-  //   expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
-  //   expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-  //   expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-  //   expect(wrapper.find('.invalid-feedback').text()).toBe(invalidText);
-  //   expect(wrapper.find('.is-invalid').exists()).toBe(true);
-  //
-  //   wrapper.setProps({value: '10/24/2020'});
-  //   expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(true);
-  //   expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
-  //   expect(wrapper.find('.invalid-feedback').isVisible()).toBe(false);
-  //   expect(wrapper.find('.is-invalid').exists()).toBe(false);
-  // });
-  //
-  // it('runs validation for invalid datetime formats', () => {
-  //   let dataFormat = 'datetime';
-  //   const wrapper = factor({dataFormat});
-  //
-  //   wrapper.setProps({value: '2020/24/10 10:00 AM'});
-  //   expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
-  //   expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-  //   expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-  //   expect(wrapper.find('.invalid-feedback').text()).toBe(invalidText);
-  //   expect(wrapper.find('.is-invalid').exists()).toBe(true);
-  //
-  //   wrapper.setProps({value: '10/24/2020'});
-  //   expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(true);
-  //   expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
-  //   expect(wrapper.find('.invalid-feedback').isVisible()).toBe(false);
-  //   expect(wrapper.find('.is-invalid').exists()).toBe(false);
-  //
-  //   wrapper.setProps({value: '10/24/2020 10:00 AM'});
-  //   expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(true);
-  //   expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
-  //   expect(wrapper.find('.invalid-feedback').isVisible()).toBe(false);
-  //   expect(wrapper.find('.is-invalid').exists()).toBe(false);
-  // });
+  it('removes the validation error messages when the field is valid.', () => {
+    const errorText = 'This field has an error';
+    const value = 'bar';
+    const wrapper = factory({
+      name: 'FormDatePicker',
+      error: errorText,
+      validation: 'required',
+      value: '10/20/2020',
+    });
+    
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
+    expect(wrapper.find('date-picker-stub').classes('is-invalid')).toBe(false);
+  });
+
+  it('runs validation for invalid date formats', () => {
+    const wrapper = factory({dateFormat});
+
+    wrapper.setProps({value: '2020/24/10'});
+    expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').text()).toBe(invalidText);
+    expect(wrapper.find('.is-invalid').exists()).toBe(true);
+
+    wrapper.setProps({value: '10/24/2020 10:00 AM'});
+    expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').text()).toBe(invalidText);
+    expect(wrapper.find('.is-invalid').exists()).toBe(true);
+
+    wrapper.setProps({value: '10/24/2020'});
+    expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(false);
+    expect(wrapper.find('.is-invalid').exists()).toBe(false);
+  });
+
+  it('runs validation for invalid datetime formats', () => {
+    let dataFormat = 'datetime';
+    const wrapper = factor({dataFormat});
+
+    wrapper.setProps({value: '2020/24/10 10:00 AM'});
+    expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').text()).toBe(invalidText);
+    expect(wrapper.find('.is-invalid').exists()).toBe(true);
+
+    wrapper.setProps({value: '10/24/2020'});
+    expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(false);
+    expect(wrapper.find('.is-invalid').exists()).toBe(false);
+
+    wrapper.setProps({value: '10/24/2020 10:00 AM'});
+    expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(true);
+    expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
+    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(false);
+    expect(wrapper.find('.is-invalid').exists()).toBe(false);
+  });
 });
