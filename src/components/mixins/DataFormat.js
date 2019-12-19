@@ -65,6 +65,12 @@ export default {
       if (this.$options._componentTag === 'FormSelectList') {
         return true;
       }
+
+      // Do not validate if there is no rule
+      if (!rules.hasOwnProperty(this.dataFormat)) {
+        return true;
+      }
+
       this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
       return this.dataTypeValidator.passes();
     },
