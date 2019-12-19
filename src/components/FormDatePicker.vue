@@ -78,6 +78,8 @@ export default {
         if (!value) {
           return;
         }
+
+        moment.tz.setDefault(this.config.timeZone);
         let current = moment(value).format(this.config.format);
         if (this.emitIso) {
           current = moment(value).toISOString();
@@ -92,9 +94,16 @@ export default {
           ? getUserDateTimeFormat()
           : getUserDateFormat();
 
+        moment.tz.setDefault(this.config.timeZone);
         this.date = moment(this.value).tz(this.config.timeZone);
       }
     },
+    value: {
+      immediate:true,
+      handler: function handler(_value) {
+          this.showClear=true;
+      }
+    }
   },
 };
 </script>
