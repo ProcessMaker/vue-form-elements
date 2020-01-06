@@ -1,13 +1,14 @@
-import { shallowMount } from '@vue/test-utils'
+import {shallowMount} from '@vue/test-utils'
 import FormTextArea from '../../src/components/FormTextArea.vue';
+import DisplayErrors from '../../src/components/common/DisplayErrors.vue';
 
 describe('FormTextArea', () => {
-  let dataFormat = 'string';
   const factory = (propsData) => {
     return shallowMount(FormTextArea, {
       propsData: {
         ...propsData
-      }
+      },
+      stubs: {'Editor': true, 'DisplayErrors': true},
     });
   };
 
@@ -25,7 +26,7 @@ describe('FormTextArea', () => {
   });
 
   it('should have an empty value on mount', () => {
-    const wrapper = factory({ dataFormat });
+    const wrapper = factory();
     expect(wrapper.html()).toContain('textarea');
     expect(wrapper.emitted()).toMatchObject({});
     expect(wrapper.props().value).toBeUndefined();
@@ -73,7 +74,6 @@ describe('FormTextArea', () => {
     const nameText = 'FormTextAreaField';
     const errorText = 'This field has an error';
     const placeholderText = 'This is a sample placeholder.';
-    const requiredText = 'The FormTextAreaField field is required.';
     const wrapper = factory({
       label: labelText,
       helper: helperText,
@@ -89,9 +89,7 @@ describe('FormTextArea', () => {
     expect(wrapper.find('textarea').element.name).toBe(nameText);
     expect(wrapper.find('textarea').element.placeholder).toBe(placeholderText);
 
-    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
     expect(wrapper.find('textarea').element.rows).toBe(4);
 
@@ -100,15 +98,12 @@ describe('FormTextArea', () => {
     expect(wrapper.find('textarea').element.name).toBe(nameText);
     expect(wrapper.find('textarea').element.placeholder).toBe(placeholderText);
 
-    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(requiredText);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
     expect(wrapper.find('textarea').element.rows).toBe(4);
   });
 
   it('displays validation error messages when the field is invalid', () => {
-    const requiredText = 'The FormTextAreaField field is required.';
     const errorText = 'This field has an error';
     const wrapper = factory({
       name: 'FormTextAreaField',
@@ -117,28 +112,25 @@ describe('FormTextArea', () => {
     wrapper.setProps({value: "", validation: 'required'});
     expect(wrapper.find('.is-invalid').exists()).toBe(true);
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(requiredText);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
 
     wrapper.setProps({value: "text", error: errorText});
     expect(wrapper.find('.is-invalid').exists()).toBe(true);
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
   });
 
   it('removes the validation error messages when the field is valid.', () => {
-    const errorText = 'This field has an error';
     const wrapper = factory({
       name: 'FormTextAreaField',
     });
 
     wrapper.setProps({value: '', validation: 'required'});
-    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toContain("The FormTextAreaField field is required.");
+    expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
 
-    wrapper.setProps({value: 'Hello World', error:null, validation: 'required'});
-    expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
+    wrapper.setProps({value: 'Hello World', error: '', validation: 'required'});
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(false);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(false);
   });
 });
