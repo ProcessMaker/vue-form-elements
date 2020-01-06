@@ -80,7 +80,6 @@ describe('FormTextArea', () => {
       name: nameText,
       richtext: false,
       error: errorText,
-      rows: 4,
       placeholder: placeholderText
     });
 
@@ -91,7 +90,6 @@ describe('FormTextArea', () => {
 
     expect(wrapper.find(DisplayErrors).exists()).toBe(true);
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
-    expect(wrapper.find('textarea').element.rows).toBe(4);
 
     wrapper.setProps({value: null, error: "", validation: 'required'});
     expect(wrapper.html()).toContain(helperText);
@@ -100,7 +98,6 @@ describe('FormTextArea', () => {
 
     expect(wrapper.find(DisplayErrors).exists()).toBe(true);
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
-    expect(wrapper.find('textarea').element.rows).toBe(4);
   });
 
   it('displays validation error messages when the field is invalid', () => {
