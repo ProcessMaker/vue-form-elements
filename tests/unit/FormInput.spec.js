@@ -1,10 +1,16 @@
 import { shallowMount } from '@vue/test-utils'
 import FormInput from '../../src/components/FormInput.vue';
+import DisplayErrors from "../../src/components/common/DisplayErrors";
 
 describe('FormInput', () => {
   const factory = (propsData) => {
-    return shallowMount(FormInput, { propsData });
-  }
+    return shallowMount(FormInput,
+      {
+        propsData,
+        stubs: {'DisplayErrors': true},
+      },
+    );
+  };
 
   it('renders the component', () => {
     const wrapper = factory();
@@ -18,15 +24,15 @@ describe('FormInput', () => {
 
   it('should emit a value on mount', () => {
     const wrapper = factory();
-    expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.emitted()).toBeTruthy();
   });
 
   it('should emit the value when input changes', () => {
     const wrapper = factory();
     const value = 'Hello World';
-    
+
     wrapper.find('input').setValue(value);
-    expect(wrapper.emitted().input[1]).toEqual([value]);
+    expect(wrapper.emitted().input[0]).toEqual([value]);
   });
 
   it('sets the value on input', () => {
@@ -42,7 +48,7 @@ describe('FormInput', () => {
     const newVal = 'Goodbye World';
     const wrapper = factory({ value });
     expect(wrapper.find('input').element.value).toBe(value);
-    
+
     wrapper.setProps({
       value: newVal
     });
@@ -55,8 +61,7 @@ describe('FormInput', () => {
     const nameText = 'FormInputField';
     const placeholderText = "This is a placeholder";
     const errorText = 'This field has an error';
-    const requiredText = 'The FormInputField field is required.';
-  
+
     const wrapper = factory({
       label: labelText,
       helper: helperText,
@@ -71,39 +76,43 @@ describe('FormInput', () => {
     expect(wrapper.find('input').element.name).toBe(nameText);
     expect(wrapper.find('input').element.placeholder).toBe(placeholderText);
     expect(wrapper.find('input').classes('is-invalid')).toBe(true);
-    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.html()).toContain(errorText);
-    expect(wrapper.html()).toContain(requiredText);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
   });
 
   it('displays validation error messages when the field is invalid', () => {
-    const requiredText = 'The FormInput field is required.';
     const errorText = 'This field has an error';
     const wrapper = factory({
       name: 'FormInput',
       error: errorText,
       validation: 'required'
     });
-    
+
+    wrapper.setProps({value: "", validation: 'required'});
     expect(wrapper.find('input').classes('is-invalid')).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(requiredText);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
+    expect(wrapper.find('.is-invalid').exists()).toBe(true);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
+
+
+    wrapper.setProps({value: "", error: errorText});
+    expect(wrapper.find('input').classes('is-invalid')).toBe(true);
+    expect(wrapper.find('.is-invalid').exists()).toBe(true);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
   });
 
   it('removes the validation error messages when the field is valid.', () => {
-    const errorText = 'This field has an error';
-    const value = 'Hello World';
     const wrapper = factory({
       name: 'formInputName',
-      error: errorText,
-      validation: 'required'
     });
-    
-    wrapper.setProps({ value });
-    
+
     expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
     expect(wrapper.find('input').classes('is-invalid')).toBe(false);
+
+    wrapper.setProps({value: '', validation: 'required'});
+    expect(wrapper.find('input').classes('is-invalid')).toBe(true);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
+
+    wrapper.setProps({value: 'Hello World', error: '', validation: 'required'});
+    expect(wrapper.find('input').classes('is-invalid')).toBe(false);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(false);
   });
 });
