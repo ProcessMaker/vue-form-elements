@@ -1,21 +1,25 @@
 import { shallowMount } from '@vue/test-utils'
 import FormSelect from '../../src/components/FormSelect.vue';
+import DisplayErrors from "../../src/components/common/DisplayErrors";
 
 describe('FormSelect', () => {
   const $t = () => {};
+
   const factory = (propsData) => {
     return shallowMount(FormSelect, {
       mocks: {$t},
       propsData: {
         ...propsData
-      }
+      },
+      stubs: {'DisplayErrors': true},
     });
-  }
+  };
+
   const options =  [
     {
         'value': 'foo',
         'content': 'Foo'
-    }, 
+    },
     {
         'value': 'bar',
         'content': 'Bar'
@@ -25,7 +29,7 @@ describe('FormSelect', () => {
   it('renders the component', () => {
     const wrapper = factory({ options });
     expect(wrapper.html()).toContain('select');
-    expect(wrapper.findAll('option').length).toBe(options.length + 1); 
+    expect(wrapper.findAll('option').length).toBe(options.length + 1);
   });
 
   it('renders the component from a data source', () => {
@@ -37,7 +41,7 @@ describe('FormSelect', () => {
     });
 
     expect(wrapper.html()).toContain('select');
-    expect(wrapper.findAll('option')).toHaveLength(options.length + 1); 
+    expect(wrapper.findAll('option')).toHaveLength(options.length + 1);
   });
 
   it('should have an empty value on mount', () => {
@@ -54,7 +58,7 @@ describe('FormSelect', () => {
     const wrapper = factory({ options });
     const selectOptions = wrapper.findAll('option');
     const value = selectOptions.at(1);
-    
+
     value.setSelected();
     expect(wrapper.emitted().input[1]).toEqual([value.element.value]);
   });
@@ -71,13 +75,13 @@ describe('FormSelect', () => {
   it('should update the value when a initial value is set and the input changes', () => {
     const value = 'foo';
     const newVal = 'bar';
-    const wrapper = factory({ 
+    const wrapper = factory({
       options: options,
       value: value
      });
     const selectOptions = wrapper.findAll('option');
     expect(selectOptions.at(1).element.selected).toBe(true);
-    
+
     wrapper.setProps({
       value: newVal
     });
@@ -91,6 +95,8 @@ describe('FormSelect', () => {
     const errorText = 'This field has an error';
     const placeholder = 'select an option';
 
+    options.defaultOptionKey  = 'bar';
+
     const wrapper = factory({
       label: label,
       helper: helper,
@@ -100,18 +106,15 @@ describe('FormSelect', () => {
       disabled: true,
       validation: 'required',
       options: options,
-      defaultOptionKey: 'bar'
     });
 
     expect(wrapper.html()).toContain(label);
     expect(wrapper.html()).toContain(helper);
     expect(wrapper.find('select').attributes().name).toBe(name);
 
-    expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toBe(errorText);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
     expect(wrapper.find('select').classes('is-invalid')).toBe(true);
-    
+
     const selectOptions = wrapper.findAll('option');
     expect(selectOptions.at(0).text()).toEqual(placeholder);
     expect(selectOptions.at(2).element.selected).toBe(true);
@@ -119,7 +122,6 @@ describe('FormSelect', () => {
   });
 
   it('displays validation error messages when the field is invalid', () => {
-    const requiredText = 'The FormSelect field is required.';
     const errorText = 'This field has an error';
     const wrapper = factory({
       name: 'FormSelect',
@@ -129,9 +131,7 @@ describe('FormSelect', () => {
     });
 
     expect(wrapper.find('select').classes('is-invalid')).toBe(true);
-    expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(requiredText);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
   });
 
   it('removes the validation error messages when the field is valid.', () => {
@@ -143,9 +143,9 @@ describe('FormSelect', () => {
       validation: 'required',
       options: options
     });
-    
+
     wrapper.setProps({ value });
-    expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
-    expect(wrapper.find('select').classes('is-invalid')).toBe(false);
+    expect(wrapper.find('.is-invalid').exists()).toBe(true);
+    expect(wrapper.find(DisplayErrors).exists()).toBe(true);
   });
 });
