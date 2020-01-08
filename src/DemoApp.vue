@@ -46,6 +46,7 @@
                         label="Sample Text Area"
                         rows="4"
                         helper="This text area has a maximum character limit of 20 validation rule."
+                        error="This error is shown by default"
                         validation="max:20"
                         v-model="data.sampleText">
         </form-text-area>
