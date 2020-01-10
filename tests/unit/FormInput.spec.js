@@ -22,11 +22,6 @@ describe('FormInput', () => {
     expect(wrapper.find('input').isEmpty()).toBe(true);
   });
 
-  it('should emit a value on mount', () => {
-    const wrapper = factory();
-    expect(wrapper.emitted()).toBeTruthy();
-  });
-
   it('should emit the value when input changes', () => {
     const wrapper = factory();
     const value = 'Hello World';
@@ -84,14 +79,12 @@ describe('FormInput', () => {
     const wrapper = factory({
       name: 'FormInput',
       error: errorText,
-      validation: 'required'
     });
 
     wrapper.setProps({value: "", validation: 'required'});
     expect(wrapper.find('input').classes('is-invalid')).toBe(true);
     expect(wrapper.find('.is-invalid').exists()).toBe(true);
     expect(wrapper.find(DisplayErrors).exists()).toBe(true);
-
 
     wrapper.setProps({value: "", error: errorText});
     expect(wrapper.find('input').classes('is-invalid')).toBe(true);
