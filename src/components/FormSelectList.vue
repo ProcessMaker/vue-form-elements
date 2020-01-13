@@ -202,8 +202,12 @@
           if (!this.value) {
             this.selectedOptions = [];
           }
-          if (Array.isArray(this.value) && this.value.length !== 0 && this.selectedOptions.length === 0) {
-            this.selectedOptions = this.allowMultiSelect ? this.value : [this.value[0]];
+
+          if (this.allowMultiSelect) {
+            this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
+          }
+          else {
+            this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
           }
         }
       },
@@ -236,7 +240,8 @@
         // If more than 1 item is selected but we are displaying a one selection control
         // show just the first selected item
         if (!this.allowMultiSelect && valueToSend.length > 0) {
-          valueToSend = new Array(valueToSend[valueToSend.length - 1]);
+          //valueToSend = new Array(valueToSend[valueToSend.length - 1]);
+          valueToSend = valueToSend[valueToSend.length - 1];
         }
 
         this.$emit('input', valueToSend);
