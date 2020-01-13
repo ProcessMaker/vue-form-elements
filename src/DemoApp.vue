@@ -146,6 +146,7 @@
         passwordValidationRules: 'required|regex:/(?=.{9,})(?=.*?[^\\w\\s])(?=.*?[0-9])(?=.*?[A-Z]).*?[a-z].*/',
         confirmPasswordValidationRules: 'required|same:password.value',
         selectOptions: {
+            renderAs: 'dropdown',
           defaultOptionKey: 'red',
           key: 'value',
           value: 'content',

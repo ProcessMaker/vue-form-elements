@@ -88,6 +88,7 @@
   import DataFormatMixin from './mixins/DataFormat';
   import FormMultiSelect from "./FormMultiSelect";
   import Mustache from "mustache";
+  import {_} from "underscore";
 
 
   const uniqIdsMixin = createUniqIdsMixin()
