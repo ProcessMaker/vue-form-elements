@@ -2,41 +2,41 @@
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
     <select
-            v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
-            v-bind="$attrs"
-            v-uni-id="name"
-            class="form-control"
-            :class="classList"
-            :name='name'
-            :placeholder="placeholder ? placeholder : $t('Select')"
-            v-model="selectedOptions[0]"
-            @change="sendSelectedOptions($event)"
+      v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
+      v-bind="$attrs"
+      v-uni-id="name"
+      class="form-control"
+      :class="classList"
+      :name='name'
+      :placeholder="placeholder ? placeholder : $t('Select')"
+      v-model="selectedOptions[0]"
+      @change="sendSelectedOptions($event)"
     >
       <option :value="selectedOptions[0] ? null : selectedOptions[0]">{{placeholder ? placeholder : $t('Select')}}
       </option>
       <option
-              v-for="(option, index) in optionsList"
-              :value="option.value"
-              :key="index"
+        v-for="(option, index) in optionsList"
+        :value="option.value"
+        :key="index"
       >
         {{ option.content }}
       </option>
     </select>
 
     <form-multi-select
-            v-if="options.renderAs === 'dropdown' && allowMultiSelect"
-            option-value="value"
-            option-content="content"
-            v-uni-id="name"
-            v-bind="$attrs"
-            v-on="$listeners"
-            v-model="selectedOptions"
-            v-bind:multiple="allowMultiSelect"
-            :placeholder="placeholder ? placeholder : $t('Select...')"
-            :show-labels="false"
-            :options="optionsList"
-            :class="classList"
-            @input="sendSelectedOptions"
+      v-if="options.renderAs === 'dropdown' && allowMultiSelect"
+      option-value="value"
+      option-content="content"
+      v-uni-id="name"
+      v-bind="$attrs"
+      v-on="$listeners"
+      v-model="selectedOptions"
+      v-bind:multiple="allowMultiSelect"
+      :placeholder="placeholder ? placeholder : $t('Select...')"
+      :show-labels="false"
+      :options="optionsList"
+      :class="classList"
+      @input="sendSelectedOptions"
     >
     </form-multi-select>
 
@@ -73,11 +73,7 @@
       </div>
     </div>
 
-
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
-    </div>
+    <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator" class="d-block"/>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
@@ -87,11 +83,11 @@
   import {createUniqIdsMixin} from 'vue-uniq-ids'
   import DataFormatMixin from './mixins/DataFormat';
   import FormMultiSelect from "./FormMultiSelect";
+  import DisplayErrors from './common/DisplayErrors';
   import Mustache from "mustache";
   import {_} from "underscore";
 
-
-  const uniqIdsMixin = createUniqIdsMixin()
+  const uniqIdsMixin = createUniqIdsMixin();
 
   function removeInvalidOptions(option) {
     return Object.keys(option).includes('value', 'content') &&
@@ -102,6 +98,7 @@
     inheritAttrs: false,
     components: {
       FormMultiSelect,
+      DisplayErrors
     },
     mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     props: [
@@ -186,30 +183,36 @@
         }
       },
       options: {
+        immediate: true,
         deep: true,
         handler(value) {
+          value.renderAs = value.renderAs || 'dropdown';
+          value.allowMultiSelect = value.allowMultiSelect || false;
+          value.key = value.key || 'value';
+          value.value = value.value || 'content';
+
           this.renderAs = value.renderAs;
           this.allowMultiSelect = value.allowMultiSelect;
           if (value.defaultOptionKey && !this.value) {
             this.selectedOptions = [value.defaultOptionKey];
           }
-          this.optionKey = value.key || 'value';
-          this.optionValue = value.value || 'content';
+          this.optionKey = value.key;
+          this.optionValue = value.value;
           this.optionsFromDataSource();
         }
       },
       value: {
-        handler() {
-          if (!this.value) {
-            this.selectedOptions = [];
+        immediate: true,
+        handler(value) {
+          if (value === undefined) {
+            return;
           }
-
-          if (this.allowMultiSelect) {
-            this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
+          if (this.options.allowMultiSelect) {
+            this.selectedOptions = Array.isArray(value) ? value : [value]
+          } else {
+            this.selectedOptions = Array.isArray(value) ? value[0] : [value]
           }
-          else {
-            this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
-          }
+          this.sendSelectedOptions();
         }
       },
     },
@@ -227,22 +230,24 @@
       this.optionsFromDataSource();
       if (typeof ProcessMaker !== 'undefined') {
         ProcessMaker.EventBus.$on('form-data-updated', (newData) => {
-          this.formData=newData;
+          this.formData = newData;
         });
       }
       this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
       sendSelectedOptions() {
+        if (!this.selectedOptions) {
+          return
+        }
         let valueToSend = (this.selectedOptions.constructor === Array)
           ? this.selectedOptions
           : [this.selectedOptions];
 
         // If more than 1 item is selected but we are displaying a one selection control
         // show just the first selected item
-        if (!this.allowMultiSelect && valueToSend.length > 0) {
-          //valueToSend = new Array(valueToSend[valueToSend.length - 1]);
-          valueToSend = valueToSend[valueToSend.length - 1];
+        if (!this.options.allowMultiSelect && valueToSend.length > 0) {
+          valueToSend = valueToSend[0];
         }
 
         this.$emit('input', valueToSend);
@@ -265,7 +270,7 @@
         const convertToSelectOptions = option => ({
           value: (option[key || 'value']).toString(),
           content: (option[value || 'content']).toString(),
-        })
+        });
 
         if (jsonData) {
           try {
@@ -319,4 +324,3 @@
     },
   }
 </script>
-
