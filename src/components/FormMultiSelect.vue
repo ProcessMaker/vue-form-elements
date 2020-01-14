@@ -1,15 +1,16 @@
 <template>
   <div class="form-group">
-    <label v-uni-for="name">{{label}}</label>
+    <label v-uni-for="name" v-if="label">{{ label }}</label>
 
     <multiselect
+      v-model="selected"
       v-bind="$attrs"
       v-on="$listeners"
       v-uni-id="name"
       :name="name"
       :track-by="optionValue"
       :label="optionContent"
-      :class="{'border border-danger':error}"
+      :class="{'border border-danger':isError}"
       :placeholder="placeholder ? placeholder : $t('type here to search')"
     >
       <template slot="noResult">
@@ -20,11 +21,7 @@
       </template>
     </multiselect>
 
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
-    </div>
-
+    <display-errors v-if="isError" :name="name" :error="error" class="d-block"/>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
@@ -33,16 +30,20 @@
   import Multiselect from 'vue-multiselect';
   import {createUniqIdsMixin} from 'vue-uniq-ids'
   import ValidationMixin from './mixins/validation'
+  import DisplayErrors from './common/DisplayErrors';
+  import {get} from "lodash";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
     inheritAttrs: false,
     components: {
-      Multiselect
+      Multiselect,
+      DisplayErrors
     },
     mixins: [uniqIdsMixin, ValidationMixin],
     props: [
+      'value',
       'optionValue',
       'optionContent',
       'label',
@@ -52,6 +53,11 @@
       'controlClass',
       'placeholder',
     ],
+    data() {
+      return {
+        selected: null,
+      };
+    },
     computed: {
       classList() {
         return {
@@ -59,6 +65,42 @@
           [this.controlClass]: !!this.controlClass
         }
       },
+      isError() {
+        return this.error ;
+      }
+    },
+    watch: {
+      selected: {
+        handler(value) {
+          let emit = [];
+          if (this.multiple) {
+            value.map(item => {
+              emit.push(item[this.optionValue]);
+            });
+          } else {
+            emit = value[this.optionValue]
+          }
+
+          this.$emit("input", emit);
+        }
+      },
+      value: {
+        immediate: true,
+        handler(value) {
+          if (value && this.options) {
+            if (this.multiple) {
+              this.selected = [];
+              value.map(item => {
+                this.selected.push(
+                  this.options.find(option => get(option, this.optionValue) === item)
+                )
+              })
+            } else {
+              this.selected = this.options.find(option => get(option, this.optionValue) === value)
+            }
+          }
+        }
+      }
     },
   }
 </script>
