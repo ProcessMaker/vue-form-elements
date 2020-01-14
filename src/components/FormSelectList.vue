@@ -185,6 +185,7 @@
         }
       },
       options: {
+        immediate:true,
         deep: true,
         handler(value) {
           this.renderAs = value.renderAs;
@@ -198,12 +199,19 @@
         }
       },
       value: {
+        immediate:true,
         handler() {
+          console.log("Handle value", this.value);
+
+          if (typeof this.value === 'undefined') {
+              return;
+          }
+
           if (!this.value) {
             this.selectedOptions = [];
           }
 
-          if (this.allowMultiSelect) {
+          if (this.options.allowMultiSelect) {
             this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
           }
           else {
@@ -213,9 +221,15 @@
       },
     },
     mounted() {
-      this.selectedOptions = (this.value)
-        ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1])
-        : [];
+      // this.selectedOptions = (this.value)
+      //   ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1])
+      //   : [];
+
+      if (this.options.allowMultiSelect) {
+        this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value];
+      } else {
+        this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
+      }
 
       if (this.options.defaultOptionKey && !this.value) {
         this.selectedOptions = [this.options.defaultOptionKey];
@@ -241,7 +255,8 @@
         // show just the first selected item
         if (!this.allowMultiSelect && valueToSend.length > 0) {
           //valueToSend = new Array(valueToSend[valueToSend.length - 1]);
-          valueToSend = valueToSend[valueToSend.length - 1];
+          //valueToSend = valueToSend[valueToSend.length - 1];
+          valueToSend = valueToSend[0];
         }
 
         this.$emit('input', valueToSend);
