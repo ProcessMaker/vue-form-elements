@@ -209,6 +209,7 @@
 
           if (!this.value) {
             this.selectedOptions = [];
+            return;
           }
 
           if (this.options.allowMultiSelect) {
@@ -217,6 +218,8 @@
           else {
             this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
           }
+
+          console.log('watch value - selectedOptions', this.selectedOptions);
         }
       },
     },
@@ -225,10 +228,26 @@
       //   ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1])
       //   : [];
 
+
       if (this.options.allowMultiSelect) {
-        this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value];
+        if (typeof this.value === 'undefined' || this.value === null) {
+          this.selectedOptions = [];
+        }
+        else {
+          //this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value];
+          console.log('antes del map');
+          this.selectedOptions = (this.value)
+                  ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1])
+                  : [];
+
+        }
       } else {
-        this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
+        if (typeof this.value === 'undefined') {
+          this.selectedOptions = [];
+        }
+        else {
+          this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
+        }
       }
 
       if (this.options.defaultOptionKey && !this.value) {
@@ -243,6 +262,8 @@
           this.formData=newData;
         });
       }
+
+      console.log(this.selectedOptions);
       this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
