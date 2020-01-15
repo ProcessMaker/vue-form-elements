@@ -206,8 +206,13 @@
           }
 
           if (!this.value) {
-            this.selectedOptions = [];
-            this.cachedSelOptions = [];
+            this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
+            this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
+
+            if (this.options.defaultOptionKey) {
+              this.sendSelectedOptions();
+            }
+
             return;
           }
 
@@ -255,8 +260,6 @@
         // If more than 1 item is selected but we are displaying a one selection control
         // show just the first selected item
         if (!this.allowMultiSelect && valueToSend.length > 0) {
-          //valueToSend = new Array(valueToSend[valueToSend.length - 1]);
-          //valueToSend = valueToSend[valueToSend.length - 1];
           valueToSend = valueToSend[0];
         }
 
