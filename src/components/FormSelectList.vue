@@ -36,6 +36,7 @@
       :show-labels="false"
       :options="optionsList"
       :class="classList"
+      :only-key="true"
       @input="sendSelectedOptions"
     >
     </form-multi-select>

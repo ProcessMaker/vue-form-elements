@@ -31,7 +31,7 @@
   import {createUniqIdsMixin} from 'vue-uniq-ids'
   import ValidationMixin from './mixins/validation'
   import DisplayErrors from './common/DisplayErrors';
-  import {get} from "lodash";
+  import {get} from 'lodash';
 
   const uniqIdsMixin = createUniqIdsMixin();
 
@@ -42,17 +42,18 @@
       DisplayErrors
     },
     mixins: [uniqIdsMixin, ValidationMixin],
-    props: [
-      'value',
-      'optionValue',
-      'optionContent',
-      'label',
-      'error',
-      'helper',
-      'name',
-      'controlClass',
-      'placeholder',
-    ],
+    props: {
+      value: {type: [String, Array] },
+      optionValue: String,
+      optionContent: String,
+      label: {type: String, default: ''},
+      error: String,
+      helper: String,
+      name: String,
+      controlClass: {type: [String, Array, Object]},
+      placeholder: String,
+      onlyKey: {type: Boolean, default: false},
+    },
     data() {
       return {
         selected: null,
@@ -75,10 +76,10 @@
           let emit = [];
           if (this.multiple) {
             value.map(item => {
-              emit.push(item[this.optionValue]);
+              emit.push(this.onlyKey ? item : item[this.optionValue]);
             });
           } else {
-            emit = value[this.optionValue]
+            emit = this.onlyKey ? value : value[this.optionValue];
           }
 
           this.$emit("input", emit);
