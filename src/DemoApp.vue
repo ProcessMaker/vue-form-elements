@@ -166,10 +166,10 @@
           sampleCheckbox: false,
           sampleCustomCheckbox: false,
           sampleRadioButtonGroup: '',
-          sampleSelect: '',
-          sampleMultiSelect: null,
+          sampleSelect: 'yellow',
+          sampleMultiSelect: ['small', 'medium'],
           sampleSelectGroupBottom: '',
-          sampleSelectcheck: '',
+          sampleSelectcheck: ['green', 'red'],
 
           sampleCustomValidationError: '',
           sampleDatePicker: DateTime.local().toISO(),

@@ -9,6 +9,7 @@
       v-uni-id="name"
       :name="name"
       :multiple="multiple"
+      :options="options"
       :track-by="optionValue"
       :label="optionContent"
       :class="{'border border-danger':isError}"
@@ -47,6 +48,7 @@
       value: {type: [String, Array, Object]},
       optionValue: String,
       optionContent: String,
+      options: Array,
       label: {type: String, default: ''},
       error: String,
       helper: String,
@@ -90,12 +92,10 @@
         immediate: true,
         handler(value) {
           if (value && this.options) {
-            if (this.multiple) {
+            if (Array.isArray(value)) {
               this.selected = [];
               value.map(item => {
-                this.selected.push(
-                  this.options.find(option => get(option, this.optionValue) === item)
-                )
+                this.selected.push(this.options.find(option => get(option, this.optionValue) === item));
               })
             } else {
               this.selected = this.options.find(option => get(option, this.optionValue) === value)
