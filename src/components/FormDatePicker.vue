@@ -4,7 +4,6 @@
         <date-picker
               v-model="date"
               :config="config"
-              :value="date"
               :disabled="disabled"
               :placeholder="placeholder"
               :data-test="dataTest"
@@ -27,7 +26,8 @@ import moment from 'moment-timezone';
 import {getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat} from '../dateUtils';
 
 const uniqIdsMixin = createUniqIdsMixin();
-const datetimeStdFormat = 'YYYY-MM-DDTHH:mm:ssZZ';
+
+moment.tz.setDefault(getTimezone());
 
 export default {
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
@@ -51,11 +51,10 @@ export default {
     return {
       date: null,
       config: {
-        format: datetimeStdFormat,
+        format: getUserDateFormat(),
         timeZone: getTimezone(),
         locale: getLang(),
         useCurrent: false,
-        showClear: true,
         showClose: true,
         icons: {
           time: 'far fa-clock',
@@ -74,18 +73,9 @@ export default {
   watch: {
     date: {
       deep: true,
-      handler(value) {
-        if (!value) {
-          return;
-        }
-
-        moment.tz.setDefault(this.config.timeZone);
-        let current = moment(value).format(this.config.format);
-        if (this.emitIso) {
-          current = moment(value).toISOString();
-        }
-        this.$emit('input', current);
-      }
+      handler(date) {
+        this.emitValueFromDate(moment(date, this.config.format));
+      },
     },
     dataFormat: {
       immediate: true,
@@ -94,16 +84,49 @@ export default {
           ? getUserDateTimeFormat()
           : getUserDateFormat();
 
-        moment.tz.setDefault(this.config.timeZone);
-        this.date = moment(this.value).tz(this.config.timeZone);
+        this.date = this.generateDate();
+        // eslint-disable-next-line no-console
+        console.log('Setting date to', this.date.toISOString(), 'from', this.value);
       }
     },
     value: {
       immediate:true,
-      handler: function handler(_value) {
-          this.showClear=true;
+      handler() {
+        this.config.showClear = true;
+        this.emitValueFromDate();
       }
     }
+  },
+  methods: {
+    emitValueFromDate(date = this.generateDate()) {
+      let value = date.utc().format(this.config.format);
+
+      if (this.emitIso) {
+        value = date.toISOString();
+      }
+
+      if (value === this.value) {
+        return;
+      }
+
+      this.$emit('input', value);
+
+      // eslint-disable-next-line no-console
+      console.log('emitValueFromDate', value);
+    },
+    generateDate() {
+      let date  = moment.utc(this.value, this.config.format);
+
+      if (!date.isValid()) {
+        date = moment();
+      }
+
+      if (this.dataFormat !== 'datetime') {
+        date.startOf('day');
+      }
+
+      return date;
+    },
   },
 };
 </script>
