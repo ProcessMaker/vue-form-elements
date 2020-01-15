@@ -91,11 +91,16 @@
       value: {
         immediate: true,
         handler(value) {
-          if (value && this.options) {
+          if (value && this.options && !this.selected) {
             if (Array.isArray(value)) {
               this.selected = [];
+
               value.map(item => {
-                this.selected.push(this.options.find(option => get(option, this.optionValue) === item));
+                let selection = item;
+                if (typeof item === 'object') {
+                  selection = item[this.optionValue]
+                }
+                this.selected.push(this.options.find(option => get(option, this.optionValue) === selection));
               })
             } else {
               this.selected = this.options.find(option => get(option, this.optionValue) === value)
