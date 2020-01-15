@@ -1,19 +1,19 @@
 <template>
-    <div class="form-group position-relative">
-        <label v-uni-for="name">{{label}}</label>
-        <date-picker
-              v-model="date"
-              :config="config"
-              :disabled="disabled"
-              :placeholder="placeholder"
-              :data-test="dataTest"
-        />
-        <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
-            <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-            <div v-if="error">{{error}}</div>
-        </div>
-        <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+  <div class="form-group position-relative">
+    <label v-uni-for="name">{{label}}</label>
+    <date-picker
+      v-model="date"
+      :config="config"
+      :disabled="disabled"
+      :placeholder="placeholder"
+      :data-test="dataTest"
+    />
+    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
+      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+      <div v-if="error">{{error}}</div>
     </div>
+    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+  </div>
 </template>
 
 <script>
@@ -90,7 +90,7 @@ export default {
       }
     },
     value: {
-      immediate:true,
+      immediate: true,
       handler() {
         this.config.showClear = true;
         this.emitValueFromDate();
@@ -115,7 +115,7 @@ export default {
       console.log('emitValueFromDate', value);
     },
     generateDate() {
-      let date  = moment.utc(this.value, this.config.format);
+      let date = moment.utc(this.value, this.config.format);
 
       if (!date.isValid()) {
         date = moment();
@@ -132,7 +132,7 @@ export default {
 </script>
 
 <style>
-    .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
-        font-size: 11px;
-    }
+  .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
+    font-size: 11px;
+  }
 </style>
