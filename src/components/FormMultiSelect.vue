@@ -8,6 +8,7 @@
       v-on="$listeners"
       v-uni-id="name"
       :name="name"
+      :multiple="multiple"
       :track-by="optionValue"
       :label="optionContent"
       :class="{'border border-danger':isError}"
@@ -43,7 +44,7 @@
     },
     mixins: [uniqIdsMixin, ValidationMixin],
     props: {
-      value: {type: [String, Array] },
+      value: {type: [String, Array, Object]},
       optionValue: String,
       optionContent: String,
       label: {type: String, default: ''},
@@ -53,6 +54,7 @@
       controlClass: {type: [String, Array, Object]},
       placeholder: String,
       onlyKey: {type: Boolean, default: false},
+      multiple: {type: Boolean, default: true},
     },
     data() {
       return {
@@ -67,7 +69,7 @@
         }
       },
       isError() {
-        return this.error ;
+        return this.error;
       }
     },
     watch: {
@@ -76,12 +78,11 @@
           let emit = [];
           if (this.multiple) {
             value.map(item => {
-              emit.push(this.onlyKey ? item : item[this.optionValue]);
+              emit.push(this.onlyKey ? item[this.optionValue] : item);
             });
           } else {
-            emit = this.onlyKey ? value : value[this.optionValue];
+            emit = this.onlyKey ? value[this.optionValue] : value;
           }
-
           this.$emit("input", emit);
         }
       },

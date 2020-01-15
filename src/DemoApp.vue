@@ -9,6 +9,7 @@
       option-content="content"
       v-model="data.sampleMultiSelect"
       :multiple="true"
+      :only-key="true"
       helper="This is a sample select list field with a validation rule that it must match red"
       validation="required">
     </form-multi-select>
