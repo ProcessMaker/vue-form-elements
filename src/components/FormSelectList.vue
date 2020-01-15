@@ -223,29 +223,6 @@
       },
     },
     mounted() {
-      if (this.options.allowMultiSelect) {
-        if (typeof this.value === 'undefined' || this.value === null) {
-          this.selectedOptions = [];
-        }
-        else {
-          this.selectedOptions = (this.value)
-                  ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1])
-                  : [];
-
-        }
-      } else {
-        if (typeof this.value === 'undefined') {
-          this.selectedOptions = [];
-        }
-        else {
-          this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
-        }
-      }
-
-      if (this.options.defaultOptionKey && !this.value) {
-        this.selectedOptions = [this.options.defaultOptionKey];
-      }
-
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
       this.optionsFromDataSource();
@@ -256,6 +233,17 @@
         });
       }
 
+      if (typeof this.value === 'undefined' || this.value === null) {
+        this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
+        this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
+        return
+      }
+
+      if (this.options.allowMultiSelect) {
+          this.selectedOptions = Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1]);
+      } else {
+          this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
+      }
       this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
