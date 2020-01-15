@@ -201,14 +201,13 @@
       value: {
         immediate:true,
         handler() {
-          console.log("Handle value", this.value);
-
           if (typeof this.value === 'undefined') {
               return;
           }
 
           if (!this.value) {
             this.selectedOptions = [];
+            this.cachedSelOptions = [];
             return;
           }
 
@@ -219,23 +218,16 @@
             this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
           }
 
-          console.log('watch value - selectedOptions', this.selectedOptions);
+          this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
         }
       },
     },
     mounted() {
-      // this.selectedOptions = (this.value)
-      //   ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1])
-      //   : [];
-
-
       if (this.options.allowMultiSelect) {
         if (typeof this.value === 'undefined' || this.value === null) {
           this.selectedOptions = [];
         }
         else {
-          //this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value];
-          console.log('antes del map');
           this.selectedOptions = (this.value)
                   ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1])
                   : [];
@@ -257,13 +249,13 @@
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
       this.optionsFromDataSource();
+
       if (typeof ProcessMaker !== 'undefined') {
         ProcessMaker.EventBus.$on('form-data-updated', (newData) => {
           this.formData=newData;
         });
       }
 
-      console.log(this.selectedOptions);
       this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
