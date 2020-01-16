@@ -77,7 +77,6 @@
     watch: {
       selected: {
         handler(value, oldValue) {
-          console.log('selected', value, oldValue);
           if (JSON.stringify(value) === JSON.stringify(oldValue)) {
             return;
           }
@@ -96,26 +95,22 @@
       value: {
         immediate: true,
         handler(value, oldValue) {
-          console.log('value', value, oldValue);
-          //if (value && this.options && !this.selected) {
-          if (true) {
-            if (Array.isArray(value)) {
-              this.selected = [];
+          if (Array.isArray(value)) {
+            this.selected = [];
 
-              let objectList = [];
-              value.forEach(item => {
-                let selection = item;
-                if (typeof item === 'object') {
-                  selection = item[this.optionValue]
-                }
-                let foundOption = this.options.find(option => get(option, this.optionValue) === selection);
-                if (foundOption) {
-                  this.selected.push(foundOption);
-                }
-              })
-            } else {
-              this.selected = this.options.find(option => get(option, this.optionValue) === value)
-            }
+            let objectList = [];
+            value.forEach(item => {
+              let selection = item;
+              if (typeof item === 'object') {
+                selection = item[this.optionValue]
+              }
+              let foundOption = this.options.find(option => get(option, this.optionValue) === selection);
+              if (foundOption) {
+                this.selected.push(foundOption);
+              }
+            })
+          } else {
+            this.selected = this.options.find(option => get(option, this.optionValue) === value)
           }
         }
       }
