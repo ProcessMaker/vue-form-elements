@@ -77,8 +77,14 @@ export default {
           return;
         }
 
-        this.$emit('input', this.generateDate(date).toISOString());
+        this.$emit('input', this.generateDate(moment(date, this.config.format)).toISOString());
       },
+    },
+    value(value) {
+      const date = this.generateDate(value);
+      if (date.toISOString() !== moment(this.date, this.config.format).toISOString()) {
+        this.date = date;
+      }
     },
     dataFormat: {
       immediate: true,
@@ -93,7 +99,7 @@ export default {
   },
   methods: {
     generateDate(value = this.value) {
-      let date = moment(value, this.config.format);
+      let date = moment(value);
 
       if (!date.isValid()) {
         date = moment();
