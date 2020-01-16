@@ -11,6 +11,7 @@ import FormHtmlEditor from './FormHtmlEditor'
 import FormHtmlViewer from './FormHtmlViewer'
 import FormDelayTimeControl from './FormDelayTimeControl'
 import FormMultiSelect from './FormMultiSelect';
+import FormPlainMultiSelect from './FormPlainMultiSelect';
 
 // Export our components
 let components = {
@@ -26,6 +27,7 @@ let components = {
     FormHtmlViewer,
     FormDelayTimeControl,
     FormMultiSelect,
+    FormPlainMultiSelect,
 }
 
 // Export our named exports
@@ -42,6 +44,7 @@ export {
     FormHtmlViewer,
     FormDelayTimeControl,
     FormMultiSelect,
+    FormPlainMultiSelect,
 }
 
 // Export our Vue plugin as our default

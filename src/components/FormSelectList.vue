@@ -23,7 +23,7 @@
       </option>
     </select>
 
-    <form-multi-select
+    <form-plain-multi-select
             v-if="options.renderAs === 'dropdown' && allowMultiSelect"
             option-value="value"
             option-content="content"
@@ -40,7 +40,7 @@
             :multiple="true"
             @input="sendSelectedOptions"
     >
-    </form-multi-select>
+    </form-plain-multi-select>
 
     <div v-if="options.renderAs === 'checkbox' && allowMultiSelect">
       <div :class="divClass" :key="option.value" v-for="option in optionsList">
@@ -88,7 +88,7 @@
   import ValidationMixin from './mixins/validation'
   import {createUniqIdsMixin} from 'vue-uniq-ids'
   import DataFormatMixin from './mixins/DataFormat';
-  import FormMultiSelect from "./FormMultiSelect";
+  import FormPlainMultiSelect from "./FormPlainMultiSelect";
   import Mustache from "mustache";
 
 
