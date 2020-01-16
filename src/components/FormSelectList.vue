@@ -36,6 +36,8 @@
             :show-labels="false"
             :options="optionsList"
             :class="classList"
+            :only-key="true"
+            :multiple="true"
             @input="sendSelectedOptions"
     >
     </form-multi-select>
@@ -181,6 +183,7 @@
     watch: {
       validationData: {
         handler(value) {
+          //console.log('watch-validationData-value', value, this.value);
           this.optionsFromDataSource();
         }
       },
@@ -249,6 +252,7 @@
       } else {
           this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
       }
+
       this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
@@ -262,6 +266,13 @@
         if (!this.allowMultiSelect && valueToSend.length > 0) {
           valueToSend = valueToSend[0];
         }
+
+        //xxxxxx 
+        console.log('value to send');
+        if (this.options.renderAs === 'dropdown' && this.options.allowMultiSelect) {
+          valueToSend = this.selectedOptions.map(x=>x[this.options.key]);
+        }
+
 
         this.$emit('input', valueToSend);
       },
@@ -297,6 +308,7 @@
         }
 
         if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
+          //console.log('data source');
           this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value, this.cachedSelOptions);
         }
 
