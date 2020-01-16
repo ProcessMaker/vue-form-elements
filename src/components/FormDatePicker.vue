@@ -35,7 +35,6 @@ export default {
     datePicker
   },
   props: {
-    emitIso: Boolean,
     name: String,
     placeholder: String,
     label: String,
@@ -74,7 +73,11 @@ export default {
     date: {
       deep: true,
       handler(date) {
-        this.emitValueFromDate(moment(date, this.config.format));
+        if (!this.date) {
+          return;
+        }
+
+        this.$emit('input', this.generateDate(date).toISOString());
       },
     },
     dataFormat: {
@@ -85,37 +88,12 @@ export default {
           : getUserDateFormat();
 
         this.date = this.generateDate();
-        // eslint-disable-next-line no-console
-        console.log('Setting date to', this.date.toISOString(), 'from', this.value);
       }
     },
-    value: {
-      immediate: true,
-      handler() {
-        this.config.showClear = true;
-        this.emitValueFromDate();
-      }
-    }
   },
   methods: {
-    emitValueFromDate(date = this.generateDate()) {
-      let value = date.utc().format(this.config.format);
-
-      if (this.emitIso) {
-        value = date.toISOString();
-      }
-
-      if (value === this.value) {
-        return;
-      }
-
-      this.$emit('input', value);
-
-      // eslint-disable-next-line no-console
-      console.log('emitValueFromDate', value);
-    },
-    generateDate() {
-      let date = moment.utc(this.value, this.config.format);
+    generateDate(value = this.value) {
+      let date = moment(value, this.config.format);
 
       if (!date.isValid()) {
         date = moment();

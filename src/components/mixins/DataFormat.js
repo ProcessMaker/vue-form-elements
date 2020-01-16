@@ -1,5 +1,5 @@
 import Validator from 'validatorjs';
-import { isValidDate, getUserDateFormat } from '../../dateUtils';
+import moment from 'moment-timezone';
 
 // To include another language in the Validator with variable processmaker
 let globalObject = typeof window === 'undefined'
@@ -9,8 +9,6 @@ let globalObject = typeof window === 'undefined'
 if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.ProcessMaker.user.lang) {
   Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
-
-Validator.register('dateFormat', isValidDate, `The :attribute is not a valid date with format ${getUserDateFormat()}`);
 
 export default {
   props: {
@@ -57,7 +55,7 @@ export default {
         'boolean': 'boolean',
         'string': 'string',
         'datetime': 'date',
-        'date': 'dateFormat',
+        'date': 'date',
         'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'currency': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'array': 'array',
@@ -92,10 +90,8 @@ export default {
           newValue = parseFloat(newValue);
           break;
         case 'date':
-          newValue = newValue.toString();
-          break;
         case 'datetime':
-          newValue = newValue.toString();
+          newValue = moment(newValue).toISOString();
           break;
         case 'int':
           newValue = parseInt(newValue);
