@@ -102,7 +102,7 @@
   export default {
     inheritAttrs: false,
     components: {
-      FormMultiSelect,
+      FormPlainMultiSelect,
     },
     mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     props: [
@@ -183,7 +183,6 @@
     watch: {
       validationData: {
         handler(value) {
-          //console.log('watch-validationData-value', value, this.value);
           this.optionsFromDataSource();
         }
       },
@@ -267,8 +266,6 @@
           valueToSend = valueToSend[0];
         }
 
-        //xxxxxx 
-        console.log('value to send');
         if (this.options.renderAs === 'dropdown' && this.options.allowMultiSelect) {
           valueToSend = this.selectedOptions.map(x=>x[this.options.key]);
         }
@@ -308,7 +305,6 @@
         }
 
         if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
-          //console.log('data source');
           this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value, this.cachedSelOptions);
         }
 
