@@ -23,7 +23,7 @@
       </option>
     </select>
 
-    <form-multi-select
+    <form-plain-multi-select
             v-if="options.renderAs === 'dropdown' && allowMultiSelect"
             option-value="value"
             option-content="content"
@@ -36,9 +36,11 @@
             :show-labels="false"
             :options="optionsList"
             :class="classList"
+            :only-key="true"
+            :multiple="true"
             @input="sendSelectedOptions"
     >
-    </form-multi-select>
+    </form-plain-multi-select>
 
     <div v-if="options.renderAs === 'checkbox' && allowMultiSelect">
       <div :class="divClass" :key="option.value" v-for="option in optionsList">
@@ -86,7 +88,7 @@
   import ValidationMixin from './mixins/validation'
   import {createUniqIdsMixin} from 'vue-uniq-ids'
   import DataFormatMixin from './mixins/DataFormat';
-  import FormMultiSelect from "./FormMultiSelect";
+  import FormPlainMultiSelect from "./FormPlainMultiSelect";
   import Mustache from "mustache";
 
 
@@ -100,7 +102,7 @@
   export default {
     inheritAttrs: false,
     components: {
-      FormMultiSelect,
+      FormPlainMultiSelect,
     },
     mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
     props: [
@@ -185,6 +187,7 @@
         }
       },
       options: {
+        immediate:true,
         deep: true,
         handler(value) {
           this.renderAs = value.renderAs;
@@ -198,33 +201,57 @@
         }
       },
       value: {
+        immediate:true,
         handler() {
+          if (typeof this.value === 'undefined') {
+              return;
+          }
+
           if (!this.value) {
-            this.selectedOptions = [];
+            this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
+            this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
+
+            if (this.options.defaultOptionKey) {
+              this.sendSelectedOptions();
+            }
+
+            return;
           }
-          if (Array.isArray(this.value) && this.value.length !== 0 && this.selectedOptions.length === 0) {
-            this.selectedOptions = this.allowMultiSelect ? this.value : [this.value[0]];
+
+          if (this.options.allowMultiSelect) {
+            this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
           }
+          else {
+            this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
+          }
+
+          this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
         }
       },
     },
     mounted() {
-      this.selectedOptions = (this.value)
-        ? Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1])
-        : [];
-
-      if (this.options.defaultOptionKey && !this.value) {
-        this.selectedOptions = [this.options.defaultOptionKey];
-      }
-
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
       this.optionsFromDataSource();
+
       if (typeof ProcessMaker !== 'undefined') {
         ProcessMaker.EventBus.$on('form-data-updated', (newData) => {
           this.formData=newData;
         });
       }
+
+      if (typeof this.value === 'undefined' || this.value === null) {
+        this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
+        this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
+        return
+      }
+
+      if (this.options.allowMultiSelect) {
+          this.selectedOptions = Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1]);
+      } else {
+          this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
+      }
+
       this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
@@ -236,8 +263,13 @@
         // If more than 1 item is selected but we are displaying a one selection control
         // show just the first selected item
         if (!this.allowMultiSelect && valueToSend.length > 0) {
-          valueToSend = new Array(valueToSend[valueToSend.length - 1]);
+          valueToSend = valueToSend[0];
         }
+
+        if (this.options.renderAs === 'dropdown' && this.options.allowMultiSelect) {
+          valueToSend = this.selectedOptions.map(x=>x[this.options.key]);
+        }
+
 
         this.$emit('input', valueToSend);
       },
