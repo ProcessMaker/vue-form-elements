@@ -1,20 +1,19 @@
 <template>
-    <div class="form-group position-relative">
-        <label v-uni-for="name">{{label}}</label>
-        <date-picker
-              v-model="date"
-              :config="config"
-              :value="date"
-              :disabled="disabled"
-              :placeholder="placeholder"
-              :data-test="dataTest"
-        />
-        <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
-            <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-            <div v-if="error">{{error}}</div>
-        </div>
-        <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+  <div class="form-group position-relative">
+    <label v-uni-for="name">{{label}}</label>
+    <date-picker
+      v-model="date"
+      :config="config"
+      :disabled="disabled"
+      :placeholder="placeholder"
+      :data-test="dataTest"
+    />
+    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
+      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+      <div v-if="error">{{error}}</div>
     </div>
+    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+  </div>
 </template>
 
 <script>
@@ -27,7 +26,8 @@ import moment from 'moment-timezone';
 import {getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat} from '../dateUtils';
 
 const uniqIdsMixin = createUniqIdsMixin();
-const datetimeStdFormat = 'YYYY-MM-DDTHH:mm:ssZZ';
+
+moment.tz.setDefault(getTimezone());
 
 export default {
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
@@ -35,7 +35,6 @@ export default {
     datePicker
   },
   props: {
-    emitIso: Boolean,
     name: String,
     placeholder: String,
     label: String,
@@ -51,11 +50,10 @@ export default {
     return {
       date: null,
       config: {
-        format: datetimeStdFormat,
+        format: getUserDateFormat(),
         timeZone: getTimezone(),
         locale: getLang(),
         useCurrent: false,
-        showClear: true,
         showClose: true,
         icons: {
           time: 'far fa-clock',
@@ -74,17 +72,18 @@ export default {
   watch: {
     date: {
       deep: true,
-      handler(value) {
-        if (!value) {
+      handler(date) {
+        if (!this.date) {
           return;
         }
 
-        moment.tz.setDefault(this.config.timeZone);
-        let current = moment(value).format(this.config.format);
-        if (this.emitIso) {
-          current = moment(value).toISOString();
-        }
-        this.$emit('input', current);
+        this.$emit('input', this.generateDate(moment(date, this.config.format)).toISOString());
+      },
+    },
+    value(value) {
+      const date = this.generateDate(value);
+      if (date.toISOString() !== moment(this.date, this.config.format).toISOString()) {
+        this.date = date;
       }
     },
     dataFormat: {
@@ -94,22 +93,30 @@ export default {
           ? getUserDateTimeFormat()
           : getUserDateFormat();
 
-        moment.tz.setDefault(this.config.timeZone);
-        this.date = moment(this.value).tz(this.config.timeZone);
+        this.date = this.generateDate();
       }
     },
-    value: {
-      immediate:true,
-      handler: function handler(_value) {
-          this.showClear=true;
+  },
+  methods: {
+    generateDate(value = this.value) {
+      let date = moment(value);
+
+      if (!date.isValid()) {
+        date = moment();
       }
-    }
+
+      if (this.dataFormat !== 'datetime') {
+        date.startOf('day');
+      }
+
+      return date;
+    },
   },
 };
 </script>
 
 <style>
-    .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
-        font-size: 11px;
-    }
+  .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
+    font-size: 11px;
+  }
 </style>
