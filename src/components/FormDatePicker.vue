@@ -17,13 +17,12 @@
 </template>
 
 <script>
-import {createUniqIdsMixin} from 'vue-uniq-ids';
+import { createUniqIdsMixin } from 'vue-uniq-ids';
 import ValidationMixin from './mixins/validation';
 import DataFormatMixin from "./mixins/DataFormat";
 import datePicker from 'vue-bootstrap-datetimepicker';
-import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
 import moment from 'moment-timezone';
-import {getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat} from '../dateUtils';
+import { getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -50,7 +49,7 @@ export default {
     return {
       date: null,
       config: {
-        format: getUserDateFormat(),
+        format: this.getFormat(),
         timeZone: getTimezone(),
         locale: getLang(),
         useCurrent: false,
@@ -65,48 +64,59 @@ export default {
           today: 'fas fa-calendar-check',
           clear: 'far fa-trash-alt',
           close: 'far fa-times-circle'
-        }
+        },
+        debug: true,
       },
     }
   },
   watch: {
     date: {
-      deep: true,
-      handler(date) {
+      handler() {
         if (!this.date) {
           return;
         }
 
-        this.$emit('input', this.generateDate(moment(date, this.config.format)).toISOString());
+        const newDate = moment(this.date, this.config.format);
+        if (this.isDateAndValueDifferent()) {
+          return;
+        }
+
+        this.$emit('input', newDate.toISOString());
       },
     },
-    value(value) {
-      const date = this.generateDate(value);
-      if (date.toISOString() !== moment(this.date, this.config.format).toISOString()) {
-        this.date = date;
+    value() {
+      const newDate = this.generateDate(this.value);
+
+      if (this.isDateAndValueDifferent()) {
+        this.date = newDate.format(this.config.format);
       }
     },
     dataFormat: {
       immediate: true,
       handler() {
-        this.config.format = this.dataFormat === 'datetime'
-          ? getUserDateTimeFormat()
-          : getUserDateFormat();
-
-        this.date = this.generateDate();
+        this.config.format = this.getFormat();
+        this.date = this.generateDate().format(this.config.format);
       }
     },
   },
   methods: {
+    getFormat() {
+      return this.dataFormat === 'datetime'
+        ? getUserDateTimeFormat()
+        : getUserDateFormat();
+    },
+    isDateAndValueDifferent() {
+      const currentDate = moment(this.date, this.config.format);
+      const currentValue = this.value ? moment(this.value) : null;
+      const comparatorString = this.dataFormat !== 'datetime' ? 'day' : null;
+
+      return currentDate.isSame(currentValue, comparatorString);
+    },
     generateDate(value = this.value) {
       let date = moment(value);
 
       if (!date.isValid()) {
         date = moment();
-      }
-
-      if (this.dataFormat !== 'datetime') {
-        date.startOf('day');
       }
 
       return date;
@@ -116,6 +126,8 @@ export default {
 </script>
 
 <style>
+  @import '~pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
+
   .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
     font-size: 11px;
   }
