@@ -1,3 +1,5 @@
+process.env.TZ = 'America/Toronto';
+
 module.exports = {
   preset: '@vue/cli-plugin-unit-jest',
   transform: {
