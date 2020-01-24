@@ -1,25 +1,68 @@
-import { shallowMount, mount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import FormDatePicker from '../../src/components/FormDatePicker.vue';
+import Vue from 'vue';
+
+const JANUARY = 0;
 
 describe('FormDatePicker', () => {
   let dataFormat = 'date';
-  const factory = (propsData) => {
-    return shallowMount(FormDatePicker, { propsData });
-  }
-  
-  it('renders the component', () => {
-    const wrapper = factory({ dataFormat });
-    expect(wrapper.html()).toContain('date-picker-stub');
+  const factory = propsData => mount(FormDatePicker, { propsData });
+  const dataTest = 'date-picker';
 
-    const value = wrapper.find('date-picker-stub').vm.value;
-    const dateDisplayed = new Date(value).setUTCMilliseconds(0);
-    const today = new Date().setUTCMilliseconds(0);
-    expect(dateDisplayed).toBe(today);
+  beforeAll(() => {
+    const year = 2020;
+    const month = JANUARY;
+    const day = 15;
+    const hour = 20;
+
+    Date.now = jest.fn(() => new Date(year, month, day, hour));
+    window.ProcessMaker = { user: {} };
   });
 
-  it('should emit a value on mount', () => {
-    const wrapper = factory({ dataFormat });
-    expect(wrapper.emitted().input).toBeTruthy();
+  afterAll(() => {
+    Date.now.mockRestore();
+  });
+
+  describe('mounted with dataFormat prop set to "datetime"', () => {
+    it('should emit today\'s date on mount', async () => {
+      const wrapper = mount(FormDatePicker, { propsData: { dataFormat: 'datetime' } });
+      await Vue.nextTick();
+      expect(wrapper.emitted('input')).toHaveLength(1);
+      expect(wrapper.emitted('input')[0]).toEqual(['2020-01-16T01:00:00.000Z']);
+    });
+
+    it('should emit an ISO formatted datestring with a UTC offset after selecting date and time', async () => {
+      const wrapper = mount(FormDatePicker, { propsData: { dataTest, dataFormat: 'datetime' } });
+
+      wrapper.find(`[data-test=${dataTest}`).trigger('focus');
+      wrapper.find('[data-day="01/30/2020"]').trigger('click');
+      wrapper.find('[title="Select Time"]').trigger('click');
+      wrapper.find('[title="Pick Minute"]').trigger('click');
+      wrapper.findAll('[data-action="selectMinute"]').wrappers.find(wrapper => {
+        return wrapper.text() === '30';
+      }).trigger('click');
+      await Vue.nextTick();
+
+      const emittedInput = wrapper.emitted('input');
+      expect(emittedInput).toHaveLength(1);
+      expect(emittedInput[0]).toEqual(['2020-01-31T01:30:00.000Z']);
+    });
+
+    it('should display a date and time in user\'s datetime format', async () => {
+      window.ProcessMaker.user.datetime_format = '[month]: M [day]: D [year]: YYYY [hour]: H';
+
+      const wrapper = mount(FormDatePicker, { propsData: { dataTest, dataFormat: 'datetime' } });
+
+      const displayedDatetime = wrapper.find(`[data-test=${dataTest}`).element.value;
+      expect(displayedDatetime).toBe(`month: ${1} day: ${15} year: ${2020} hour: ${20}`);
+    });
+  });
+
+  describe('mounted with no dataFormat prop set', () => {
+    it('should not emit a value on mount', () => {
+      const wrapper = mount(FormDatePicker);
+      expect(wrapper.emitted().input).not.toBeTruthy();
+    });
   });
 
   it('should emit the value when input changes', () => {
@@ -100,29 +143,29 @@ describe('FormDatePicker', () => {
       validation: 'required',
       value: '10/20/2020',
     });
-    
+
     expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
     expect(wrapper.find('date-picker-stub').classes('is-invalid')).toBe(false);
   });
 
   it('runs validation for invalid date formats', () => {
-    const wrapper = factory({dateFormat});
+    const wrapper = factory({ dateFormat });
 
-    wrapper.setProps({value: '2020/24/10'});
+    wrapper.setProps({ value: '2020/24/10' });
     expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
     expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
     expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
     expect(wrapper.find('.invalid-feedback').text()).toBe(invalidText);
     expect(wrapper.find('.is-invalid').exists()).toBe(true);
 
-    wrapper.setProps({value: '10/24/2020 10:00 AM'});
+    wrapper.setProps({ value: '10/24/2020 10:00 AM' });
     expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
     expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
     expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
     expect(wrapper.find('.invalid-feedback').text()).toBe(invalidText);
     expect(wrapper.find('.is-invalid').exists()).toBe(true);
 
-    wrapper.setProps({value: '10/24/2020'});
+    wrapper.setProps({ value: '10/24/2020' });
     expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(true);
     expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
     expect(wrapper.find('.invalid-feedback').isVisible()).toBe(false);
@@ -131,22 +174,22 @@ describe('FormDatePicker', () => {
 
   it('runs validation for invalid datetime formats', () => {
     let dataFormat = 'datetime';
-    const wrapper = factor({dataFormat});
+    const wrapper = factor({ dataFormat });
 
-    wrapper.setProps({value: '2020/24/10 10:00 AM'});
+    wrapper.setProps({ value: '2020/24/10 10:00 AM' });
     expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(false);
     expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
     expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
     expect(wrapper.find('.invalid-feedback').text()).toBe(invalidText);
     expect(wrapper.find('.is-invalid').exists()).toBe(true);
 
-    wrapper.setProps({value: '10/24/2020'});
+    wrapper.setProps({ value: '10/24/2020' });
     expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(true);
     expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
     expect(wrapper.find('.invalid-feedback').isVisible()).toBe(false);
     expect(wrapper.find('.is-invalid').exists()).toBe(false);
 
-    wrapper.setProps({value: '10/24/2020 10:00 AM'});
+    wrapper.setProps({ value: '10/24/2020 10:00 AM' });
     expect(wrapper.find('date-picker-stub').vm.value.isValid()).toBe(true);
     expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
     expect(wrapper.find('.invalid-feedback').isVisible()).toBe(false);
