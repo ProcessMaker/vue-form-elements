@@ -47,13 +47,13 @@ export default {
         updateValidation() {
             if (this.validation) {
                 let fieldName = this.validationField ? this.validationField : this.name;
-                let data = this.validationData ? this.validationData : {[fieldName]: this.value}
+                let data = this.validationData ? this.validationData : { [fieldName]: this.value }
                 let rules = {
                     [fieldName]: this.validation
-                }
+                };
                 this.validator = new Validator(data, rules, this.validationMessages ? this.validationMessages : null)
                 // Validation will not run until you call passes/fails on it
-                this.validator.passes()
+                this.validator.passes();
             } else {
                 this.validator = null
             }

@@ -100,21 +100,23 @@ describe('FormDatePicker', () => {
     });
   });
 
-  it.skip('should render all configured props', async () => {
+  it('should render all configured props', async () => {
     const label = 'Enter Your Birthday';
     const placeholder = '02/23/1998';
     const helper = 'This is some text';
     const error = 'This field has an error';
-    const readOnly = true;
+    const validationError = 'The birthdate field is required';
+    const disabled = true;
 
     const wrapper = mount(FormDatePicker, {
       propsData: {
+        dataTest,
         name: 'birthdate',
         label,
         placeholder,
         helper,
         error,
-        disabled: readOnly,
+        disabled,
         validation: 'required',
         value: '',
       }
@@ -122,9 +124,10 @@ describe('FormDatePicker', () => {
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.html()).toContain(label);
-    // expect(wrapper.find('.invalid-feedback').text()).toContain(helper);
-    // expect(wrapper.find('.invalid-feedback').text()).toContain(error);
+    [label, placeholder, helper, error, validationError].forEach(text => {
+      expect(wrapper.html()).toContain(text);
+    });
+    expect(wrapper.find(`[data-test=${dataTest}`).element.disabled).toBe(true);
   });
 
   describe.skip('validation', () => {

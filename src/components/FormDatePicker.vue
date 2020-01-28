@@ -8,9 +8,8 @@
       :placeholder="placeholder"
       :data-test="dataTest"
     />
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
+    <div v-if="errors.length > 0" class="invalid-feedback d-block">
+      <div v-for="(error, index) in errors" :key="index">{{error}}</div>
     </div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
@@ -47,6 +46,7 @@ export default {
   },
   data() {
     return {
+      validatorErrors: [],
       date: null,
       config: {
         format: this.getFormat(),
@@ -65,11 +65,24 @@ export default {
           clear: 'far fa-trash-alt',
           close: 'far fa-times-circle'
         },
-        debug: true,
       },
     }
   },
+  computed: {
+    errors() {
+      if (this.error) {
+        return [...this.validatorErrors, this.error];
+      }
+
+      return this.validatorErrors;
+    }
+  },
   watch: {
+    validator() {
+      this.validatorErrors = this.validator && this.validator.errors.get(this.name)
+        ? this.validator.errors.get(this.name)
+        : [];
+    },
     date() {
       if (!this.date) {
         return;
