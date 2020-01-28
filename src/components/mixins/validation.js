@@ -57,7 +57,11 @@ export default {
                         rules.push(configs.value); 
                     });
                     
-                    validationRules = rules;
+                    if (rules.length > 1) {
+                        validationRules = rules.join('|');
+                    } else  {
+                        validationRules = rules;
+                    }
                 } else {
                     validationRules = this.validation;
                 }
