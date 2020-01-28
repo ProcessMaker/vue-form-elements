@@ -70,24 +70,22 @@ export default {
     }
   },
   watch: {
-    date: {
-      handler() {
-        if (!this.date) {
-          return;
-        }
+    date() {
+      if (!this.date) {
+        return;
+      }
 
-        const newDate = moment(this.date, this.config.format);
-        if (this.isDateAndValueDifferent()) {
-          return;
-        }
+      const newDate = moment(this.date, this.config.format);
+      if (this.isDateAndValueTheSame()) {
+        return;
+      }
 
-        this.$emit('input', newDate.toISOString());
-      },
+      this.$emit('input', newDate.toISOString());
     },
     value() {
       const newDate = this.generateDate(this.value);
 
-      if (this.isDateAndValueDifferent()) {
+      if (!this.isDateAndValueTheSame()) {
         this.date = newDate.format(this.config.format);
       }
     },
@@ -105,7 +103,7 @@ export default {
         ? getUserDateTimeFormat()
         : getUserDateFormat();
     },
-    isDateAndValueDifferent() {
+    isDateAndValueTheSame() {
       const currentDate = moment(this.date, this.config.format);
       const currentValue = this.value ? moment(this.value) : null;
       const comparatorString = this.dataFormat !== 'datetime' ? 'day' : null;

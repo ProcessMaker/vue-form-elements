@@ -62,31 +62,69 @@ describe('FormDatePicker', () => {
     });
   });
 
-  describe.skip('mounted with no dataFormat prop set', () => {
-  });
-
-  it.skip('should render all configured props', () => {
-    const nameText = 'birthdate';
-    const labelText = 'Enter Your Birthday';
-    const placeholderText = 'MM/DD/YYYY';
-    const helperText = 'This is some text';
-    const errorText = 'This field has an error';
-    const readOnly = true;
-    const wrapper = factory({
-      name: nameText,
-      label: labelText,
-      placeholder: placeholderText,
-      helper: helperText,
-      error: errorText,
-      disabled: readOnly,
-      validation: 'required',
-      value: ''
+  describe('mounted with no dataFormat prop set', () => {
+    it('should emit today\'s date (disregarding current time) on mount', async () => {
+      const wrapper = mount(FormDatePicker);
+      await wrapper.vm.$nextTick();
+      expect(wrapper.emitted('input')).toHaveLength(1);
+      expect(wrapper.emitted('input')[0]).toEqual(['2020-01-15T05:00:00.000Z']);
     });
 
+    it('should emit an ISO formatted datestring with a UTC offset after selecting date and time', async () => {
+      const wrapper = mount(FormDatePicker, { propsData: { dataTest, dataFormat: 'datetime' } });
+      await wrapper.vm.$nextTick();
+
+      wrapper.find(`[data-test=${dataTest}`).trigger('focus');
+      wrapper.find('[data-day="01/30/2020"]').trigger('click');
+      await wrapper.vm.$nextTick();
+      wrapper.find('[title="Select Time"]').trigger('click');
+      wrapper.find('[title="Pick Minute"]').trigger('click');
+      wrapper.findAll('[data-action="selectMinute"]').wrappers.find(wrapper => {
+        return wrapper.text() === '30';
+      }).trigger('click');
+      await wrapper.vm.$nextTick();
+
+      const emittedInput = wrapper.emitted('input');
+      expect(emittedInput).toBeTruthy();
+      expect(emittedInput[emittedInput.length - 1]).toEqual(['2020-01-31T01:30:00.000Z']);
+    });
+
+    it('should display a date in user\'s datetime format', async () => {
+      window.ProcessMaker.user.datetime_format = 'M-D-YYYY hh:mm A';
+
+      const wrapper = mount(FormDatePicker, { propsData: { dataTest } });
+      const displayedDatetime = wrapper.find(`[data-test=${dataTest}`).element.value;
+      await wrapper.vm.$nextTick();
+
+      expect(displayedDatetime).toBe(`${1}-${15}-${2020}`);
+    });
+  });
+
+  it.skip('should render all configured props', async () => {
+    const label = 'Enter Your Birthday';
+    const placeholder = '02/23/1998';
+    const helper = 'This is some text';
+    const error = 'This field has an error';
+    const readOnly = true;
+
+    const wrapper = mount(FormDatePicker, {
+      propsData: {
+        name: 'birthdate',
+        label,
+        placeholder,
+        helper,
+        error,
+        disabled: readOnly,
+        validation: 'required',
+        value: '',
+      }
+    });
+
+    await wrapper.vm.$nextTick();
+
     expect(wrapper.html()).toContain(label);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(helperText);
-    expect(wrapper.find('.invalid-feedback').text()).toContain(errorText);
-    expect(wrapper.name()).toBe(nameText);
+    // expect(wrapper.find('.invalid-feedback').text()).toContain(helper);
+    // expect(wrapper.find('.invalid-feedback').text()).toContain(error);
   });
 
   describe.skip('validation', () => {
