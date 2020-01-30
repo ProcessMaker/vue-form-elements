@@ -47,11 +47,26 @@ export default {
         updateValidation() {
             if (this.validation) {
                 let fieldName = this.validationField ? this.validationField : this.name;
-                let data = this.validationData ? this.validationData : { [fieldName]: this.value }
+                let data = this.validationData ? this.validationData : {[fieldName]: this.value}
+                let validationRules = '';
+               
+                if (typeof this.validation !== 'string' && this.validation.length) {
+                    let rules = [];
+
+                    this.validation.forEach(configs => {
+                        rules.push(configs.value); 
+                    });
+            
+                    validationRules = rules;
+                } else {
+                    validationRules = this.validation;
+                }
+
                 let rules = {
-                    [fieldName]: this.validation
-                };
+                    [fieldName]: validationRules
+                }
                 this.validator = new Validator(data, rules, this.validationMessages ? this.validationMessages : null)
+                this.validator.setAttributeNames({ name: this.label });
                 // Validation will not run until you call passes/fails on it
                 this.validator.passes();
             } else {
