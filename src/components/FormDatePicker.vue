@@ -78,24 +78,32 @@ export default {
     }
   },
   watch: {
-    validator() {
-      this.validatorErrors = this.validator && this.validator.errors.get(this.name)
-        ? this.validator.errors.get(this.name)
-        : [];
+    validator: {
+      deep: true,
+      handler() {
+        this.validatorErrors = this.validator && this.validator.errors.get(this.name)
+          ? this.validator.errors.get(this.name)
+          : [];
+      },
     },
     date() {
-      if (!this.date) {
-        return;
+      if (this.value && !this.date) {
+        this.$emit('input', '');
       }
 
-      const newDate = moment(this.date, this.config.format);
       if (this.isDateAndValueTheSame()) {
         return;
       }
 
+      const newDate = moment(this.date, this.config.format);
       this.$emit('input', newDate.toISOString());
     },
     value() {
+      if (!this.value) {
+        this.date = '';
+        return;
+      }
+
       const newDate = this.generateDate(this.value);
 
       if (!this.isDateAndValueTheSame()) {
@@ -106,7 +114,9 @@ export default {
       immediate: true,
       handler() {
         this.config.format = this.getFormat();
-        this.date = this.generateDate().format(this.config.format);
+        this.date = this.value
+          ? this.generateDate().format(this.config.format)
+          : '';
       }
     },
   },
@@ -117,6 +127,10 @@ export default {
         : getUserDateFormat();
     },
     isDateAndValueTheSame() {
+      if (!this.date && !this.value) {
+        return true;
+      }
+
       const currentDate = moment(this.date, this.config.format);
       const currentValue = this.value ? moment(this.value) : null;
       const comparatorString = this.dataFormat !== 'datetime' ? 'day' : null;
