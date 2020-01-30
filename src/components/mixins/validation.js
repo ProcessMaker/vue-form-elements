@@ -56,12 +56,8 @@ export default {
                     this.validation.forEach(configs => {
                         rules.push(configs.value); 
                     });
-                    
-                    if (rules.length > 1) {
-                        validationRules = rules.join('|');
-                    } else  {
-                        validationRules = rules;
-                    }
+            
+                    validationRules = rules;
                 } else {
                     validationRules = this.validation;
                 }
@@ -72,7 +68,7 @@ export default {
                 this.validator = new Validator(data, rules, this.validationMessages ? this.validationMessages : null)
                 this.validator.setAttributeNames({ name: this.label });
                 // Validation will not run until you call passes/fails on it
-                this.validator.passes()
+                this.validator.passes();
             } else {
                 this.validator = null
             }
