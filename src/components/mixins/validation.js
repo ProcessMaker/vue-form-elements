@@ -66,7 +66,7 @@ export default {
                     [fieldName]: validationRules
                 }
                 this.validator = new Validator(data, rules, this.validationMessages ? this.validationMessages : null)
-                this.validator.setAttributeNames({ name: this.label });
+                this.validator.setAttributeNames({ [this.name]: this.label });
                 // Validation will not run until you call passes/fails on it
                 this.validator.passes();
             } else {
