@@ -6,10 +6,11 @@
       v-bind="$attrs"
       v-on="$listeners"
       v-uni-id="name"
+      :value="value"
       :name="name"
       :track-by="optionValue"
       :label="optionContent"
-      :class="{'border border-danger':error}"
+      :class="classList"
       :placeholder="placeholder ? placeholder : $t('type here to search')"
     >
       <template slot="noResult">
@@ -43,6 +44,7 @@
     },
     mixins: [uniqIdsMixin, ValidationMixin],
     props: [
+      'value',
       'optionValue',
       'optionContent',
       'label',
@@ -55,11 +57,11 @@
     computed: {
       classList() {
         return {
-          'is-invalid': (this.validator && this.validator.errorCount) || this.error,
+          'is-invalid border border-danger': (this.validator && this.validator.errorCount) || this.error,
           [this.controlClass]: !!this.controlClass
         }
       },
-    },
+    }
   }
 </script>
 
