@@ -138,7 +138,7 @@
           let dataSourceUrl = '/requests/data_sources/' + selectedDataSource;
           if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
             let pmql = Mustache.render(this.options.pmqlQuery, {data: this.formData});
-            dataSourceUrl += '&pmql=' + pmql;
+            dataSourceUrl += '?pmql=' + pmql;
           }
 
           ProcessMaker.apiClient
