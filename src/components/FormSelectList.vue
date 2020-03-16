@@ -204,6 +204,7 @@
         immediate:true,
         handler() {
           if (typeof this.value === 'undefined') {
+             this.selectedOptions = [];
               return;
           }
 
