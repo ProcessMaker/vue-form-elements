@@ -204,6 +204,7 @@
         immediate:true,
         handler() {
           if (typeof this.value === 'undefined') {
+             this.selectedOptions = [];
               return;
           }
 
@@ -310,7 +311,7 @@
 
         if (dataName) {
           try {
-            options = Object.values(this.validationData[dataName])
+            options = Object.values(_.get(this.validationData, dataName))
               .map(convertToSelectOptions)
               .filter(removeInvalidOptions);
             this.optionsList = options;
