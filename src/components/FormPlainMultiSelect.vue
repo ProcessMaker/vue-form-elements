@@ -99,8 +99,6 @@
         handler(value, oldValue) {
           console.log('value watcher', value, oldValue);
           if (Array.isArray(value)) {
-            // this.selected = [];
-
             let objectList = [];
             value.forEach(item => {
               let selection = item;
