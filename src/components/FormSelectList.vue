@@ -226,13 +226,6 @@
               this.onlyKey = false;
             }
             this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
-            // if( this.options.valueTypeReturned === 'object') {
-            //   console.log('hit here for an object multiselect');
-            //   console.log('value', this.value);
-            //   this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
-            // } else {
-            //   this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
-            // }
           } 
           else {
             this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
@@ -245,6 +238,8 @@
     mounted() {
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
+      this.onlyKey = this.options.onlyKey;
+      this.valueTypeReturned = this.options.valueTypeReturned;
       this.optionsFromDataSource();
 
       if (typeof ProcessMaker !== 'undefined') {
