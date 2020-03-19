@@ -83,6 +83,8 @@
 
           let emit = [];
           if (this.multiple) {
+            console.log('is mulitple', this.multiple);
+            console.log('value', value);
             value.map(item => {
               emit.push(this.onlyKey ? item[this.optionValue] : item);
             });
@@ -95,8 +97,9 @@
       value: {
         immediate: true,
         handler(value, oldValue) {
+          console.log('value watcher', value, oldValue);
           if (Array.isArray(value)) {
-            this.selected = [];
+            // this.selected = [];
 
             let objectList = [];
             value.forEach(item => {

@@ -35,7 +35,7 @@
             :show-labels="false"
             :options="optionsList"
             :class="classList"
-            :only-key="true"
+            :only-key="onlyKey"
             :multiple="true"
             @input="sendSelectedOptions"
     >
@@ -177,6 +177,9 @@
               /* Ignore error */
             });
         }, 750),
+        onlyKey: true,
+        foo: null,
+        bar: null,
       };
     },
     watch: {
@@ -219,6 +222,9 @@
           }
 
           if (this.options.allowMultiSelect) {
+            if (this.options.valueTypeReturned === 'object') {
+              this.onlyKey = false;
+            }
             this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
             // if( this.options.valueTypeReturned === 'object') {
             //   console.log('hit here for an object multiselect');
@@ -330,16 +336,15 @@
           } 
           
           if (this.options.valueTypeReturned === 'object') {
-            const convertObjectToSelectOptions = option => (console.log('map value', value), console.log('map key',key), {
+            const convertObjectToSelectOptions = option => ({
               value: option,
-              content: option[value || 'value'],
+              content: (option[value || 'content']).toString(),
             });
             try {
               options = Object.values(_.get(this.validationData, dataName))
                 .map(convertObjectToSelectOptions);
               this.optionsList = options;
             } catch(error) {
-              console.log('error', error);
               /* Ignore error */
             }
           } 
