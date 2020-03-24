@@ -1,43 +1,21 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
-    <select
-            v-if="options.renderAs === 'dropdown' && !allowMultiSelect"
-            v-bind="$attrs"
-            v-uni-id="name"
-            class="form-control"
-            :class="classList"
-            :name='name'
-            :placeholder="placeholder ? placeholder : $t('Select')"
-            v-model="selectedOptions[0]"
-            @change="sendSelectedOptions($event)"
-    >
-      <option :value="selectedOptions[0] ? null : selectedOptions[0]">{{placeholder ? placeholder : $t('Select')}}
-      </option>
-      <option
-              v-for="(option, index) in optionsList"
-              :value="option.value"
-              :key="index"
-      >
-        {{ option.content }}
-      </option>
-    </select>
-
     <form-plain-multi-select
-            v-if="options.renderAs === 'dropdown' && allowMultiSelect"
-            option-value="value"
-            option-content="content"
-            v-uni-id="name"
-            v-bind="$attrs"
-            v-on="$listeners"
-            v-model="selectedOptions"
-            :placeholder="placeholder ? placeholder : $t('Select...')"
-            :show-labels="false"
-            :options="optionsList"
-            :class="classList"
-            :only-key="onlyKey"
-            :multiple="true"
-            @input="sendSelectedOptions"
+      v-if="options.renderAs === 'dropdown'"
+      option-value="value"
+      option-content="content"
+      v-uni-id="name"
+      v-bind="$attrs"
+      v-on="$listeners"
+      v-model="selectedOptions"
+      :placeholder="placeholder ? placeholder : $t('Select...')"
+      :show-labels="false"
+      :options="optionsList"
+      :class="classList"
+      :only-key="onlyKey"      
+      :multiple="allowMultiSelect"
+      @input="sendSelectedOptions"
     >
     </form-plain-multi-select>
 
@@ -178,8 +156,6 @@
             });
         }, 750),
         onlyKey: true,
-        foo: null,
-        bar: null,
       };
     },
     watch: {
