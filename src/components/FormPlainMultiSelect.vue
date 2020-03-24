@@ -87,7 +87,7 @@
               emit.push(this.onlyKey ? item[this.optionValue] : item);
             });
           } else {
-            emit = this.onlyKey ? value[this.optionValue] : value;
+            emit = this.onlyKey ? value[0][this.optionValue] : value;
           }
           this.$emit("input", emit);
         }
