@@ -96,8 +96,6 @@
         immediate: true,
         handler(value, oldValue) {
           if (Array.isArray(value)) {
-            this.selected = [];
-
             let objectList = [];
             value.forEach(item => {
               let selection = item;

@@ -13,9 +13,9 @@
       :show-labels="false"
       :options="optionsList"
       :class="classList"
-      :only-key="true"
-      @input="sendSelectedOptions"
+      :only-key="onlyKey"      
       :multiple="allowMultiSelect"
+      @input="sendSelectedOptions"
     >
     </form-plain-multi-select>
 
@@ -155,6 +155,7 @@
               /* Ignore error */
             });
         }, 750),
+        onlyKey: true,
       };
     },
     watch: {
@@ -197,8 +198,11 @@
           }
 
           if (this.options.allowMultiSelect) {
+            if (this.options.valueTypeReturned === 'object') {
+              this.onlyKey = false;
+            }
             this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
-          }
+          } 
           else {
             this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
           }
@@ -210,6 +214,8 @@
     mounted() {
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
+      this.onlyKey = this.options.onlyKey;
+      this.valueTypeReturned = this.options.valueTypeReturned;
       this.optionsFromDataSource();
 
       if (typeof ProcessMaker !== 'undefined') {
@@ -270,8 +276,7 @@
           value: (option[key || 'value']).toString(),
           content: (option[value || 'content']).toString(),
         })
-
-        if (jsonData) {
+        if (jsonData) {          
           try {
             options = JSON.parse(jsonData)
               .map(convertToSelectOptions)
@@ -285,16 +290,35 @@
         if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
           this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value, this.cachedSelOptions);
         }
-
         if (dataName) {
-          try {
+          if (this.options.valueTypeReturned === null) {
+            return;
+          } 
+
+          if (this.options.valueTypeReturned === 'single') {
+            try {
             options = Object.values(_.get(this.validationData, dataName))
-              .map(convertToSelectOptions)
-              .filter(removeInvalidOptions);
-            this.optionsList = options;
-          } catch (error) {
-            /* Ignore error */
-          }
+                .map(convertToSelectOptions)
+                .filter(removeInvalidOptions);
+              this.optionsList = options;
+            } catch (error) {
+              /* Ignore error */
+            }
+          } 
+          
+          if (this.options.valueTypeReturned === 'object') {
+            const convertObjectToSelectOptions = option => ({
+              value: option,
+              content: (option[value || 'content']).toString(),
+            });
+            try {
+              options = Object.values(_.get(this.validationData, dataName))
+                .map(convertObjectToSelectOptions);
+              this.optionsList = options;
+            } catch(error) {
+              /* Ignore error */
+            }
+          } 
         }
 
       },
