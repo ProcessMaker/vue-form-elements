@@ -1,7 +1,6 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name" v-if="label">{{ label }}</label>
-
     <multiselect
       v-model="selected"
       v-bind="$attrs"
@@ -104,7 +103,12 @@
               }
               let foundOption = this.options.find(option => get(option, this.optionValue) === selection);
               if (foundOption) {
-                this.selected.push(foundOption);
+                if (Array.isArray(this.selected)) {
+                  this.selected.push(foundOption);
+                }
+                else {
+                  this.selected = foundOption;
+                }
               }
             })
           } else {
