@@ -15,7 +15,6 @@
       :class="classList"
       :only-key="onlyKey"      
       :multiple="allowMultiSelect"
-      @input="sendSelectedOptions"
     >
     </form-plain-multi-select>
 
@@ -103,6 +102,7 @@
         renderAs: 'dropdown',
         allowMultiSelect: false,
         optionsList: [],
+        onlyKey: true,
         debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
                                            selOptions) => {
           let options = [];
@@ -155,7 +155,6 @@
               /* Ignore error */
             });
         }, 750),
-        onlyKey: true,
       };
     },
     watch: {
@@ -214,7 +213,6 @@
     mounted() {
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
-      this.onlyKey = this.options.onlyKey;
       this.valueTypeReturned = this.options.valueTypeReturned;
       this.optionsFromDataSource();
 

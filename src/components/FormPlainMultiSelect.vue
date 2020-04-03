@@ -83,39 +83,14 @@
           let emit = [];
           if (this.multiple) {
             value.map(item => {
-              emit.push(this.onlyKey ? item[this.optionValue] : item);
+              emit.push(item[this.optionValue]);
             });
           } else {
-            emit = this.onlyKey ? value[0][this.optionValue] : value;
+            emit = this.onlyKey ? value[this.optionValue]: value;
           }
           this.$emit("input", emit);
         }
       },
-      value: {
-        immediate: true,
-        handler(value, oldValue) {
-          if (Array.isArray(value)) {
-            let objectList = [];
-            value.forEach(item => {
-              let selection = item;
-              if (typeof item === 'object') {
-                selection = item[this.optionValue]
-              }
-              let foundOption = this.options.find(option => get(option, this.optionValue) === selection);
-              if (foundOption) {
-                if (Array.isArray(this.selected)) {
-                  this.selected.push(foundOption);
-                }
-                else {
-                  this.selected = foundOption;
-                }
-              }
-            })
-          } else {
-            this.selected = this.options.find(option => get(option, this.optionValue) === value)
-          }
-        }
-      }
     },
   }
 </script>
