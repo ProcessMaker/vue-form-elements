@@ -91,7 +91,25 @@
           this.$emit("input", emit);
         }
       },
-    },
+      value: {	
+        immediate: true,	
+        handler(value, oldValue) {
+          if (Array.isArray(value)) {	
+            value.forEach(item => {	
+              let selection = item;	
+              let foundOption = this.options.find(option => get(option, this.optionValue) === selection);	
+              if (foundOption) {	
+                if (!Array.isArray(this.selected)) {
+                  this.selected = foundOption;	
+                }	
+              }	
+            })	
+          } else {
+            this.selected = this.options.find(option => get(option, this.optionValue) === value)	
+          }	
+        }	
+      }
+    }
   }
 </script>
 
