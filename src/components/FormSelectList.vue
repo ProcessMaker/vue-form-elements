@@ -196,10 +196,9 @@
             return;
           }
 
+          this.onlyKey = !(this.options.valueTypeReturned === 'object');
+
           if (this.options.allowMultiSelect) {
-            if (this.options.valueTypeReturned === 'object') {
-              this.onlyKey = false;
-            }
             this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
           }
           else {
