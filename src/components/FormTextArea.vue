@@ -72,6 +72,8 @@ export default {
         plugins: [ 'link', 'lists' ],
         toolbar: 'undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
         skin: false,
+        relative_urls: false,
+        remove_script_host: false,
       },
     }
   }
