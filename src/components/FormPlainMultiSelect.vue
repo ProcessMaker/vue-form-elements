@@ -74,49 +74,107 @@
       }
     },
     watch: {
-      selected: {
-        handler(value, oldValue) {
-          if (JSON.stringify(value) === JSON.stringify(oldValue)) {
-            return;
-          }
-
-          let emit = [];
-          if (this.multiple) {
-            value.map(item => {
-              emit.push(this.onlyKey ? item[this.optionValue] : item);
-            });
-          } else {
-            emit = this.onlyKey ? value[0][this.optionValue] : value;
-          }
-          this.$emit("input", emit);
-        }
-      },
       value: {
         immediate: true,
-        handler(value, oldValue) {
-          if (Array.isArray(value)) {
-            let objectList = [];
-            value.forEach(item => {
-              let selection = item;
-              if (typeof item === 'object') {
-                selection = item[this.optionValue]
-              }
-              let foundOption = this.options.find(option => get(option, this.optionValue) === selection);
-              if (foundOption) {
-                if (Array.isArray(this.selected)) {
-                  this.selected.push(foundOption);
+        handler(value) {
+          if (this.multiple && this.onlyKey) {
+            if (this.valueOriginForKeysOnly(value) === 'VueMultiSelect') {
+              let emit = [];
+              value.map(item => {
+                emit.push(item[this.optionValue]);
+              });
+              this.$emit('input', emit);
+            }
+
+            if (this.valueOriginForKeysOnly(value) === 'DirectSet') {
+              let selectedArray = [];
+              value.forEach(item => {
+                let foundOption = this.options.find( option => JSON.stringify(option.value) === JSON.stringify(item));
+                if (foundOption) {
+                  selectedArray.push(foundOption);
                 }
-                else {
-                  this.selected = foundOption;
-                }
-              }
-            })
-          } else {
-            this.selected = this.options.find(option => get(option, this.optionValue) === value)
+              })
+              this.selected = selectedArray;
+            }
           }
+
+          if (this.multiple && !this.onlyKey) {
+            if (this.valueOriginForObjectsOnly(value) === 'VueMultiSelect') {
+              let emit = [];
+              value.map(item => {
+                emit.push(item.value);
+              });
+              this.$emit('input', emit);
+            }
+
+            if (this.valueOriginForObjectsOnly(value) === 'DirectSet') {
+              let selectedArray = [];
+              value.forEach(item => {
+                let foundOption = this.options.find( option => JSON.stringify(option.value) === JSON.stringify(item));
+                if (foundOption) {
+                  selectedArray.push(foundOption);
+                }
+              })
+              this.selected = selectedArray;
+            }
+          }
+
+          if (!this.multiple && this.onlyKey) {
+            if (this.valueOriginForKeysOnly(value) === 'VueMultiSelect') {
+              this.$emit('input', value[0][this.optionValue]);
+            }
+
+            if (this.valueOriginForKeysOnly(value) === 'DirectSet') {
+              let selectedArray = [];
+              value.forEach(item => {
+                let foundOption = this.options.find( option => JSON.stringify(option.value) === JSON.stringify(item));
+                if (foundOption) {
+                  selectedArray.push(foundOption);
+                }
+              })
+              this.selected = selectedArray.length > 0 ? selectedArray[0] : [];
+            }
+          }
+
+          if (!this.multiple && !this.onlyKey) {
+            if (this.valueOriginForObjectsOnly(value) === 'VueMultiSelect') {
+              this.$emit('input', value[0].value);
+            }
+
+            if (this.valueOriginForObjectsOnly(value) === 'DirectSet') {
+              let selectedArray = [];
+              value.forEach(item => {
+                let foundOption = this.options.find( option => JSON.stringify(option.value) === JSON.stringify(item));
+                if (foundOption) {
+                  selectedArray.push(foundOption);
+                }
+              })
+              this.selected = selectedArray.length > 0 ? selectedArray[0] : [];
+            }
+          }
+
         }
       }
     },
+    methods: {
+        valueOriginForObjectsOnly: function (value) {
+          if (typeof value === 'undefined' || value === null || !Array.isArray(value) || value.length <= 0) {
+            return 'None';
+          }
+
+          let firstVal = value[0];
+          return (typeof firstVal[this.optionValue] === 'object' ? 'VueMultiSelect' : 'DirectSet');
+        },
+
+        valueOriginForKeysOnly: function (value) {
+          if (typeof value === 'undefined' || value === null || !Array.isArray(value) || value.length <= 0) {
+            return 'None';
+          }
+
+          let firstVal = value[0];
+          return (typeof firstVal === 'object' ? 'VueMultiSelect' : 'DirectSet');
+      }
+    }
   }
 </script>
 

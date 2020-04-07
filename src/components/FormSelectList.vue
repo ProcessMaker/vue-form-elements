@@ -13,14 +13,13 @@
       :show-labels="false"
       :options="optionsList"
       :class="classList"
-      :only-key="onlyKey"      
+      :only-key="onlyKey"
       :multiple="allowMultiSelect"
-      @input="sendSelectedOptions"
     >
     </form-plain-multi-select>
 
     <div v-if="options.renderAs === 'checkbox' && allowMultiSelect">
-      <div :class="divClass" :key="option.value" v-for="option in optionsList">
+      <div :class="divClass" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value" v-for="option in optionsList">
         <input
           v-bind="$attrs"
           :class="inputClass"
@@ -37,7 +36,7 @@
     </div>
 
     <div v-if="options.renderAs === 'checkbox' && !allowMultiSelect">
-      <div :class="divClass" :key="option.value" v-for="option in optionsList">
+      <div :class="divClass" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value" v-for="option in optionsList">
         <input
           v-bind="$attrs"
           type="radio"
@@ -103,6 +102,7 @@
         renderAs: 'dropdown',
         allowMultiSelect: false,
         optionsList: [],
+        onlyKey: true,
         debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
                                            selOptions) => {
           let options = [];
@@ -155,7 +155,6 @@
               /* Ignore error */
             });
         }, 750),
-        onlyKey: true,
       };
     },
     watch: {
@@ -197,12 +196,11 @@
             return;
           }
 
+          this.onlyKey = !(this.options.valueTypeReturned === 'object');
+
           if (this.options.allowMultiSelect) {
-            if (this.options.valueTypeReturned === 'object') {
-              this.onlyKey = false;
-            }
             this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
-          } 
+          }
           else {
             this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
           }
@@ -214,7 +212,6 @@
     mounted() {
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
-      this.onlyKey = this.options.onlyKey;
       this.valueTypeReturned = this.options.valueTypeReturned;
       this.optionsFromDataSource();
 
@@ -276,7 +273,7 @@
           value: (option[key || 'value']).toString(),
           content: (option[value || 'content']).toString(),
         })
-        if (jsonData) {          
+        if (jsonData) {
           try {
             options = JSON.parse(jsonData)
               .map(convertToSelectOptions)
@@ -293,7 +290,7 @@
         if (dataName) {
           if (this.options.valueTypeReturned === null) {
             return;
-          } 
+          }
 
           if (this.options.valueTypeReturned === 'single') {
             try {
@@ -304,8 +301,8 @@
             } catch (error) {
               /* Ignore error */
             }
-          } 
-          
+          }
+
           if (this.options.valueTypeReturned === 'object') {
             const convertObjectToSelectOptions = option => ({
               value: option,
@@ -318,7 +315,7 @@
             } catch(error) {
               /* Ignore error */
             }
-          } 
+          }
         }
 
       },
