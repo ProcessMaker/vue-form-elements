@@ -48,9 +48,19 @@
                         helper="This text area has a maximum character limit of 20 validation rule."
                         error="This error is shown by default"
                         validation="max:20"
+                        :richtext="richtext"
                         v-model="data.sampleText">
         </form-text-area>
         Current Character Count: {{data.sampleText.length}}
+        <form-checkbox name="useRichtext"
+                       label="Use richtext editor for above textarea"
+                       v-model="richtext"
+                       toggle="true"
+                       helper="">
+        </form-checkbox>
+
+
+
         <form-select name="sampleSelect"
                      label="Sample Select"
                      :options="selectOptions"
@@ -77,6 +87,7 @@
                        toggle="true"
                        helper="This checkbox represents a boolean in the data model. Need parameter 'toggle=true' for enable custom switches">
         </form-checkbox>
+
         Current Value: {{data.sampleCustomCheckbox}}
         <form-radio-button-group name="sampleCustomRadioButtonGroup"
                                  toggle="true"
@@ -93,11 +104,14 @@
                 v-model="data.sampleDatePicker"
         />
         <form-html-editor
-            name="sampleHtmlText"
             label="Sample Html Editor"
-            v-model="data.sampleHtmlText"
-            validation="required|max:300" class="mt-3"
+            :content="data.sampleHtmlText"
+            @input="data.sampleHtmlText = $event"
         />
+        <form-text-area
+          label="HTML Output"
+          v-model="data.sampleHtmlText"
+        ></form-text-area>
         <form-delay-time-control
             name="sampleDelayTimeControl"
             v-model="data.sampleDelayTimeControl"
@@ -141,6 +155,7 @@
           sampleDatePicker: DateTime.local().toISO(),
           sampleDelayTimeControl: '',
         },
+        richtext: false,
         inputValidationRules: 'required|min:2',
         textValidationRules: 'max:255',
         passwordValidationRules: 'required|regex:/(?=.{9,})(?=.*?[^\\w\\s])(?=.*?[0-9])(?=.*?[A-Z]).*?[a-z].*/',
