@@ -22,10 +22,40 @@ import DataFormatMixin from "./mixins/DataFormat";
 import datePicker from 'vue-bootstrap-datetimepicker';
 import moment from 'moment-timezone';
 import { getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
+import Mustache from 'mustache';
+let Validator = require('validatorjs');
 
 const uniqIdsMixin = createUniqIdsMixin();
+const checkFormats = ['YYYY-MM-DD', moment.ISO_8601];
 
 moment.tz.setDefault(getTimezone());
+
+Validator.register('date_or_mustache', function(value, requirement, attribute) {
+  let rendered = null;
+  try {
+    // Clear out any mustache statements
+    rendered = Mustache.render(value, {});
+  } catch (e) {
+    rendered = value;
+  }
+
+  if (value !== rendered) {
+    // contains mustache, so just give them the benefit of the doubt here
+    return true;
+  }
+
+  if (value === '') {
+    // Empty is ok, it just disables min/max
+    return true;
+  }
+
+  if (moment(value, checkFormats, true).isValid()) {
+    return true;
+  }
+
+  return false;
+
+}, 'Must be YYYY-MM-DD, ISO8601, or mustache syntax');
 
 export default {
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
@@ -39,10 +69,12 @@ export default {
     error: String,
     helper: String,
     dataFormat: String,
-    value: String,
+    value: [String, Boolean],
     inputClass: {type: [String, Array, Object], default: 'form-control'},
     dataTest: String,
     disabled: null,
+    minDate: { type: [String, Boolean], default: false },
+    maxDate: { type: [String, Boolean], default: false },
   },
   data() {
     return {
@@ -54,6 +86,8 @@ export default {
         locale: getLang(),
         useCurrent: false,
         showClose: true,
+        minDate: false,
+        maxDate: false,
         icons: {
           time: 'far fa-clock',
           date: 'far fa-calendar',
@@ -78,6 +112,9 @@ export default {
     }
   },
   watch: {
+    validationData() {
+      this.setMinMaxValues();
+    },
     validator: {
       deep: true,
       handler() {
@@ -121,6 +158,29 @@ export default {
     },
   },
   methods: {
+    setMinMaxValues() {
+      this.config.minDate = this.parseDate(this.minDate);
+      this.config.maxDate = this.parseDate(this.maxDate);
+    },
+    parseDate(val) {
+      let date = false;
+
+      if (typeof val === 'string' && val !== '') {
+
+        try {
+          date = Mustache.render(val, this.validationData);
+        } catch (error) {
+          date = val;
+        }
+
+        date = moment(date, checkFormats, true);
+        if (!date.isValid()) {
+          date = false;
+        } 
+      }
+
+      return date;
+    },
     getFormat() {
       return this.dataFormat === 'datetime'
         ? getUserDateTimeFormat()
