@@ -1,4 +1,5 @@
 let Validator = require('validatorjs');
+import customValidationRules from './customValidationRules';
 
 // To include another language in the Validator with variable processmaker
 let globalObject = typeof window === 'undefined'
@@ -67,6 +68,7 @@ export default {
                 }
                 this.validator = new Validator(data, rules, this.validationMessages ? this.validationMessages : null)
                 this.validator.setAttributeNames({ [fieldName]: this.label });
+                this.validator.errors.first(this.name);
                 // Validation will not run until you call passes/fails on it
                 this.validator.passes();
             } else {
