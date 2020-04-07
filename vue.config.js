@@ -4,4 +4,7 @@ module.exports = {
       'validatorjs',
     ] : [],
   },
+  css: {
+    extract: true,
+  }
 };
