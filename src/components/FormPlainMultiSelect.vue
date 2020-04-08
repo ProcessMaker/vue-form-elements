@@ -76,104 +76,96 @@
     watch: {
       value: {
         immediate: true,
-        handler(value) {
-          if (this.multiple && this.onlyKey) {
-            if (this.valueOriginForKeysOnly(value) === 'VueMultiSelect') {
-              let emit = [];
-              value.map(item => {
-                emit.push(item[this.optionValue]);
-              });
-              this.$emit('input', emit);
-            }
+        handler(value, oldValue) {
 
-            if (this.valueOriginForKeysOnly(value) === 'DirectSet') {
-              let selectedArray = [];
-              value.forEach(item => {
-                let foundOption = this.options.find( option => JSON.stringify(option.value) === JSON.stringify(item));
-                if (foundOption) {
-                  selectedArray.push(foundOption);
-                }
-              })
-              this.selected = selectedArray;
-            }
+          if (typeof value === 'undefined' || value === null || !Array.isArray(value) || value.length <= 0) {
+              return;
           }
 
-          if (this.multiple && !this.onlyKey) {
-            if (this.valueOriginForObjectsOnly(value) === 'VueMultiSelect') {
-              let emit = [];
-              value.map(item => {
-                emit.push(item.value);
-              });
-              this.$emit('input', emit);
-            }
+          let firstValToEmit =  typeof value[0] === 'object' ? JSON.stringify(this.valueToUseForEmit(value[0])) : value[0];
 
-            if (this.valueOriginForObjectsOnly(value) === 'DirectSet') {
-              let selectedArray = [];
-              value.forEach(item => {
-                let foundOption = this.options.find( option => JSON.stringify(option.value) === JSON.stringify(item));
-                if (foundOption) {
-                  selectedArray.push(foundOption);
-                }
-              })
-              this.selected = selectedArray;
-            }
+          let firstVal =  typeof value[0] === 'object' ? JSON.stringify(value[0]) : value[0];
+
+          if (firstValToEmit === firstVal && JSON.stringify(value) === JSON.stringify(oldValue)) {
+            return;
           }
 
-          if (!this.multiple && this.onlyKey) {
-            if (this.valueOriginForKeysOnly(value) === 'VueMultiSelect') {
-              this.$emit('input', value[0][this.optionValue]);
+          let selectedArray = [];
+          value.forEach(item => {
+            let foundOption = this.options.find(option => JSON.stringify(this.keyValue(option)) === JSON.stringify(this.keyValue(item)));
+            if (foundOption) {
+              selectedArray.push(foundOption);
             }
+          });
 
-            if (this.valueOriginForKeysOnly(value) === 'DirectSet') {
-              let selectedArray = [];
-              value.forEach(item => {
-                let foundOption = this.options.find( option => JSON.stringify(option.value) === JSON.stringify(item));
-                if (foundOption) {
-                  selectedArray.push(foundOption);
-                }
-              })
-              this.selected = selectedArray.length > 0 ? selectedArray[0] : [];
-            }
+          if (this.multiple) {
+            let emit = [];
+            value.map(item => {
+              emit.push(this.valueToUseForEmit(item));
+            });
+            this.$emit('input', emit);
+            this.selected = selectedArray;
           }
-
-          if (!this.multiple && !this.onlyKey) {
-            if (this.valueOriginForObjectsOnly(value) === 'VueMultiSelect') {
-              this.$emit('input', value[0].value);
-            }
-
-            if (this.valueOriginForObjectsOnly(value) === 'DirectSet') {
-              let selectedArray = [];
-              value.forEach(item => {
-                let foundOption = this.options.find( option => JSON.stringify(option.value) === JSON.stringify(item));
-                if (foundOption) {
-                  selectedArray.push(foundOption);
-                }
-              })
-              this.selected = selectedArray.length > 0 ? selectedArray[0] : [];
-            }
+          else {
+            this.$emit('input', this.valueToUseForEmit(value[0]));
+            this.selected = selectedArray.length > 0 ? selectedArray[0] : [];
           }
-
         }
       }
     },
     methods: {
-        valueOriginForObjectsOnly: function (value) {
-          if (typeof value === 'undefined' || value === null || !Array.isArray(value) || value.length <= 0) {
-            return 'None';
+        valueToUseForEmit: function (element) {
+          if (this.onlyKey) {
+            if (typeof element.value == 'undefined') {
+              return element;
+            }
+            return (typeof element.value === 'object' ? element.value[this.optionValue] : element.value);
           }
-
-          let firstVal = value[0];
-          return (typeof firstVal[this.optionValue] === 'object' ? 'VueMultiSelect' : 'DirectSet');
+          else {
+            return (typeof element.value === 'object' ? element.value : element);
+          }
         },
 
-        valueOriginForKeysOnly: function (value) {
-          if (typeof value === 'undefined' || value === null || !Array.isArray(value) || value.length <= 0) {
-            return 'None';
-          }
+        valueType: function(value) {
+            if (typeof value != 'object') {
+              return 'scalar';
+            }
 
-          let firstVal = value[0];
-          return (typeof firstVal === 'object' ? 'VueMultiSelect' : 'DirectSet');
-      }
+            if (typeof value.value == 'object') {
+              return 'nested';
+            }
+            else {
+              return 'object';
+            }
+        },
+
+        keyValue: function (element) {
+          if (this.onlyKey) {
+            switch(this.valueType(element))  {
+              case 'scalar':
+                return element;
+              case 'object':
+                return element[this.optionValue];
+              case 'nested':
+                return element.value[this.optionValue];
+              default:
+                return element;
+            }
+          }
+          else {
+            switch(this.valueType(element))  {
+              case 'scalar':
+                return null;
+              case 'object':
+                return element;
+              case 'nested':
+                return element.value;
+              default:
+                return element;
+            }
+          }
+        }
+
     }
   }
 </script>
