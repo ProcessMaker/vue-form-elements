@@ -92,10 +92,6 @@ export default {
                 if (!checkDate.isValid()) {
                     params = data[params];
                 }
-                // check if its valid date
-                if (!moment(params).isValid()) {
-                    return false;
-                }
                 
                 const inputDate = moment(date).toISOString();
                 const afterDate = moment(params).toISOString();
@@ -108,11 +104,6 @@ export default {
                 let checkDate = moment(params);
                 if (!checkDate.isValid()) {
                     params = data[params];
-                }
-
-                // check if its valid date
-                if (!moment(params).isValid()) {
-                    return false;
                 }
 
                 const inputDate = moment(date).toISOString();
@@ -128,11 +119,6 @@ export default {
                     params = data[params];
                 }
 
-                // check if its valid date
-                if (!moment(params).isValid()) {
-                    return false;
-                }
-
                 const inputDate = moment(date).toISOString();
                 const beforeDate = moment(params).toISOString();
                 
@@ -145,12 +131,7 @@ export default {
                 if (!checkDate.isValid()) {
                     params = data[params];
                 }
-
-                // check if its valid date
-                if (!moment(params).isValid()) {
-                    return false;
-                }
-            
+                
                 const inputDate = moment(date).toISOString();
                 const beforeDate = moment(params).toISOString();
                 
