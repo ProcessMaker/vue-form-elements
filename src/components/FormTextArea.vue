@@ -2,7 +2,9 @@
   <div class="form-group">
   <label v-uni-for="label">{{label}}</label>
     <div v-if="richtext" :class="classList" v-uni-id="label">
+      <div v-if="readonly" v-html="value"></div>
       <editor
+        v-if="!readonly"
         v-bind="$attrs"
         :value="value"
         :init="editorSettings"
@@ -52,15 +54,16 @@ export default {
     'value',
     'helper',
     'controlClass',
-    'richtext'
+    'richtext',
+    'readonly'
   ],
   computed: {
     classList() {
       return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass,
-        'form-control': this.richtext,
-        'richtext': this.richtext,
+        'form-control': this.richtext && !this.readonly,
+        'richtext': this.richtext && !this.readonly,
       };
     },
   },
@@ -81,7 +84,7 @@ export default {
 </script>
 
 <style>
-.richtext {
+.form-group .richtext {
   height: auto;
 }
 </style>
