@@ -18,6 +18,8 @@
     <textarea
       v-else
       v-bind="$attrs"
+      :rows="rows"
+      :readonly="readonly"
       v-uni-id="label"
       class="form-control"
       :class="classList"
@@ -58,7 +60,8 @@ export default {
     'helper',
     'controlClass',
     'richtext',
-    'readonly'
+    'readonly',
+    'rows'
   ],
   computed: {
     classList() {
@@ -68,6 +71,33 @@ export default {
         'richtext': this.richtext && !this.readonly,
       };
     },
+    height() {
+      if (!this.rows) {
+        return false;
+      }
+      return String(parseInt(this.rows) * 55) + 'px';
+    }
+  },
+  watch: {
+    rows: {
+      handler() {
+        this.setHeight();
+      },
+      immediate: true,
+    }
+  },
+  methods: {
+    setHeight() {
+      if (!this.editorInstance) {
+        return;
+      }
+
+      if (!this.rows) {
+        return;
+      }
+
+      this.editorInstance.getContainer().style.height = this.height;
+    }
   },
   data() {
     return {
@@ -81,7 +111,12 @@ export default {
         skin: false,
         relative_urls: false,
         remove_script_host: false,
+        init_instance_callback: (editor) => {
+          this.editorInstance = editor;
+          this.setHeight();
+        },
       },
+      editorInstance: null,
     }
   }
 }
@@ -97,7 +132,6 @@ export default {
   .editor {
     border: 1px solid #ccc;
     border-top: 0;
-    padding: 1em;
   }
 }
 </style>
