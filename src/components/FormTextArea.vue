@@ -3,14 +3,17 @@
   <label v-uni-for="label">{{label}}</label>
     <div v-if="richtext" :class="classList" v-uni-id="label">
       <div v-if="readonly" v-html="value"></div>
-      <editor
-        v-if="!readonly"
-        v-bind="$attrs"
-        :value="value"
-        :init="editorSettings"
-        :name="name"
-        @input="$emit('input', $event)"
-      />
+      <div v-else>
+        <editor
+          class="editor"
+          v-if="!readonly"
+          v-bind="$attrs"
+          :value="value"
+          :init="editorSettings"
+          :name="name"
+          @input="$emit('input', $event)"
+        />
+      </div>
     </div>
     <textarea
       v-else
@@ -62,7 +65,6 @@ export default {
       return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass,
-        'form-control': this.richtext && !this.readonly,
         'richtext': this.richtext && !this.readonly,
       };
     },
@@ -70,7 +72,9 @@ export default {
   data() {
     return {
       editorSettings: {
-        inline: true,
+        inline: false,
+        statusbar: false,
+        content_style: 'body { font-family: Arial; }',
         menubar: false,
         plugins: [ 'link', 'lists' ],
         toolbar: 'undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
@@ -83,9 +87,18 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .form-group .richtext {
   height: auto;
+  :focus {
+    outline: 0 !important;
+  }
+
+  .editor {
+    border: 1px solid #ccc;
+    border-top: 0;
+    padding: 1em;
+  }
 }
 </style>
 
