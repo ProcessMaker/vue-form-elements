@@ -45,6 +45,7 @@ export default {
     'content',
     'validationData',
     'label',
+    'renderVarHtml',
     // 'value'
   ],
   computed:{
@@ -62,9 +63,19 @@ export default {
         return this.content;
       }
 
+      if (this.renderVarHtml) {
+        this.variableToRender = `{${this.content}}`;
+      }
+    
       try {
+        if (this.renderVarHtml) {
+          return Mustache.render(this.variableToRender, {...this.customFunctions, ...this.validationData});  
+        }
         return Mustache.render(this.content, {...this.customFunctions, ...this.validationData});
       } catch (error) {
+        if (this.renderVarHtml) {
+          return this.renderVarName;
+        }
         return this.content;
       }
     }
@@ -86,6 +97,7 @@ export default {
         relative_urls: false,
         remove_script_host: false,
       },
+      variableToRender: null,
     }
   }
 }
