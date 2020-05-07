@@ -10,6 +10,11 @@ if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.
   Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
 
+Validator.register('date', function(date) {
+  let checkDate = moment(date);
+  return checkDate.isValid();
+}, 'The :attribute must be a valid date.');
+
 export default {
   props: {
     dataFormat: {
