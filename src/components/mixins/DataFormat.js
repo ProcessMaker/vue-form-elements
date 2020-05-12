@@ -1,5 +1,6 @@
 import Validator from 'validatorjs';
 import moment from 'moment-timezone';
+import { getUserDateFormat, getUserDateTimeFormat } from '../../dateUtils';
 
 // To include another language in the Validator with variable processmaker
 let globalObject = typeof window === 'undefined'
@@ -10,10 +11,15 @@ if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.
   Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
 
-Validator.register('date', function(date) {
-  let checkDate = moment(date);
+Validator.register('custom-date', function(date) {
+  let checkDate = moment(date, [getUserDateFormat(), moment.ISO_8601], true);
   return checkDate.isValid();
 }, 'The :attribute must be a valid date.');
+
+Validator.register('custom-datetime', function(date) {
+  let checkDate = moment(date, [getUserDateTimeFormat(), moment.ISO_8601], true);
+  return checkDate.isValid();
+}, 'The :attribute must be a valid date and time.');
 
 export default {
   props: {
@@ -59,8 +65,8 @@ export default {
         'int': 'integer',
         'boolean': 'boolean',
         'string': 'string',
-        'datetime': 'date',
-        'date': 'date',
+        'datetime': 'custom-datetime',
+        'date': 'custom-date',
         'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'currency': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
         'array': 'array',
@@ -95,8 +101,10 @@ export default {
           newValue = parseFloat(newValue);
           break;
         case 'date':
+          newValue = moment(newValue, [getUserDateFormat(), moment.ISO_8601], true).toISOString();
+          break;
         case 'datetime':
-          newValue = moment(newValue).toISOString();
+          newValue = moment(newValue, [getUserDateTimeFormat(), moment.ISO_8601], true).toISOString();
           break;
         case 'int':
           newValue = parseInt(newValue);
