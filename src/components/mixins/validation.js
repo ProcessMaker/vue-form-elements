@@ -55,6 +55,9 @@ export default {
                     let rules = [];
 
                     this.validation.forEach(configs => {
+                        if (!configs.value) {
+                            return;
+                        }
                         rules.push(configs.value); 
                     });
             
