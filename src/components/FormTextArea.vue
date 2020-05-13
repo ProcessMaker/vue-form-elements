@@ -95,8 +95,9 @@ export default {
       if (!this.rows) {
         return;
       }
-
-      this.editorInstance.getContainer().style.height = this.height;
+      if (this.editorInstance.getContainer() && this.editorInstance.getContainer().style) {
+          this.editorInstance.getContainer().style.height = this.height;
+      }
     }
   },
   data() {
