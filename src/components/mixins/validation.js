@@ -139,7 +139,7 @@ export default {
                 const beforeDate = moment(params).toISOString();
                 
                 return inputDate <= beforeDate;
-            }, 'The :attribute must be equal or after :before_or_equal.');
+            }, 'The :attribute must be equal or before :before_or_equal.');
         }
     }
 }
