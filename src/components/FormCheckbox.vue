@@ -47,7 +47,7 @@ export default {
   ],
   computed: {
     isChecked() {
-      // if it should be checked by default, check the control if the checked value is not set
+      // If it is selected by default, check the control if the checked value is not set
       if (this.initiallyChecked && typeof(this.checked) == 'undefined') {
          this.$emit('change', true);
          return true;
