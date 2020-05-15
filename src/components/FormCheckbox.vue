@@ -47,6 +47,9 @@ export default {
   ],
   computed: {
     isChecked() {
+      if (this.initiallyChecked) {
+         this.$emit('change', true);
+      }
       return this.checked || this.initiallyChecked;
     },
     divClass() {
