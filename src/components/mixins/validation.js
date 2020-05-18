@@ -140,6 +140,52 @@ export default {
                 
                 return inputDate <= beforeDate;
             }, 'The :attribute must be equal or before :before_or_equal.');
-        }
+
+            Validator.register('required_if', function(val, req, attribute) {
+                if (typeof req === 'string') {
+                    req = req.split(',');
+                }
+                
+                let inputtedValue = this.validator._objectPath(this.validator.input, req[0]);
+            
+                switch (typeof inputtedValue) {
+                    case 'boolean':
+                    case 'number':
+                        if (inputtedValue.toString() == req[1]) {
+                            return this.validator.getRule('required').validate(val);
+                        }
+                        break;
+                    default:
+                        if (inputtedValue == req[1]) {
+                            return this.validator.getRule('required').validate(val);
+                        }
+                        break;
+                }
+                return true;
+            }, 'The :attribute field is required.');
+
+            Validator.register('required_unless', function(val, req, attribute) {
+                if (typeof req === 'string') {
+                    req = req.split(',');
+                }
+                
+                let inputtedValue = this.validator._objectPath(this.validator.input, req[0]);
+            
+                switch (typeof inputtedValue) {
+                    case 'boolean':
+                    case 'number':
+                        if (inputtedValue.toString() !== req[1]) {
+                            return this.validator.getRule('required').validate(val);
+                        }
+                        break;
+                    default:
+                        if (inputtedValue !== req[1]) {
+                            return this.validator.getRule('required').validate(val);
+                        }
+                        break;
+                }
+                return true;
+            }, 'The :attribute field is required.');
+        },
     }
 }
