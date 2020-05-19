@@ -47,7 +47,14 @@ export default {
   ],
   computed: {
     isChecked() {
-      return this.checked || this.initiallyChecked;
+      // if control's value is not set, use the initiallyChecked configuration
+      let initCheck = new Boolean(this.initiallyChecked)
+      if (typeof(this.checked) == 'undefined') {
+        this.$emit('change', initCheck);
+        return initCheck;
+      }
+
+      return this.checked;
     },
     divClass() {
       return !this.toggle ? 'form-check' : 'custom-control custom-switch';
