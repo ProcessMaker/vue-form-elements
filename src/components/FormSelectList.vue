@@ -118,6 +118,7 @@
             dataSourceUrl += '?pmql=' + pmql;
           }
 
+          console.log('enviando..');
           ProcessMaker.apiClient
             .post(dataSourceUrl, {
               config: {
@@ -125,6 +126,7 @@
               }
             })
             .then(response => {
+              console.log('recibiendo..');
               var list = dataName ? eval('response.data.' + dataName) : response.data;
               list.forEach(item => {
                 // if the content has a mustache expression
@@ -160,6 +162,9 @@
     watch: {
       validationData: {
         handler(value) {
+          if (this.options.dataSource === 'dataConnector') {
+            return;
+          }
           this.optionsFromDataSource();
         }
       },
