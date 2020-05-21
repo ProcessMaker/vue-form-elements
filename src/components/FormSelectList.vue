@@ -15,6 +15,7 @@
       :class="classList"
       :only-key="onlyKey"
       :multiple="allowMultiSelect"
+      ref="multiselect"
     >
     </form-plain-multi-select>
 
@@ -103,9 +104,8 @@
         allowMultiSelect: false,
         optionsList: [],
         onlyKey: true,
-        waitForApiCall: false,
         debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
-                                           selOptions, waitForApi) => {
+                                           selOptions) => {
           let options = [];
 
           // If no ProcessMaker object is available return and do nothing
@@ -119,7 +119,6 @@
             dataSourceUrl += '?pmql=' + pmql;
           }
 
-          console.log('enviando..');
           ProcessMaker.apiClient
             .post(dataSourceUrl, {
               config: {
@@ -127,7 +126,6 @@
               }
             })
             .then(response => {
-              console.log('recibiendo..');
               var list = dataName ? eval('response.data.' + dataName) : response.data;
               list.forEach(item => {
                 // if the content has a mustache expression
@@ -153,15 +151,12 @@
                 this.selectedOptions = this.allowMultiSelect ? currentValue : [currentValue[0]];
               }
               this.selectedOptions = selOptions || [];
-
-              if (waitForApi) {
-                this.waitForApiCall = true;
-              }
-
+              this.$refs.multiselect.setReemit(true);
             })
             .catch(err => {
               /* Ignore error */
             });
+
         }, 750),
       };
     },
@@ -172,39 +167,6 @@
             return;
           }
           this.optionsFromDataSource();
-        }
-      },
-      waitForApiCall:{
-        immediate:true,
-        handler(load) {
-          if (!load) {
-            return;
-          }
-          console.log('wait for api');
-
-          if (typeof ProcessMaker !== 'undefined') {
-            ProcessMaker.EventBus.$on('form-data-updated', (newData) => {
-              this.formData=newData;
-            });
-          }
-
-          if (typeof this.value === 'undefined' || this.value === null) {
-            this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
-            this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
-            return
-          }
-
-          if (this.options.allowMultiSelect) {
-            this.selectedOptions = Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1]);
-          } else {
-            this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
-          }
-
-          this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
-
-          this.optionsForDataName()
-
-          this.waitForApiCall = false;
         }
       },
       options: {
@@ -224,13 +186,7 @@
       value: {
         immediate:true,
         handler() {
-          let thereIsntAssignment =(typeof this.value === 'undefined' ||
-                                        typeof this.options.optionsList === 'undefined' ||
-                                        !Array.isArray(this.options.optionsList) ||
-                                        this.options.optionsList.length===0);
-
-          //If there aren't options or values to set return
-          if (thereIsntAssignment) {
+          if (typeof this.value === 'undefined') {
              this.selectedOptions = [];
               return;
           }
@@ -263,27 +219,27 @@
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
       this.valueTypeReturned = this.options.valueTypeReturned;
-      this.optionsFromDataSource(true);
+      this.optionsFromDataSource();
 
-      //if (typeof ProcessMaker !== 'undefined') {
-      //  ProcessMaker.EventBus.$on('form-data-updated', (newData) => {
-      //    this.formData=newData;
-      //  });
-      //}
+      if (typeof ProcessMaker !== 'undefined') {
+        ProcessMaker.EventBus.$on('form-data-updated', (newData) => {
+          this.formData=newData;
+        });
+      }
 
-      //if (typeof this.value === 'undefined' || this.value === null) {
-      //  this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
-      //  this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
-      //  return
-      //}
+      if (typeof this.value === 'undefined' || this.value === null) {
+        this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
+        this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
+        return
+      }
 
-      //if (this.options.allowMultiSelect) {
-      //    this.selectedOptions = Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1]);
-      //} else {
-      //    this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
-      //}
+      if (this.options.allowMultiSelect) {
+          this.selectedOptions = Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1]);
+      } else {
+          this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
+      }
 
-      //this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
+      this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
       sendSelectedOptions() {
@@ -302,11 +258,10 @@
         }
 
 
-        console.log('value to send', valueToSend);
         this.$emit('input', valueToSend);
       },
 
-      optionsFromDataSource(waitForApi) {
+      optionsFromDataSource() {
         const {
           jsonData,
           key,
@@ -336,61 +291,8 @@
         }
 
         if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
-          this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value, this.cachedSelOptions, waitForApi);
+          this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value, this.cachedSelOptions);
         }
-        this.optionsForDataName();
-        //if (dataName) {
-        //  if (this.options.valueTypeReturned === null) {
-        //    return;
-        //  }
-
-        //  if (this.options.valueTypeReturned === 'single') {
-        //    try {
-        //    options = Object.values(_.get(this.validationData, dataName))
-        //        .map(convertToSelectOptions)
-        //        .filter(removeInvalidOptions);
-        //      this.optionsList = options;
-        //    } catch (error) {
-        //      /* Ignore error */
-        //    }
-        //  }
-
-        //  if (this.options.valueTypeReturned === 'object') {
-        //    const convertObjectToSelectOptions = option => ({
-        //      value: option,
-        //      content: (option[value || 'content']).toString(),
-        //    });
-        //    try {
-        //      options = Object.values(_.get(this.validationData, dataName))
-        //        .map(convertObjectToSelectOptions);
-        //      this.optionsList = options;
-        //    } catch(error) {
-        //      /* Ignore error */
-        //    }
-        //  }
-        //}
-
-      },
-      optionsForDataName() {
-        const {
-          jsonData,
-          key,
-          value,
-          dataSource,
-          allowMultiSelect,
-          selectedDataSource,
-          selectedEndPoint,
-          dataName
-        } = this.options;
-        console.log('optionsForDataName');
-
-        let options = [];
-
-        const convertToSelectOptions = option => ({
-          value: (option[key || 'value']).toString(),
-          content: (option[value || 'content']).toString(),
-        })
-
         if (dataName) {
           if (this.options.valueTypeReturned === null) {
             return;
@@ -421,7 +323,9 @@
             }
           }
         }
-      } 
+
+      },
+
     },
     computed: {
       divClass() {

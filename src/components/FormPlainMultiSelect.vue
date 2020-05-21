@@ -60,6 +60,7 @@
     data() {
       return {
         selected: null,
+        reemitInput: false
       };
     },
     computed: {
@@ -86,9 +87,10 @@
 
           let firstVal =  typeof value[0] === 'object' ? JSON.stringify(value[0]) : value[0];
 
-          if (firstValToEmit === firstVal && JSON.stringify(value) === JSON.stringify(oldValue)) {
+          if (firstValToEmit === firstVal && JSON.stringify(value) === JSON.stringify(oldValue) && !this.reemitInput) {
             return;
           }
+          this.reemitInput = false;
 
           let selectedArray = [];
           value.forEach(item => {
@@ -114,6 +116,9 @@
       }
     },
     methods: {
+        setReemit: function (value) {
+          this.reemitInput = value;
+        },
         valueToUseForEmit: function (element) {
           if (this.onlyKey) {
             if (typeof element.value == 'undefined') {
