@@ -69,7 +69,7 @@ export default {
     error: String,
     helper: String,
     dataFormat: String,
-    value: [String, Boolean],
+    value: [String, Boolean, Date],
     inputClass: {type: [String, Array, Object], default: 'form-control'},
     dataTest: String,
     disabled: null,
@@ -176,7 +176,7 @@ export default {
         date = moment(date, checkFormats, true);
         if (!date.isValid()) {
           date = false;
-        } 
+        }
       }
 
       return date;
