@@ -15,6 +15,7 @@
       :class="classList"
       :only-key="onlyKey"
       :multiple="allowMultiSelect"
+      ref="multiselect"
     >
     </form-plain-multi-select>
 
@@ -150,16 +151,21 @@
                 this.selectedOptions = this.allowMultiSelect ? currentValue : [currentValue[0]];
               }
               this.selectedOptions = selOptions || [];
+              this.$refs.multiselect.setReemit(true);
             })
             .catch(err => {
               /* Ignore error */
             });
+
         }, 750),
       };
     },
     watch: {
       validationData: {
         handler(value) {
+          if (this.options.dataSource === 'dataConnector') {
+            return;
+          }
           this.optionsFromDataSource();
         }
       },
