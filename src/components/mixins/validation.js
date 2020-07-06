@@ -1,15 +1,6 @@
 let Validator = require('validatorjs');
 import moment from 'moment-timezone';
 
-// To include another language in the Validator with variable processmaker
-let globalObject = typeof window === 'undefined'
-  ? global
-  : window;
-
-if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.ProcessMaker.user.lang) {
-    Validator.useLang(globalObject.ProcessMaker.user.lang);
-}
-
 export default {
     props: [
         'validation',
@@ -23,6 +14,7 @@ export default {
         }
     },
     mounted() {
+        this.setValidatorLanguage();
         this.updateValidation()
     },
     watch: {
@@ -45,6 +37,21 @@ export default {
         }
     },
     methods: {
+        setValidatorLanguage() {
+            let globalObject = typeof window === 'undefined' ? global : window;
+
+            if (globalObject.validatorLanguageSet) {
+                return;
+            }
+
+            if (_.has(globalObject, 'ProcessMaker.user.lang')) {
+                Validator.useLang(globalObject.ProcessMaker.user.lang);
+            } else if (document.documentElement.lang) {
+                Validator.useLang(document.documentElement.lang);
+            }
+
+            globalObject.validatorLanguageSet = true;
+        },
         updateValidation() {
             if (this.validation) {
                 let fieldName = this.validationField ? this.validationField : this.name;
