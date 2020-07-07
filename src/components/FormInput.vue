@@ -11,14 +11,7 @@
       :class="classList"
       v-on:blur="formatFloatValue()"
     >
-      <template v-if="validator && validator.errorCount">
-        <div class="invalid-feedback" v-for="(errors, index) in validator.errors.all()" :key="index">
-          <div v-for="(error, subIndex) in errors" :key="subIndex">
-            {{error}}
-          </div>
-        </div>
-      </template>
-      <div class="invalid-feedback" v-if="error">{{error}}</div>
+    <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator"/>
     <small v-if="helper" class="form-text text-muted" v-html="helper"/>
   </div>
 </template>
@@ -27,11 +20,15 @@
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
+import DisplayErrors from './common/DisplayErrors';
 
-const uniqIdsMixin = createUniqIdsMixin()
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   inheritAttrs: false,
+  components: {
+    DisplayErrors,
+  },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [
     'value',
