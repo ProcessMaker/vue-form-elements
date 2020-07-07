@@ -98,6 +98,7 @@ export default {
           newValue = Boolean(newValue);
           break;
         case 'currency':
+        case 'percentage':
           newValue = parseFloat(newValue);
           break;
         case 'date':
