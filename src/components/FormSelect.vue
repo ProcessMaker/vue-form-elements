@@ -20,10 +20,7 @@
         {{option.content}}
       </option>
     </select>
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
-    </div>
+    <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator"/>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
@@ -33,8 +30,9 @@ import ValidationMixin from './mixins/validation'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import DataFormatMixin from './mixins/DataFormat';
 import hasDefaultOptionKey from './mixins/hasDefaultOptionKey';
+import DisplayErrors from './common/DisplayErrors';
 
-const uniqIdsMixin = createUniqIdsMixin()
+const uniqIdsMixin = createUniqIdsMixin();
 
 function removeInvalidOptions(option) {
   return Object.keys(option).includes('value', 'contemnt') &&
@@ -43,6 +41,9 @@ function removeInvalidOptions(option) {
 
 export default {
   inheritAttrs: false,
+  components: {
+    DisplayErrors,
+  },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin, hasDefaultOptionKey],
   props: [
     'label',
