@@ -6,8 +6,6 @@
       option-value="value"
       option-content="content"
       v-uni-id="name"
-      v-bind="$attrs"
-      v-on="$listeners"
       v-model="selectedOptions"
       :placeholder="placeholder ? placeholder : $t('Select...')"
       :show-labels="false"
@@ -15,20 +13,21 @@
       :class="classList"
       :only-key="onlyKey"
       :multiple="allowMultiSelect"
+      @input="onInput"
       ref="multiselect"
     >
     </form-plain-multi-select>
 
     <div v-if="options.renderAs === 'checkbox' && allowMultiSelect">
-      <div :class="divClass" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value" v-for="option in optionsList">
+      <div :class="divClass" :key="typeof option == 'object' ? option[optionKey] : option.value" v-for="option in optionsList">
         <input
           v-bind="$attrs"
           :class="inputClass"
           type="checkbox"
-          :value="option.value"
+          :value="onlyKey ? option.value : option"
           v-uni-id="`${name}-${option.value}`"
           :name="`${name}`"
-          :checked="selectedOptions.indexOf(option.value)>=0"
+          :checked="selectedOptions.indexOf(onlyKey ? option.value : option)>=0"
           v-model="selectedOptions"
           @change="sendSelectedOptions($event)"
         >
@@ -37,12 +36,12 @@
     </div>
 
     <div v-if="options.renderAs === 'checkbox' && !allowMultiSelect">
-      <div :class="divClass" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value" v-for="option in optionsList">
+      <div :class="divClass" :key="typeof option == 'object' ? option[optionKey] : option.value" v-for="option in optionsList">
         <input
           v-bind="$attrs"
           type="radio"
           :class="inputClass"
-          :value="option.value"
+          :value="onlyKey ? option.value : option"
           v-uni-id="`${name}-${option.value}`"
           :name="`${name}`"
           v-model="selectedOptions[0]"
@@ -180,38 +179,42 @@
           }
           this.optionKey = value.key || 'value';
           this.optionValue = value.value || 'content';
+          this.onlyKey = this.options.valueTypeReturned == 'single' ? true : false;
           this.optionsFromDataSource();
         }
       },
       value: {
         immediate:true,
         handler() {
+          console.log('value changed', this.value);
           if (typeof this.value === 'undefined') {
              this.selectedOptions = [];
               return;
           }
 
           if (!this.value) {
-            this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
-            this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
+            console.log('no value');
+            // this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
+            // this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
 
-            if (this.options.defaultOptionKey) {
-              this.sendSelectedOptions();
-            }
+            // if (this.options.defaultOptionKey) {
+            //   this.sendSelectedOptions();
+            // }
 
-            return;
+            // return;
           }
 
-          this.onlyKey = !(this.options.valueTypeReturned === 'object');
+          // this.onlyKey = !(this.options.valueTypeReturned === 'object');
 
           if (this.options.allowMultiSelect) {
             this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
           }
           else {
             this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
+            console.log('selected', this.value, this.selectedOptions);
           }
 
-          this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
+          // this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
         }
       },
     },
@@ -243,7 +246,8 @@
     },
     methods: {
       sendSelectedOptions() {
-        let valueToSend = (this.selectedOptions.constructor === Array)
+        console.log('hit here');
+        let valueToSend = (this.selectedOptions && this.selectedOptions.constructor === Array)
           ? this.selectedOptions
           : [this.selectedOptions];
 
@@ -253,11 +257,26 @@
           valueToSend = valueToSend[0];
         }
 
-        if (this.options.renderAs === 'dropdown' && this.options.allowMultiSelect) {
-          valueToSend = this.selectedOptions.map(x=>x[this.options.key]);
+        if (!this.options.allowMultiSelect) {
+          console.log('HIT HERE');
+          this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
         }
+        // if (this.options.allowMultiSelect && this.onlyKey) {
+        //   // valueToSend = this.selectedOptions.map(x=>x[this.options.key]);
+        //   console.log('valueToSend', valueToSend, this.selectedOptions);
+        // }
 
+        // if (!this.options.allowMultiSelect && this.options.renderAs == 'checkbox' && this.onlyKey) {
+        //   valueToSend = valueToSend[this];
+        //   console.log('RADIO', valueToSend);
+        // }
 
+        // if (this.options.renderAs == 'checkbox' && !this.options.allowMultiSelect && this.onlyKey) {
+        //   console.log('radio button with objects returned');
+        // }
+
+        // console.log('VALUE TO SEND', valueToSend);
+        console.log('emitted', valueToSend);
         this.$emit('input', valueToSend);
       },
 
@@ -309,7 +328,7 @@
             }
           }
 
-          if (this.options.valueTypeReturned === 'object') {
+          if (this.options.valueTypeReturned === 'object' && this.options.renderAs === 'dropdown') {
             const convertObjectToSelectOptions = option => ({
               value: option,
               content: (option[value || 'content']).toString(),
@@ -325,6 +344,11 @@
         }
 
       },
+      onInput(value) {
+        console.log('ON INPUT', value);
+        this.selectedOptions =  value;
+        this.sendSelectedOptions();
+      }
 
     },
     computed: {
