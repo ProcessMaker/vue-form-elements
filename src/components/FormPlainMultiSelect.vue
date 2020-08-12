@@ -3,8 +3,6 @@
     <label v-uni-for="name" v-if="label">{{ label }}</label>
     <multiselect
       v-model="selected"
-      v-bind="$attrs"
-      v-on="$listeners"
       v-uni-id="name"
       :name="name"
       :multiple="multiple"
@@ -78,9 +76,9 @@
       value: {
         immediate: true,
         handler(value, oldValue) {
-
+          console.log('FORM SELECT VALUE CHANGED', value);
           if (typeof value === 'undefined' || value === null || !Array.isArray(value) || value.length <= 0) {
-              return;
+            return;
           }
 
           let firstValToEmit =  typeof value[0] === 'object' ? JSON.stringify(this.valueToUseForEmit(value[0])) : value[0];
@@ -100,20 +98,57 @@
             }
           });
 
+          // this.selected = selectedArray;
+
+          console.log('selectedArray', selectedArray);
+
+          // if (this.multiple) {
+          //   this.selected = selectedArray;
+          // } else {
+          //   this.selected = selectedArray.length > 0 ? selectedArray[0] : [];
+          // }
+
+          
+
           if (this.multiple) {
             let emit = [];
             value.map(item => {
               emit.push(this.valueToUseForEmit(item));
             });
-            this.$emit('input', emit);
+            console.log('emitted value from plain mulit 1', );
             this.selected = selectedArray;
+            this.$emit('input', emit);
+            
           }
           else {
-            this.$emit('input', this.valueToUseForEmit(value[0]));
+            console.log('emitted value from plain mulit', this.valueToUseForEmit(value[0]));
             this.selected = selectedArray.length > 0 ? selectedArray[0] : [];
+            this.$emit('input', this.valueToUseForEmit(value[0]));
           }
         }
-      }
+      },
+      selected() {
+        console.log('FROM MULITSELECT FORM', this.selected);
+        if (typeof this.selected === 'undefined' || this.selected === null || this.selected.length <= 0) {
+          // this.$emit('input', null);
+          return;
+        }
+
+        if (this.multiple) {
+        //   console.log('has mulitple');
+          let emit = [];
+          this.selected.map(item => {
+            console.log('ITEM', item);
+            emit.push(this.valueToUseForEmit(item));
+          });
+          this.$emit('input', emit);
+        } else {
+          this.$emit('input', this.valueToUseForEmit(this.selected));  
+        }
+
+
+        // this.$emit('input', this.valueToUseForEmit(this.selected));
+      },
     },
     methods: {
         setReemit: function (value) {
