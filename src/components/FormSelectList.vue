@@ -103,6 +103,7 @@
         allowMultiSelect: false,
         optionsList: [],
         onlyKey: true,
+        responseList: [],
         debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
                                            selOptions) => {
           let options = [];
@@ -125,7 +126,8 @@
               }
             })
             .then(response => {
-              var list = dataName ? eval('response.data.' + dataName) : response.data;
+              let list = dataName ? eval('response.data.' + dataName) : response.data;
+              this.responseList = list;
               list.forEach(item => {
                 // if the content has a mustache expression
                 let itemContent = (value.indexOf('{{') >= 0)
@@ -261,10 +263,30 @@
           console.log('HIT HERE');
           this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
         }
-        // if (this.options.allowMultiSelect && this.onlyKey) {
-        //   // valueToSend = this.selectedOptions.map(x=>x[this.options.key]);
-        //   console.log('valueToSend', valueToSend, this.selectedOptions);
-        // }
+        if (!this.onlyKey) {
+          if (Array.isArray(valueToSend)) {
+            let newData = [];
+            valueToSend.map((selected) => {
+              this.responseList.map((item) => {
+                if (item[this.optionKey] === selected.value) {
+                  item['value'] = selected.value;
+                  item['content'] = selected.content;
+                  newData.push(item);
+                }
+              });
+            });
+            valueToSend = newData;
+          } else {
+            let reponse = this.responseList.filter((item) => {
+              item['value'] = valueToSend.value;
+              item['content'] = valueToSend.content;
+              
+              return item[this.optionKey] === valueToSend.value;
+            });
+            valueToSend = reponse[0];
+          }
+          console.log('valueToSend', valueToSend, this.selectedOptions);
+        }
 
         // if (!this.options.allowMultiSelect && this.options.renderAs == 'checkbox' && this.onlyKey) {
         //   valueToSend = valueToSend[this];
