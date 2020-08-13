@@ -130,7 +130,7 @@
       selected() {
         console.log('FROM MULITSELECT FORM', this.selected);
         if (typeof this.selected === 'undefined' || this.selected === null || this.selected.length <= 0) {
-          // this.$emit('input', null);
+          this.$emit('input', this.multiple ? [] : '');
           return;
         }
 
