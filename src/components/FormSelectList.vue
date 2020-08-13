@@ -275,7 +275,7 @@
                 }
               });
             });
-            valueToSend = newData;
+            valueToSend = newData.length > 0 || valueToSend;
           } else {
             let reponse = this.responseList.filter((item) => {
               item['value'] = valueToSend.value;
@@ -283,7 +283,7 @@
               
               return item[this.optionKey] === valueToSend.value;
             });
-            valueToSend = reponse[0];
+            valueToSend = reponse[0] || valueToSend;
           }
           console.log('valueToSend', valueToSend, this.selectedOptions);
         }
