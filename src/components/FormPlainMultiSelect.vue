@@ -103,7 +103,14 @@ export default {
         let selectedArray = [];
         value.forEach((item) => {
           let foundOption = this.options.find((option) => {
-            if (option.value == this.keyElementValue(item)) {
+            console.log(option.value);
+            console.log(this.keyValue(item));
+            if (
+              JSON.stringify(option.value) ==
+              JSON.stringify(this.keyValue(item))
+            ) {
+              return item;
+            } else if (option.value == this.keyElementValue(item)) {
               return item;
             }
           });
@@ -200,10 +207,13 @@ export default {
       if (this.onlyKey) {
         switch (this.valueType(element)) {
           case "scalar":
+            console.log("scalar");
             return element;
           case "object":
+            console.log(this.optionValue);
             return element[this.optionValue];
           case "nested":
+            console.log(this.optionValue);
             return element.value[this.optionValue];
           default:
             return element;
@@ -211,10 +221,13 @@ export default {
       } else {
         switch (this.valueType(element)) {
           case "scalar":
+            console.log("scalar");
             return null;
           case "object":
+            console.log("object");
             return element;
           case "nested":
+            console.log("nested");
             return element.value;
           default:
             return element;
@@ -225,10 +238,13 @@ export default {
     keyElementValue: function (element) {
       switch (this.valueType(element)) {
         case "scalar":
+          console.log("scalar");
           return element;
         case "object":
+          console.log(this.optionValue);
           return element[this.optionValue];
         case "nested":
+          console.log(this.optionValue);
           return element.value[this.optionValue];
         default:
           return element;
