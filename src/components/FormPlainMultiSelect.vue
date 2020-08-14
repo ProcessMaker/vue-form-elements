@@ -101,7 +101,7 @@ export default {
         this.reemitInput = false;
 
         let selectedArray = [];
-        value.forEach((item) => {
+        /*value.forEach((item) => {
           let foundOption = this.options.find((option) => {
             console.log(option.value);
             console.log(this.keyValue(item));
@@ -110,14 +110,13 @@ export default {
               JSON.stringify(this.keyValue(item))
             ) {
               return item;
-            } else if (option.value == this.keyElementValue(item)) {
-              return item;
             }
           });
           if (foundOption) {
             selectedArray.push(foundOption);
           }
-        });
+        });*/
+        selectedArray = value;
 
         // this.selected = selectedArray;
 
