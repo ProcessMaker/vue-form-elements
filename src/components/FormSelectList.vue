@@ -16,6 +16,7 @@
       :only-key="onlyKey"
       :multiple="allowMultiSelect"
       ref="multiselect"
+      @search-change="searchChange"
     >
     </form-plain-multi-select>
 
@@ -95,6 +96,7 @@
     ],
     data() {
       return {
+        filter: '',
         cachedSelOptions: null,
         formData: {},
         optionKey: '',
@@ -122,6 +124,7 @@
           ProcessMaker.apiClient
             .post(dataSourceUrl, {
               config: {
+                filter: this.filter,
                 endpoint: selectedEndPoint,
               }
             })
@@ -164,6 +167,10 @@
       validationData: {
         handler(value) {
           if (this.options.dataSource === 'dataConnector') {
+            if (this.filter != String(this.value)) {
+              this.filter = String(this.value);
+              this.optionsFromDataSource();
+            }
             return;
           }
           this.optionsFromDataSource();
@@ -219,6 +226,7 @@
       this.renderAs = this.options.renderAs;
       this.allowMultiSelect = this.options.allowMultiSelect;
       this.valueTypeReturned = this.options.valueTypeReturned;
+      this.filter = this.value;
       this.optionsFromDataSource();
 
       if (typeof ProcessMaker !== 'undefined') {
@@ -242,6 +250,10 @@
       this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
+      searchChange(filter) {
+        this.filter = filter;
+        this.optionsFromDataSource();
+      },
       sendSelectedOptions() {
         let valueToSend = (this.selectedOptions.constructor === Array)
           ? this.selectedOptions
