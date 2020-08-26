@@ -102,7 +102,7 @@ export default {
           newValue = parseFloat(newValue);
           break;
         case 'date':
-          newValue = moment(newValue, [getUserDateFormat(), moment.ISO_8601], true).toISOString();
+          newValue = moment(newValue, [getUserDateFormat(), moment.ISO_8601], true).toISOString().split(RegExp('T[0-9]'))[0];
           break;
         case 'datetime':
           newValue = moment(newValue, [getUserDateTimeFormat(), moment.ISO_8601], true).toISOString();
