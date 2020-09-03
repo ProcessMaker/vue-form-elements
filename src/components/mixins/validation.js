@@ -96,6 +96,23 @@ export default {
             }
         },
         registerCustomRules(data) {
+
+            Validator.register('custom-same', function(val, req) {
+                let val1;
+                let val2 = val;
+                if (!req.includes('.')) {
+                    val1 = this.validator._flattenObject(this.validator.input)[req];
+                } else {
+                    val1 = req.split('.').reduce((obj,i)=>obj[i], this.validator.input);
+                }
+                
+                if (val1 === val2) {
+                    return true;
+                }
+                
+                return false;
+            }, 'The :attribute and :custom-same fields must match.');
+
             Validator.register('after', function(date, params) {
                 // checks if incoming 'params' is a date or a key reference.
                 let checkDate = moment(params);
