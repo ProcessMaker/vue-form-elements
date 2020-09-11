@@ -54,7 +54,7 @@
 
 
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+      <div v-for="(error, index) in validatorErrors" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
     </div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
@@ -242,6 +242,10 @@
       this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
+      searchChange(filter) {
+        this.filter = filter;
+        this.optionsFromDataSource();
+      },
       sendSelectedOptions() {
         let valueToSend = (this.selectedOptions.constructor === Array)
           ? this.selectedOptions
@@ -328,6 +332,9 @@
 
     },
     computed: {
+      validatorErrors() {
+        return this.validator && this.validator.errors.get(this.name) || [];
+      },
       divClass() {
         return this.toggle ? 'custom-control custom-radio' : 'form-check';
       },

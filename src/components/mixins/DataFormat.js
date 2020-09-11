@@ -101,12 +101,6 @@ export default {
         case 'percentage':
           newValue = parseFloat(newValue);
           break;
-        case 'date':
-          newValue = moment(newValue, [getUserDateFormat(), moment.ISO_8601], true).toISOString();
-          break;
-        case 'datetime':
-          newValue = moment(newValue, [getUserDateTimeFormat(), moment.ISO_8601], true).toISOString();
-          break;
         case 'int':
           newValue = parseInt(newValue);
           break;
