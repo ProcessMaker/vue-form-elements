@@ -41,6 +41,9 @@ export default {
     value(value) {
       const typedValue = this.formatValue(value);
       if (typedValue !== value) {
+        if (this.dataFormat === 'date' && this.formatValue(value) === typedValue) {
+          return;
+        }
         this.$emit('input', typedValue);
       }
     },
