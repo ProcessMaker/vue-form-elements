@@ -7,7 +7,7 @@
           v-uni-id="getOptionId(option)"
           :name="`${name}`"
           :value="emitObjects ? option : getOptionValue(option)"
-          v-model="seleccionados"
+          v-model="selected"
       >
       <label :class="labelClass" v-uni-for="getOptionId(option)">
         {{getOptionContent(option)}}
@@ -30,28 +30,27 @@ export default {
     'optionValue',
     'optionContent',
     'options',
-    'label',
     'error',
     'helper',
     'name',
     'controlClass',
-    'placeholder',
     'emitObjects',
     'emitArray',
   ],
   data() {
     return {
-      seleccionados:[]
+      selected:[]
     }
   },
   mounted() {
+    this.selected = this.value ? this.value : [];
   },
   watch: {
     value(val) {
-      this.seleccionados = val;
+      this.selected = val;
     },
-    seleccionados() {
-      this.$emit('input', this.seleccionados);
+    selected() {
+      this.$emit('input', this.selected);
     }
   },
   computed: {
@@ -67,12 +66,6 @@ export default {
         {'is-invalid': (this.validator && this.validator.errorCount) || this.error},
         this.toggle ? 'custom-control-input' : 'form-check-input'
       ];
-    },
-    classList() {
-      return {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
-        [this.controlClass]: !!this.controlClass
-      }
     },
   },
   methods: {

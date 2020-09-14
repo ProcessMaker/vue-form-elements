@@ -87,27 +87,13 @@
     ],
     data() {
       return {
-        selectListOptions: []
-      }
-    },
-    mounted() {
-    },
-    methods: {
-      fillSelectListOptions() {
-        if (this.options.dataSource && this.options.dataSource === 'provideData') {
-          this.selectListOptions = this.options.optionsList;
-        }
-
-        if (this.options.dataSource && this.options.dataSource === 'dataObject') {
-          this.selectListOptions = _.get(this.validationData, this.options.dataName);
-        }
-
-        if (this.options.dataSource && this.options.dataSource === 'dataConnector') {
-          const selectedEndPoint = this.options.selectedEndPoint;
-          const selectedDataSource = this.options.selectedDataSource;
-          const dataName = this.options.dataName;
-          const key = this.options.key;
-          const value = this.options.value;
+        selectListOptions: [],
+        doDebounce: _.debounce(options => {
+          const selectedEndPoint = options.selectedEndPoint;
+          const selectedDataSource = options.selectedDataSource;
+          const dataName = options.dataName;
+          const key = options.key;
+          const value = options.value;
           let opt = [];
 
           let dataSourceUrl = '/requests/data_sources/' + selectedDataSource;
@@ -117,24 +103,13 @@
           }
 
           ProcessMaker.apiClient
-              .post(dataSourceUrl, {
-                config: {
-                  endpoint: selectedEndPoint,
-                }
-              })
+              .post(dataSourceUrl, { config: { endpoint: selectedEndPoint, } })
               .then(response => {
-                console.log('respuesta de url:', response);
                 var list = dataName ? eval('response.data.' + dataName) : response.data;
                 list.forEach(item => {
                   // if the content has a mustache expression
-                  let itemContent = (value.indexOf('{{') >= 0)
-                      ? Mustache.render(value, item)
-                      : item[value || 'content'].toString();
-
-                  let itemValue = (key.indexOf('{{') >= 0)
-                      ? Mustache.render(key, item)
-                      : item[key || 'value'].toString();
-
+                  let itemContent = (value.indexOf('{{') >= 0) ? Mustache.render(value, item) : item[value || 'content'].toString();
+                  let itemValue = (key.indexOf('{{') >= 0) ? Mustache.render(key, item) : item[key || 'value'].toString();
                   let parsedOption = {};
                   parsedOption[key] = itemValue;
                   parsedOption[value] = itemContent;
@@ -142,28 +117,50 @@
                 });
 
                 this.selectListOptions =  opt;
-                console.log('Ya llenado', this.selectListOptions);
-                //this.$refs.multiselect.setReemit(true);
               })
               .catch(err => {
                 /* Ignore error */
               });
-          return [];
+        }, 700)
+      }
+    },
+    methods: {
+      fillSelectListOptions() {
+        if (this.options.dataSource && this.options.dataSource === 'provideData') {
+          this.selectListOptions = this.options && this.options.optionsList ? this.options.optionsList : [];
         }
 
-        return this.options.optionsList;
+        if (this.options.dataSource && this.options.dataSource === 'dataObject') {
+          let requestOptions = []
+          try {
+            requestOptions = eval('this.validationData.' + this.options.dataName);
+          }
+          catch(e) {
+            requestOptions = [];
+          }
+          this.selectListOptions = requestOptions ? requestOptions : [];
+        }
+
+        if (this.options.dataSource && this.options.dataSource === 'dataConnector') {
+          this.doDebounce(this.sourceConfig);
+        }
       },
     },
     watch: {
-      options:{
-        immediate:true,
-        deep: true,
-        handler() {
-          this.fillSelectListOptions();
-        }
-      }
+      sourceConfig: { immediate:true, handler() { this.fillSelectListOptions();} },
+      validationData: { immediate:true, handler() { this.fillSelectListOptions();} },
     },
     computed: {
+      sourceConfig() {
+        return {
+          dataSource: this.options.dataSource,
+          selectedEndPoint: this.options.selectedEndPoint,
+          selectedDataSource: this.options.selectedDataSource,
+          dataName: this.options.dataName,
+          value: this.options.value,
+          key: this.options.key
+        };
+      },
       valueProxy: {
         get() { return this.value; },
         set(val) { return this.$emit('input', val); }
@@ -179,19 +176,6 @@
           return 'content';
         }
         return this.options.value || 'content';
-      },
-      divClass() {
-        return this.toggle ? 'custom-control custom-radio' : 'form-check';
-      },
-      labelClass() {
-        return this.toggle ? 'custom-control-label' : 'form-check-label';
-      },
-      inputClass() {
-        return [
-          {[this.controlClass]: !!this.controlClass},
-          {'is-invalid': (this.validator && this.validator.errorCount) || this.error},
-          this.toggle ? 'custom-control-input' : 'form-check-input'
-        ];
       },
       classList() {
         return {
