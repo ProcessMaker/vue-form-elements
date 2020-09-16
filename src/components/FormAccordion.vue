@@ -1,9 +1,9 @@
 <template>
   <div>
     <button
-      v-b-toggle="`collapse-${config.label}`"
+      v-b-toggle="`collapse-${config.name || config.label}`"
       class="accordion-button text-left card-header d-flex align-items-center w-100 pl-3"
-      :id="`accordion-button-${config.label}`"
+      :id="`accordion-button-${config.name || config.label}`"
       >
         <i
           v-if="config.icon"
@@ -19,7 +19,7 @@
 
     <b-collapse
       :visible="initiallyOpen"
-      :id="`collapse-${config.label}`"
+      :id="`collapse-${config.name || config.label}`"
       :accordion="`accordion-${config.name}`"
     >
       <div v-for="element in items" :key="element.config.name">

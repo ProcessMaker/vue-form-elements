@@ -85,15 +85,6 @@ export default {
             } else {
                 this.validator = null
             }
-
-            // Show data type validation messages if exists
-            if (this.dataTypeValidator && !this.dataTypeValidatorPasses) {
-                if (!this.value) {
-                    this.validator = null;
-                    return;
-                }
-                this.validator = this.dataTypeValidator;
-            }
         },
         registerCustomRules(data) {
 

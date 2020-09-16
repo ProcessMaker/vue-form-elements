@@ -39,7 +39,7 @@
     </div>
 
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+      <div v-for="(error, index) in validatorErrors" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
     </div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
@@ -125,6 +125,21 @@
       }
     },
     methods: {
+      searchChange(filter) {
+        this.filter = filter;
+        this.optionsFromDataSource();
+      },
+      sendSelectedOptions() {
+        let valueToSend = (this.selectedOptions.constructor === Array)
+          ? this.selectedOptions
+          : [this.selectedOptions];
+
+        // If more than 1 item is selected but we are displaying a one selection control
+        // show just the first selected item
+        if (!this.allowMultiSelect && valueToSend.length > 0) {
+          valueToSend = valueToSend[0];
+        }
+      },
       fillSelectListOptions() {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           this.selectListOptions = this.options && this.options.optionsList ? this.options.optionsList : [];
@@ -151,6 +166,12 @@
       validationData: { immediate:true, handler() { this.fillSelectListOptions();} },
     },
     computed: {
+      validatorErrors() {
+        return this.validator && this.validator.errors.get(this.name) || [];
+      },
+      divClass() {
+        return this.toggle ? 'custom-control custom-radio' : 'form-check';
+      },
       sourceConfig() {
         return {
           dataSource: this.options.dataSource,
