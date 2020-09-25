@@ -44,19 +44,11 @@ export default {
   },
   watch: {
     value(value) {
-      // const typedValue = this.formatValue(value);
-      // if (typedValue !== value) {
-      //   this.$emit('input', typedValue);
-      // }
       const typedValue = this.formatValue(value);
-      console.log('DataFormat: watch value. Component', this.componentName, 'value: ', value, 'typed Value:', typedValue);
       if (typedValue !== value) {
-        console.log('typedValue diferente');
         if (this.dataFormat === 'date' && this.formatValue(value) === typedValue && this.componentName !== 'FormDatePicker') {
-          console.log('SALIENDO');
           return;
         }
-        console.log('EMITIENDO');
         this.$emit('input', typedValue);
       }
     },
