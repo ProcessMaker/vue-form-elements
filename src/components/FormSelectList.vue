@@ -87,6 +87,7 @@
     ],
     data() {
       return {
+        apiClient: ProcessMaker.apiClient.create(),
         selectListOptions: [],
         doDebounce: _.debounce(options => {
           const selectedEndPoint = options.selectedEndPoint;
@@ -96,13 +97,18 @@
           const value = options.value;
           let opt = [];
 
+          // If no data source has been specified, do not make the api call
+          if(selectedDataSource === null || typeof selectedDataSource === 'undefined' || selectedDataSource.toString().trim().length === 0) {
+            return;
+          }
+
           let dataSourceUrl = '/requests/data_sources/' + selectedDataSource;
           if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
             let pmql = Mustache.render(this.options.pmqlQuery, {data: this.formData});
             dataSourceUrl += '?pmql=' + pmql;
           }
 
-          ProcessMaker.apiClient
+          this.apiClient
               .post(dataSourceUrl, { config: { endpoint: selectedEndPoint, } })
               .then(response => {
                 var list = dataName ? eval('response.data.' + dataName) : response.data;
