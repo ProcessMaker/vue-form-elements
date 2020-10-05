@@ -117,8 +117,8 @@
                   let itemContent = (value.indexOf('{{') >= 0) ? Mustache.render(value, item) : item[value || 'content'].toString();
                   let itemValue = (key.indexOf('{{') >= 0) ? Mustache.render(key, item) : item[key || 'value'].toString();
                   let parsedOption = {};
-                  parsedOption[key] = itemValue;
-                  parsedOption[value] = itemContent;
+                  parsedOption[this.optionsKey] = itemValue;
+                  parsedOption[this.optionsValue] = itemContent;
                   opt.push(parsedOption);
                 });
 
@@ -166,6 +166,14 @@
           this.doDebounce(this.sourceConfig);
         }
       },
+      stripMustache(str) {
+        const removed =  str.replace(/{{/g,'')
+            .replace(/}}/g,'')
+            .split('.')
+            .pop();
+
+        return removed ? removed : str;
+      },
     },
     watch: {
       sourceConfig: { immediate:true, handler() { this.fillSelectListOptions();} },
@@ -196,13 +204,27 @@
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           return 'value';
         }
-        return this.options.key || 'value';
+
+        const fieldName = this.options.key || 'value';
+
+        if (this.options.key.indexOf('{{') >= 0) {
+          return this.stripMustache(fieldName);
+        }
+
+        return fieldName;
       },
       optionsValue() {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           return 'content';
         }
-        return this.options.value || 'content';
+
+        const fieldName = this.options.value || 'content';
+
+        if (this.options.key.indexOf('{{') >= 0) {
+          return this.stripMustache(fieldName);
+        }
+
+        return fieldName;
       },
       classList() {
         return {
