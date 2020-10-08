@@ -6,7 +6,7 @@
         :multiple="emitArray"
         v-model="valueProxy"
         :name="name"
-        :track-by="optionValue"
+        :track-by="emitObjects ? optionContent : optionValue"
         :label="optionContent"
         :class="classList"
         :placeholder="placeholder ? placeholder : $t('type here to search')"
