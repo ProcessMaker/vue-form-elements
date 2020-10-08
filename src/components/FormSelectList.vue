@@ -49,7 +49,6 @@
 <script>
   import ValidationMixin from './mixins/validation'
   import {createUniqIdsMixin} from 'vue-uniq-ids'
-  import DataFormatMixin from './mixins/DataFormat';
   import MultiSelectView from "./FormSelectList/MultiSelectView";
   import CheckboxView from "./FormSelectList/CheckboxView";
   import OptionboxView from "./FormSelectList/OptionboxView";
@@ -72,7 +71,7 @@
       CheckboxView,
       FormMultiSelect,
     },
-    mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
+    mixins: [uniqIdsMixin, ValidationMixin],
     props: [
       'label',
       'error',
@@ -111,15 +110,21 @@
           this.apiClient
               .post(dataSourceUrl, { config: { endpoint: selectedEndPoint, } })
               .then(response => {
-                var list = dataName ? eval('response.data.' + dataName) : response.data;
+                const list = dataName ? eval('response.data.' + dataName) : response.data;
+                const suffix = this.attributeParent(value);
                 list.forEach(item => {
                   // if the content has a mustache expression
-                  let itemContent = (value.indexOf('{{') >= 0) ? Mustache.render(value, item) : item[value || 'content'].toString();
-                  let itemValue = (key.indexOf('{{') >= 0) ? Mustache.render(key, item) : item[key || 'value'].toString();
+                  let itemContent = (value.indexOf('{{') >= 0) ? Mustache.render(value, item) : (item[value || 'content'] || '').toString();
+                  let itemValue = (key.indexOf('{{') >= 0) ? Mustache.render(key, item) : (item[key || 'value'] || '').toString();
                   let parsedOption = {};
                   parsedOption[this.optionsKey] = itemValue;
                   parsedOption[this.optionsValue] = itemContent;
-                  opt.push(parsedOption);
+                  if (options.valueTypeReturned === 'object') {
+                    opt.push(eval( suffix.length > 0 ? 'item.' +  suffix : 'item'));
+                  }
+                  else {
+                    opt.push(parsedOption);
+                  }
                 });
 
                 this.selectListOptions =  opt;
@@ -174,6 +179,13 @@
 
         return removed ? removed : str;
       },
+      attributeParent(str) {
+        let parts =  str.replace(/{{/g,'')
+            .replace(/}}/g,'')
+            .split('.')
+        parts.pop();
+        return parts.join('.');
+      }
     },
     watch: {
       sourceConfig: { immediate:true, handler() { this.fillSelectListOptions();} },
@@ -191,6 +203,7 @@
           dataSource: this.options.dataSource,
           selectedEndPoint: this.options.selectedEndPoint,
           selectedDataSource: this.options.selectedDataSource,
+          valueTypeReturned: this.options.valueTypeReturned,
           dataName: this.options.dataName,
           value: this.options.value,
           key: this.options.key
@@ -207,7 +220,7 @@
 
         const fieldName = this.options.key || 'value';
 
-        if (this.options.key.indexOf('{{') >= 0) {
+        if (fieldName.indexOf('{{') >= 0) {
           return this.stripMustache(fieldName);
         }
 
@@ -220,7 +233,7 @@
 
         const fieldName = this.options.value || 'content';
 
-        if (this.options.key.indexOf('{{') >= 0) {
+        if (fieldName.indexOf('{{') >= 0) {
           return this.stripMustache(fieldName);
         }
 
