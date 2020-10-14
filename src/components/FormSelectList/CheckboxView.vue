@@ -8,6 +8,7 @@
           :name="`${name}`"
           :value="emitObjects ? option : getOptionValue(option)"
           v-model="selected"
+          v-bind="$attrs"
       >
       <label :class="labelClass" v-uni-for="getOptionId(option)">
         {{getOptionContent(option)}}

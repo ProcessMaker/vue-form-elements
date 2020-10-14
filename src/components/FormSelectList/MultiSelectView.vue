@@ -10,6 +10,7 @@
         :label="optionContent"
         :class="classList"
         :placeholder="placeholder ? placeholder : $t('type here to search')"
+        v-bind="$attrs"
     >
       <template slot="noResult">
         {{ $t('No elements found. Consider changing the search query.') }}
