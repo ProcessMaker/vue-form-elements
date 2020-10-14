@@ -13,6 +13,7 @@
       :class="classList"
       :emit-objects="options.valueTypeReturned === 'object'"
       :emit-array="options.allowMultiSelect"
+      v-bind="$attrs"
     >
     </multi-select-view>
 
@@ -24,6 +25,7 @@
         :option-content="optionsValue"
         :options="selectListOptions"
         :emit-objects="options.valueTypeReturned === 'object'"
+        v-bind="$attrs"
       />
     </div>
 
@@ -35,6 +37,7 @@
           :option-content="optionsValue"
           :options="selectListOptions"
           :emit-objects="options.valueTypeReturned === 'object'"
+          v-bind="$attrs"
       />
     </div>
 
