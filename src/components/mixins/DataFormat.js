@@ -114,7 +114,7 @@ export default {
           break;
         case 'date':
           if (this.componentName === 'FormDatePicker') {
-            newValue = moment(newValue, [getUserDateFormat(), moment.ISO_8601], true).toISOString().split(RegExp('T[0-9]'))[0];
+            newValue = moment.utc(newValue, [getUserDateFormat(), moment.ISO_8601], true).toISOString().split(RegExp('T[0-9]'))[0];
           }
           break;
         case 'datetime':

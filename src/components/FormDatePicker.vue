@@ -132,7 +132,8 @@ export default {
         return;
       }
 
-      const newDate = moment(this.date, this.config.format);
+      const newDate = this.dataFormat === 'date' ? moment.utc(this.date, this.config.format) : moment(this.date, this.config.format);
+
       this.$emit('input', newDate.toISOString());
     },
     value() {
