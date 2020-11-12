@@ -117,8 +117,12 @@
                 const suffix = this.attributeParent(value);
                 list.forEach(item => {
                   // if the content has a mustache expression
+                  const escape = Mustache.escape;
+                  Mustache.escape = (t) => t; // Do not escape mustache content
                   let itemContent = (value.indexOf('{{') >= 0) ? Mustache.render(value, item) : (item[value || 'content'] || '').toString();
                   let itemValue = (key.indexOf('{{') >= 0) ? Mustache.render(key, item) : (item[key || 'value'] || '').toString();
+                  Mustache.escape = escape; // Reset mustache to original escape function
+
                   let parsedOption = {};
                   parsedOption[this.optionsKey] = itemValue;
                   parsedOption[this.optionsValue] = itemContent;
