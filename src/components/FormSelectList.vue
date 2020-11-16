@@ -131,6 +131,7 @@
                 });
 
                 this.selectListOptions =  opt;
+                this.$root.$emit('selectListOptionsUpdated', this.sendSelectedOptions);
               })
               .catch(err => {
                 /* Ignore error */
@@ -192,7 +193,7 @@
     },
     watch: {
       sourceConfig: { immediate:true, handler() { this.fillSelectListOptions();} },
-      validationData: { immediate:true, handler() { this.fillSelectListOptions();} },
+      validationData: { immediate:true, handler() { console.log('FORM SELECT VALIDATION DATA CHANGED', this.validationData); this.fillSelectListOptions();} },
     },
     computed: {
       validatorErrors() {
