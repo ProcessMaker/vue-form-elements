@@ -12,7 +12,7 @@
       >
       <label :class="labelClass" v-uni-for="name">{{label}}</label>
       <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-        <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+        <div v-for="(error, index) in validatorErrors" :key="index">{{error}}</div>
         <div v-if="error">{{error}}</div>
       </div>
 
@@ -46,6 +46,9 @@ export default {
     'initiallyChecked',
   ],
   computed: {
+    validatorErrors() {
+      return this.validator && this.validator.errors.get(this.name) || [];
+    },
     isChecked() {
       // if control's value is not set, use the initiallyChecked configuration
       let initCheck = (new Boolean(this.initiallyChecked)) == true;

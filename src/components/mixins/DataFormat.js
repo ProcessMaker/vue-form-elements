@@ -30,6 +30,11 @@ export default {
       },
     },
   },
+  computed:{
+    componentName() {
+      return this.$vnode.tag ?  this.$vnode.tag.replace(/vue-component-\d+-/i, '') : '';
+    }
+  },
   data() {
     return {
       dataTypeValidator: null,
@@ -41,6 +46,9 @@ export default {
     value(value) {
       const typedValue = this.formatValue(value);
       if (typedValue !== value) {
+        if (this.dataFormat === 'date' && this.formatValue(value) === typedValue && this.componentName !== 'FormDatePicker') {
+          return;
+        }
         this.$emit('input', typedValue);
       }
     },
@@ -101,16 +109,20 @@ export default {
         case 'percentage':
           newValue = parseFloat(newValue);
           break;
-        case 'date':
-          newValue = moment(newValue, [getUserDateFormat(), moment.ISO_8601], true).toISOString();
-          break;
-        case 'datetime':
-          newValue = moment(newValue, [getUserDateTimeFormat(), moment.ISO_8601], true).toISOString();
-          break;
         case 'int':
           newValue = parseInt(newValue);
           break;
-       case 'array':
+        case 'date':
+          if (this.componentName === 'FormDatePicker') {
+            newValue = moment.utc(newValue, [getUserDateFormat(), moment.ISO_8601], true).toISOString().split(RegExp('T[0-9]'))[0];
+          }
+          break;
+        case 'datetime':
+          if (this.componentName === 'FormDatePicker') {
+            newValue = moment(newValue, [getUserDateTimeFormat(), moment.ISO_8601], true).toISOString();
+          }
+          break;
+        case 'array':
           break;
         default:
           newValue = newValue.toString();

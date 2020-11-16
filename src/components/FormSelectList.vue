@@ -1,60 +1,48 @@
 <template>
   <div class="form-group">
     <label v-uni-for="name">{{label}}</label>
-    <form-plain-multi-select
+    <multi-select-view
       v-if="options.renderAs === 'dropdown'"
-      option-value="value"
-      option-content="content"
+      :option-value="optionsKey"
+      :option-content="optionsValue"
       v-uni-id="name"
-      v-bind="$attrs"
-      v-on="$listeners"
-      v-model="selectedOptions"
+      v-model="valueProxy"
       :placeholder="placeholder ? placeholder : $t('Select...')"
       :show-labels="false"
-      :options="optionsList"
+      :options="selectListOptions"
       :class="classList"
-      :only-key="onlyKey"
-      :multiple="allowMultiSelect"
-      ref="multiselect"
+      :emit-objects="options.valueTypeReturned === 'object'"
+      :emit-array="options.allowMultiSelect"
+      v-bind="$attrs"
     >
-    </form-plain-multi-select>
+    </multi-select-view>
 
-    <div v-if="options.renderAs === 'checkbox' && allowMultiSelect">
-      <div :class="divClass" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value" v-for="option in optionsList">
-        <input
-          v-bind="$attrs"
-          :class="inputClass"
-          type="checkbox"
-          :value="option.value"
-          v-uni-id="`${name}-${option.value}`"
-          :name="`${name}`"
-          :checked="selectedOptions.indexOf(option.value)>=0"
-          v-model="selectedOptions"
-          @change="sendSelectedOptions($event)"
-        >
-        <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
-      </div>
+    <div v-if="options.renderAs === 'checkbox' && options.allowMultiSelect">
+      <checkbox-view
+        v-model="valueProxy"
+        :name="name"
+        :option-value="optionsKey"
+        :option-content="optionsValue"
+        :options="selectListOptions"
+        :emit-objects="options.valueTypeReturned === 'object'"
+        v-bind="$attrs"
+      />
     </div>
 
-    <div v-if="options.renderAs === 'checkbox' && !allowMultiSelect">
-      <div :class="divClass" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value" v-for="option in optionsList">
-        <input
+    <div v-if="options.renderAs === 'checkbox' && !options.allowMultiSelect">
+      <optionbox-view
+          v-model="valueProxy"
+          :name="name"
+          :option-value="optionsKey"
+          :option-content="optionsValue"
+          :options="selectListOptions"
+          :emit-objects="options.valueTypeReturned === 'object'"
           v-bind="$attrs"
-          type="radio"
-          :class="inputClass"
-          :value="option.value"
-          v-uni-id="`${name}-${option.value}`"
-          :name="`${name}`"
-          v-model="selectedOptions[0]"
-          @change="sendSelectedOptions($event)"
-        >
-        <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
-      </div>
+      />
     </div>
-
 
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
+      <div v-for="(error, index) in validatorErrors" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
     </div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
@@ -64,8 +52,10 @@
 <script>
   import ValidationMixin from './mixins/validation'
   import {createUniqIdsMixin} from 'vue-uniq-ids'
-  import DataFormatMixin from './mixins/DataFormat';
-  import FormPlainMultiSelect from "./FormPlainMultiSelect";
+  import MultiSelectView from "./FormSelectList/MultiSelectView";
+  import CheckboxView from "./FormSelectList/CheckboxView";
+  import OptionboxView from "./FormSelectList/OptionboxView";
+  import FormMultiSelect from "./FormMultiSelect";
   import Mustache from "mustache";
 
 
@@ -79,9 +69,12 @@
   export default {
     inheritAttrs: false,
     components: {
-      FormPlainMultiSelect,
+      OptionboxView,
+      MultiSelectView,
+      CheckboxView,
+      FormMultiSelect,
     },
-    mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
+    mixins: [uniqIdsMixin, ValidationMixin],
     props: [
       'label',
       'error',
@@ -92,156 +85,68 @@
       'controlClass',
       'validationData',
       'placeholder',
+      'multiple'
     ],
     data() {
       return {
-        cachedSelOptions: null,
-        formData: {},
-        optionKey: '',
-        optionValue: '',
-        selectedOptions: [],
-        renderAs: 'dropdown',
-        allowMultiSelect: false,
-        optionsList: [],
-        onlyKey: true,
-        debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
-                                           selOptions) => {
-          let options = [];
+        apiClient: ProcessMaker.apiClient.create(),
+        selectListOptions: [],
+        doDebounce: _.debounce(options => {
+          const selectedEndPoint = options.selectedEndPoint;
+          const selectedDataSource = options.selectedDataSource;
+          const dataName = options.dataName;
+          const key = options.key;
+          const value = options.value;
+          let opt = [];
 
-          // If no ProcessMaker object is available return and do nothing
-          if (typeof ProcessMaker === 'undefined') {
+          // If no data source has been specified, do not make the api call
+          if(selectedDataSource === null || typeof selectedDataSource === 'undefined' || selectedDataSource.toString().trim().length === 0) {
             return;
           }
 
-          let dataSourceUrl = '/requests/data_sources/' + selectedDataSource;
+          let queryParams = {};
           if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
-            let pmql = Mustache.render(this.options.pmqlQuery, {data: this.formData});
-            dataSourceUrl += '?pmql=' + pmql;
+            queryParams['pmql'] = Mustache.render(this.options.pmqlQuery, {data: this.formData});
           }
 
-          ProcessMaker.apiClient
-            .post(dataSourceUrl, {
-              config: {
-                endpoint: selectedEndPoint,
-              }
-            })
-            .then(response => {
-              var list = dataName ? eval('response.data.' + dataName) : response.data;
-              list.forEach(item => {
-                // if the content has a mustache expression
-                let itemContent = (value.indexOf('{{') >= 0)
-                  ? Mustache.render(value, item)
-                  : item[value || 'content'].toString();
+          const postParams = { config: { endpoint: selectedEndPoint } };
+          this.$dataProvider.executeDataSource(selectedDataSource, postParams, queryParams)
+              .then(response => {
+                const list = dataName ? eval('response.data.' + dataName) : response.data;
+                const suffix = this.attributeParent(value);
+                list.forEach(item => {
+                  // if the content has a mustache expression
+                  const escape = Mustache.escape;
+                  Mustache.escape = (t) => t; // Do not escape mustache content
+                  let itemContent = (value.indexOf('{{') >= 0) ? Mustache.render(value, item) : (item[value || 'content'] || '').toString();
+                  let itemValue = (key.indexOf('{{') >= 0) ? Mustache.render(key, item) : (item[key || 'value'] || '').toString();
+                  Mustache.escape = escape; // Reset mustache to original escape function
 
-                let itemValue = (key.indexOf('{{') >= 0)
-                  ? Mustache.render(key, item)
-                  : item[key || 'value'].toString();
-
-                options.push({
-                  value: itemValue,
-                  content: itemContent
+                  let parsedOption = {};
+                  parsedOption[this.optionsKey] = itemValue;
+                  parsedOption[this.optionsValue] = itemContent;
+                  if (options.valueTypeReturned === 'object') {
+                    opt.push(eval( suffix.length > 0 ? 'item.' +  suffix : 'item'));
+                  }
+                  else {
+                    opt.push(parsedOption);
+                  }
                 });
+
+                this.selectListOptions =  opt;
+                this.$root.$emit('selectListOptionsUpdated', this.sendSelectedOptions);
+              })
+              .catch(err => {
+                /* Ignore error */
               });
-              this.optionsList = options;
-
-              if (!currentValue) {
-                this.selectedOptions = [];
-              }
-              if (Array.isArray(currentValue) && currentValue.length !== 0) {
-                this.selectedOptions = this.allowMultiSelect ? currentValue : [currentValue[0]];
-              }
-              this.selectedOptions = selOptions || [];
-              this.$refs.multiselect.setReemit(true);
-            })
-            .catch(err => {
-              /* Ignore error */
-            });
-
-        }, 750),
-      };
-    },
-    watch: {
-      validationData: {
-        handler(value) {
-          if (this.options.dataSource === 'dataConnector') {
-            return;
-          }
-          this.optionsFromDataSource();
-        }
-      },
-      options: {
-        immediate:true,
-        deep: true,
-        handler(value) {
-          this.renderAs = value.renderAs;
-          this.allowMultiSelect = value.allowMultiSelect;
-          if (value.defaultOptionKey && !this.value) {
-            this.selectedOptions = [value.defaultOptionKey];
-          }
-          this.optionKey = value.key || 'value';
-          this.optionValue = value.value || 'content';
-          this.optionsFromDataSource();
-        }
-      },
-      value: {
-        immediate:true,
-        handler() {
-          if (typeof this.value === 'undefined') {
-             this.selectedOptions = [];
-              return;
-          }
-
-          if (!this.value) {
-            this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
-            this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
-
-            if (this.options.defaultOptionKey) {
-              this.sendSelectedOptions();
-            }
-
-            return;
-          }
-
-          this.onlyKey = !(this.options.valueTypeReturned === 'object');
-
-          if (this.options.allowMultiSelect) {
-            this.selectedOptions = Array.isArray(this.value) ? this.value : [this.value]
-          }
-          else {
-            this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value]
-          }
-
-          this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
-        }
-      },
-    },
-    mounted() {
-      this.renderAs = this.options.renderAs;
-      this.allowMultiSelect = this.options.allowMultiSelect;
-      this.valueTypeReturned = this.options.valueTypeReturned;
-      this.optionsFromDataSource();
-
-      if (typeof ProcessMaker !== 'undefined') {
-        ProcessMaker.EventBus.$on('form-data-updated', (newData) => {
-          this.formData=newData;
-        });
+        }, 700)
       }
-
-      if (typeof this.value === 'undefined' || this.value === null) {
-        this.selectedOptions = this.options.defaultOptionKey ? [this.options.defaultOptionKey] : [];
-        this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
-        return
-      }
-
-      if (this.options.allowMultiSelect) {
-          this.selectedOptions = Object.entries(JSON.parse(JSON.stringify(this.value))).map(x => x[1]);
-      } else {
-          this.selectedOptions = Array.isArray(this.value) ? this.value[0] : [this.value];
-      }
-
-      this.cachedSelOptions = JSON.parse(JSON.stringify(this.selectedOptions));
     },
     methods: {
+      searchChange(filter) {
+        this.filter = filter;
+        this.optionsFromDataSource();
+      },
       sendSelectedOptions() {
         let valueToSend = (this.selectedOptions.constructor === Array)
           ? this.selectedOptions
@@ -252,94 +157,94 @@
         if (!this.allowMultiSelect && valueToSend.length > 0) {
           valueToSend = valueToSend[0];
         }
-
-        if (this.options.renderAs === 'dropdown' && this.options.allowMultiSelect) {
-          valueToSend = this.selectedOptions.map(x=>x[this.options.key]);
+      },
+      fillSelectListOptions() {
+        if (this.options.dataSource && this.options.dataSource === 'provideData') {
+          this.selectListOptions = this.options && this.options.optionsList ? this.options.optionsList : [];
         }
 
-
-        this.$emit('input', valueToSend);
-      },
-
-      optionsFromDataSource() {
-        const {
-          jsonData,
-          key,
-          value,
-          dataSource,
-          allowMultiSelect,
-          selectedDataSource,
-          selectedEndPoint,
-          dataName
-        } = this.options;
-
-        this.allowMultiSelect = allowMultiSelect;
-        let options = [];
-        const convertToSelectOptions = option => ({
-          value: (option[key || 'value']).toString(),
-          content: (option[value || 'content']).toString(),
-        })
-        if (jsonData) {
+        if (this.options.dataSource && this.options.dataSource === 'dataObject') {
+          let requestOptions = []
           try {
-            options = JSON.parse(jsonData)
-              .map(convertToSelectOptions)
-              .filter(removeInvalidOptions);
-            this.optionsList = options;
-          } catch (error) {
-            /* Ignore error */
+            requestOptions = eval('this.validationData.' + this.options.dataName);
           }
+          catch(e) {
+            requestOptions = [];
+          }
+          this.selectListOptions = requestOptions ? requestOptions : [];
         }
 
-        if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
-          this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value, this.cachedSelOptions);
+        if (this.options.dataSource && this.options.dataSource === 'dataConnector') {
+          this.doDebounce(this.sourceConfig);
         }
-        if (dataName) {
-          if (this.options.valueTypeReturned === null) {
-            return;
-          }
-
-          if (this.options.valueTypeReturned === 'single') {
-            try {
-            options = Object.values(_.get(this.validationData, dataName))
-                .map(convertToSelectOptions)
-                .filter(removeInvalidOptions);
-              this.optionsList = options;
-            } catch (error) {
-              /* Ignore error */
-            }
-          }
-
-          if (this.options.valueTypeReturned === 'object') {
-            const convertObjectToSelectOptions = option => ({
-              value: option,
-              content: (option[value || 'content']).toString(),
-            });
-            try {
-              options = Object.values(_.get(this.validationData, dataName))
-                .map(convertObjectToSelectOptions);
-              this.optionsList = options;
-            } catch(error) {
-              /* Ignore error */
-            }
-          }
-        }
-
       },
+      stripMustache(str) {
+        const removed =  str.replace(/{{/g,'')
+            .replace(/}}/g,'')
+            .split('.')
+            .pop();
 
+        return removed ? removed : str;
+      },
+      attributeParent(str) {
+        let parts =  str.replace(/{{/g,'')
+            .replace(/}}/g,'')
+            .split('.')
+        parts.pop();
+        return parts.join('.');
+      }
+    },
+    watch: {
+      sourceConfig: { immediate:true, handler() { this.fillSelectListOptions();} },
+      validationData: { immediate:true, handler() { console.log('FORM SELECT VALIDATION DATA CHANGED', this.validationData); this.fillSelectListOptions();} },
     },
     computed: {
+      validatorErrors() {
+        return this.validator && this.validator.errors.get(this.name) || [];
+      },
       divClass() {
         return this.toggle ? 'custom-control custom-radio' : 'form-check';
       },
-      labelClass() {
-        return this.toggle ? 'custom-control-label' : 'form-check-label';
+      sourceConfig() {
+        return {
+          dataSource: this.options.dataSource,
+          selectedEndPoint: this.options.selectedEndPoint,
+          selectedDataSource: this.options.selectedDataSource,
+          valueTypeReturned: this.options.valueTypeReturned,
+          dataName: this.options.dataName,
+          value: this.options.value,
+          key: this.options.key
+        };
       },
-      inputClass() {
-        return [
-          {[this.controlClass]: !!this.controlClass},
-          {'is-invalid': (this.validator && this.validator.errorCount) || this.error},
-          this.toggle ? 'custom-control-input' : 'form-check-input'
-        ];
+      valueProxy: {
+        get() { return this.value; },
+        set(val) { return this.$emit('input', val); }
+      },
+      optionsKey() {
+        if (this.options.dataSource && this.options.dataSource === 'provideData') {
+          return 'value';
+        }
+
+        const fieldName = this.options.key || 'value';
+
+        if (fieldName.indexOf('{{') >= 0) {
+          return this.stripMustache(fieldName);
+        }
+
+        return fieldName;
+      },
+      optionsValue() {
+        if (this.options.dataSource && this.options.dataSource === 'provideData') {
+          return 'content';
+        }
+
+        const fieldName = this.options.value || 'content';
+
+        if (fieldName.indexOf('{{') >= 0) {
+          return this.stripMustache(fieldName);
+        }
+
+        return fieldName;
       },
       classList() {
         return {
