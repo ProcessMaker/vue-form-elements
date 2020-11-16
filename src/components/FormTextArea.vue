@@ -37,6 +37,7 @@ import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
+import Editor from './Editor'
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -44,11 +45,7 @@ export default {
   inheritAttrs: false,
   components: {
     DisplayErrors,
-    Editor: () => {
-      if (typeof window !== 'undefined') {
-        return import(/* webpackChunkName: "tinymce" */ './Editor');
-      }
-    }
+    Editor
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
 

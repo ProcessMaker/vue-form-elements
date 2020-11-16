@@ -23,6 +23,7 @@
 import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
 import Mustache from 'mustache';
+import Editor from './Editor'
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
@@ -31,11 +32,7 @@ export default {
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin],
   components: {
-    Editor: () => {
-      if (typeof window !== 'undefined') {
-        return import(/* webpackChunkName: "tinymce" */ './Editor');
-      }
-    }
+    Editor
   },
   props: [
     'error',
