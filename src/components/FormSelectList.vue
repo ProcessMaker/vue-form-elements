@@ -104,13 +104,14 @@
             return;
           }
 
-          let queryParams = {};
+          let dataSourceUrl = '/requests/data_sources/' + selectedDataSource;
           if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
-            queryParams['pmql'] = Mustache.render(this.options.pmqlQuery, {data: this.formData});
+            const pmql = Mustache.render(this.options.pmqlQuery, {data: this.validationData});
+            dataSourceUrl += '?pmql=' + pmql;
           }
 
-          const postParams = { config: { endpoint: selectedEndPoint } };
-          this.$dataProvider.executeDataSource(selectedDataSource, postParams, queryParams)
+          this.apiClient
+              .post(dataSourceUrl, { config: { endpoint: selectedEndPoint, } })
               .then(response => {
                 const list = dataName ? eval('response.data.' + dataName) : response.data;
                 const suffix = this.attributeParent(value);
