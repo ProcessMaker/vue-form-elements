@@ -19,14 +19,14 @@
     "*.js"
   ],
   "dependencies": {
-    "@tinymce/tinymce-vue": "^2.0.0",
+    "@tinymce/tinymce-vue": "2.0.0",
     "bootstrap": "^4.2.1",
     "jquery": "^3.3.1",
     "luxon": "^1.11.3",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
     "popper.js": "^1.14.4",
-    "tinymce": "^5.0.1",
+    "tinymce": "5.2.2",
     "v-calendar": "^0.9.7",
     "validatorjs": "^3.14.2",
     "vue": "^2.5.16",
