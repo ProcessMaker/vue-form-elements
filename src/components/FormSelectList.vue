@@ -148,18 +148,6 @@
         this.filter = filter;
         this.optionsFromDataSource();
       },
-      //deprecated
-      sendSelectedOptions() {
-        let valueToSend = (this.selectedOptions.constructor === Array)
-          ? this.selectedOptions
-          : [this.selectedOptions];
-
-        // If more than 1 item is selected but we are displaying a one selection control
-        // show just the first selected item
-        if (!this.allowMultiSelect && valueToSend.length > 0) {
-          valueToSend = valueToSend[0];
-        }
-      },
       fillSelectListOptions() {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           this.selectListOptions = this.options && this.options.optionsList ? this.options.optionsList : [];
