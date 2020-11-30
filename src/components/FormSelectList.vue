@@ -135,7 +135,7 @@
                 });
 
                 this.selectListOptions =  opt;
-                this.$root.$emit('selectListOptionsUpdated', this.sendSelectedOptions);
+                this.$root.$emit('selectListOptionsUpdated', this.selectListOptions);
               })
               .catch(err => {
                 /* Ignore error */
@@ -147,17 +147,6 @@
       searchChange(filter) {
         this.filter = filter;
         this.optionsFromDataSource();
-      },
-      sendSelectedOptions() {
-        let valueToSend = (this.selectedOptions.constructor === Array)
-          ? this.selectedOptions
-          : [this.selectedOptions];
-
-        // If more than 1 item is selected but we are displaying a one selection control
-        // show just the first selected item
-        if (!this.allowMultiSelect && valueToSend.length > 0) {
-          valueToSend = valueToSend[0];
-        }
       },
       fillSelectListOptions() {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
@@ -196,8 +185,18 @@
       }
     },
     watch: {
-      sourceConfig: { immediate:true, handler() { this.fillSelectListOptions();} },
-      validationData: { immediate:true, handler() { console.log('FORM SELECT VALIDATION DATA CHANGED', this.validationData); this.fillSelectListOptions();} },
+      sourceConfig: {
+        immediate:true,
+        handler() {
+          this.fillSelectListOptions();
+        }
+      },
+      validationData: {
+        immediate:true,
+        handler() {
+          this.fillSelectListOptions();
+        }
+      },
     },
     computed: {
       validatorErrors() {
