@@ -135,7 +135,7 @@
                 });
 
                 this.selectListOptions =  opt;
-                this.$root.$emit('selectListOptionsUpdated', this.sendSelectedOptions);
+                this.$root.$emit('selectListOptionsUpdated', this.selectListOptions);
               })
               .catch(err => {
                 /* Ignore error */
@@ -148,6 +148,7 @@
         this.filter = filter;
         this.optionsFromDataSource();
       },
+      //deprecated
       sendSelectedOptions() {
         let valueToSend = (this.selectedOptions.constructor === Array)
           ? this.selectedOptions
@@ -196,8 +197,18 @@
       }
     },
     watch: {
-      sourceConfig: { immediate:true, handler() { this.fillSelectListOptions();} },
-      validationData: { immediate:true, handler() { console.log('FORM SELECT VALIDATION DATA CHANGED', this.validationData); this.fillSelectListOptions();} },
+      sourceConfig: {
+        immediate:true,
+        handler() {
+          this.fillSelectListOptions();
+        }
+      },
+      validationData: {
+        immediate:true,
+        handler() {
+          this.fillSelectListOptions();
+        }
+      },
     },
     computed: {
       validatorErrors() {
