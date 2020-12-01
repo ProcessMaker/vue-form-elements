@@ -105,7 +105,7 @@
           }
 
           let dataSourceUrl = '/requests/data_sources/' + selectedDataSource;
-          if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
+          if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '' && this.options.pmqlQuery !== null) {
             const pmql = Mustache.render(this.options.pmqlQuery, {data: this.validationData});
             dataSourceUrl += '?pmql=' + pmql;
           }
