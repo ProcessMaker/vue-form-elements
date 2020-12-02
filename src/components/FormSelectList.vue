@@ -57,6 +57,7 @@
   import OptionboxView from "./FormSelectList/OptionboxView";
   import FormMultiSelect from "./FormMultiSelect";
   import Mustache from "mustache";
+  import { get } from 'lodash';
 
 
   const uniqIdsMixin = createUniqIdsMixin()
@@ -155,7 +156,7 @@
         if (this.options.dataSource && this.options.dataSource === 'dataObject') {
           let requestOptions = []
           try {
-            requestOptions = eval('this.validationData.' + this.options.dataName);
+            requestOptions = get(this.validationData, this.options.dataName);
           }
           catch(e) {
             requestOptions = [];
@@ -186,18 +187,21 @@
     watch: {
       sourceConfig: {
         immediate:true,
+        deep: true,
         handler() {
           this.fillSelectListOptions();
         }
       },
       validationData: {
         immediate:true,
+        deep: true,
         handler() {
           this.fillSelectListOptions();
         }
       },
       selectListOptions: {
         immediate: true,
+        deep: true,
         handler() {
           this.$root.$emit('selectListOptionsUpdated', this.selectListOptions);
         }
