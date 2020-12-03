@@ -107,6 +107,7 @@ export default {
         plugins: [ 'link', 'lists', 'image'],
         toolbar: 'undo redo | link image pagebreak | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
         skin: false,
+        content_css: false,
         relative_urls: false,
         remove_script_host: false,
         init_instance_callback: (editor) => {
