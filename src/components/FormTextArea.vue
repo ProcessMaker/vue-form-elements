@@ -6,7 +6,7 @@
       <div v-else>
         <editor
           class="editor"
-          v-if="!readonly"
+          v-if="!readonly && editorActive"
           v-bind="$attrs"
           :value="value"
           :init="editorSettings"
@@ -83,6 +83,12 @@ export default {
       immediate: true,
     }
   },
+  activated() {
+    this.editorActive = true;
+  },
+  deactivated() {
+    this.editorActive = false;
+  },
   methods: {
     setHeight() {
       if (!this.editorInstance) {
@@ -125,6 +131,7 @@ export default {
         },
       },
       editorInstance: null,
+      editorActive: true,
     }
   }
 }
