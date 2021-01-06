@@ -135,6 +135,7 @@
                   }
                 });
 
+                this.$root.$emit('selectListOptionsUpdated', opt);
                 this.selectListOptions =  opt;
               })
               .catch(err => {
@@ -199,13 +200,6 @@
           this.fillSelectListOptions();
         }
       },
-      selectListOptions: {
-        immediate: true,
-        deep: true,
-        handler() {
-          this.$root.$emit('selectListOptionsUpdated', this.selectListOptions);
-        }
-      }
     },
     computed: {
       validatorErrors() {
