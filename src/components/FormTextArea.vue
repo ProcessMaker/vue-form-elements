@@ -38,6 +38,7 @@ import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
 import Editor from './Editor'
+import _ from 'lodash'
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -81,13 +82,18 @@ export default {
         this.setHeight();
       },
       immediate: true,
-    }
+    },
+    name() {
+      this.rebootEditor();
+    },
   },
-  activated() {
-    this.editorActive = true;
-  },
-  deactivated() {
-    this.editorActive = false;
+  created() {
+    this.rebootEditor = _.throttle(() => {
+      this.editorActive = false;
+      this.$nextTick(() => {
+        this.editorActive = true
+      });
+    }, 500);
   },
   methods: {
     setHeight() {
