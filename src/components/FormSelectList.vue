@@ -90,15 +90,12 @@
     ],
     data() {
       return {
-        apiClient: ProcessMaker.apiClient.create(),
+        apiClient: window.ProcessMaker.apiClient.create(),
         selectListOptions: [],
         doDebounce: _.debounce(options => {
           const selectedEndPoint = options.selectedEndPoint;
           const selectedDataSource = options.selectedDataSource;
           const dataName = options.dataName;
-          const key = options.key;
-          const value = options.value;
-          let opt = [];
 
           // If no data source has been specified, do not make the api call
           if(selectedDataSource === null || typeof selectedDataSource === 'undefined' || selectedDataSource.toString().trim().length === 0) {
@@ -115,28 +112,10 @@
               .post(dataSourceUrl, { config: { endpoint: selectedEndPoint, } })
               .then(response => {
                 const list = dataName ? eval('response.data.' + dataName) : response.data;
-                const suffix = this.attributeParent(value);
-                list.forEach(item => {
-                  // if the content has a mustache expression
-                  const escape = Mustache.escape;
-                  Mustache.escape = (t) => t; // Do not escape mustache content
-                  let itemContent = (value.indexOf('{{') >= 0) ? Mustache.render(value, item) : (item[value || 'content'] || '').toString();
-                  let itemValue = (key.indexOf('{{') >= 0) ? Mustache.render(key, item) : (item[key || 'value'] || '').toString();
-                  Mustache.escape = escape; // Reset mustache to original escape function
 
-                  let parsedOption = {};
-                  parsedOption[this.optionsKey] = itemValue;
-                  parsedOption[this.optionsValue] = itemContent;
-                  if (options.valueTypeReturned === 'object') {
-                    opt.push(eval( suffix.length > 0 ? 'item.' +  suffix : 'item'));
-                  }
-                  else {
-                    opt.push(parsedOption);
-                  }
-                });
-
-                this.$root.$emit('selectListOptionsUpdated', opt);
-                this.selectListOptions =  opt;
+                const transformedList = this.transformOptions(list);
+                this.$root.$emit('selectListOptionsUpdated', transformedList);
+                this.selectListOptions =  transformedList;
               })
               .catch(err => {
                 /* Ignore error */
@@ -162,12 +141,47 @@
           catch(e) {
             requestOptions = [];
           }
-          this.selectListOptions = requestOptions ? requestOptions : [];
+
+          let list = requestOptions ? requestOptions : [];
+          this.selectListOptions = this.transformOptions(list);
         }
 
         if (this.options.dataSource && this.options.dataSource === 'dataConnector') {
           this.doDebounce(this.sourceConfig);
         }
+      },
+
+
+      /**
+       * @param {*|*[]} list, array of objects
+       */
+      transformOptions(list) {
+        const suffix = this.attributeParent(this.options.value);
+        let resultList = [];
+
+        list.forEach(item => {
+          // if the content has a mustache expression
+          const escape = Mustache.escape;
+          Mustache.escape = (t) => t; // Do not escape mustache content
+          let itemContent = (this.options.value.indexOf('{{') >= 0)
+                              ? Mustache.render(this.options.value, item)
+                              : Mustache.render('{{'+ (this.options.value || 'content') + '}}', item);
+          let itemValue = (this.options.key.indexOf('{{') >= 0)
+                          ? Mustache.render(this.options.key, item)
+                          : Mustache.render('{{'+ (this.options.key || 'value') + '}}', item);
+          Mustache.escape = escape; // Reset mustache to original escape function
+
+          let parsedOption = {};
+          parsedOption[this.optionsKey] = itemValue;
+          parsedOption[this.optionsValue] = itemContent;
+          if (this.options.valueTypeReturned === 'object') {
+            resultList.push(eval( suffix.length > 0 ? 'item.' +  suffix : 'item'));
+          }
+          else {
+            resultList.push(parsedOption);
+          }
+        });
+        return resultList
       },
       stripMustache(str) {
         const removed =  str.replace(/{{/g,'')
@@ -183,7 +197,7 @@
             .split('.')
         parts.pop();
         return parts.join('.');
-      }
+      },
     },
     watch: {
       sourceConfig: {
@@ -230,11 +244,7 @@
 
         const fieldName = this.options.key || 'value';
 
-        if (fieldName.indexOf('{{') >= 0) {
-          return this.stripMustache(fieldName);
-        }
-
-        return fieldName;
+        return this.stripMustache(fieldName);
       },
       optionsValue() {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
@@ -243,11 +253,7 @@
 
         const fieldName = this.options.value || 'content';
 
-        if (fieldName.indexOf('{{') >= 0) {
-          return this.stripMustache(fieldName);
-        }
-
-        return fieldName;
+        return this.stripMustache(fieldName);
       },
       classList() {
         return {
