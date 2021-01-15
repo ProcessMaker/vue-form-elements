@@ -80,14 +80,25 @@ export default {
     return {
       validatorErrors: [],
       date: null,
-      config: {
-        format: this.getFormat(),
+    }
+  },
+  computed: {
+    errors() {
+      if (this.error) {
+        return [...this.validatorErrors, this.error];
+      }
+
+      return this.validatorErrors;
+    },
+    config() {
+      return {
+        format: this.dataFormat === 'datetime' ? getUserDateTimeFormat() : getUserDateFormat(),
         timeZone: getTimezone(),
         locale: getLang(),
         useCurrent: false,
         showClose: true,
-        minDate: false,
-        maxDate: false,
+        minDate: this.parseDate(this.minDate),
+        maxDate: this.parseDate(this.maxDate),
         icons: {
           time: 'far fa-clock',
           date: 'far fa-calendar',
@@ -98,23 +109,11 @@ export default {
           today: 'fas fa-calendar-check',
           clear: 'far fa-trash-alt',
           close: 'far fa-times-circle'
-        },
-      },
-    }
-  },
-  computed: {
-    errors() {
-      if (this.error) {
-        return [...this.validatorErrors, this.error];
-      }
-
-      return this.validatorErrors;
-    }
+        }
+      };
+    },
   },
   watch: {
-    validationData() {
-      this.setMinMaxValues();
-    },
     validator: {
       deep: true,
       handler() {
@@ -151,7 +150,6 @@ export default {
     dataFormat: {
       immediate: true,
       handler() {
-        this.config.format = this.getFormat();
         this.date = this.value
           ? this.generateDate().format(this.config.format)
           : '';
@@ -159,10 +157,6 @@ export default {
     },
   },
   methods: {
-    setMinMaxValues() {
-      this.config.minDate = this.parseDate(this.minDate);
-      this.config.maxDate = this.parseDate(this.maxDate);
-    },
     parseDate(val) {
       let date = false;
 
@@ -181,11 +175,6 @@ export default {
       }
 
       return date;
-    },
-    getFormat() {
-      return this.dataFormat === 'datetime'
-        ? getUserDateTimeFormat()
-        : getUserDateFormat();
     },
     isDateAndValueTheSame() {
       if (!this.date && !this.value) {
