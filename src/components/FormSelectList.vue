@@ -198,6 +198,16 @@
         parts.pop();
         return parts.join('.');
       },
+      updateWatcherDependentFieldValue(newSelectOptions, oldSelectOptions) {
+        let dataName = this.options.dataName.split('.');
+        // Check to see if the watcher output variable has been loaded.
+        if (this.validationData && this.validationData.hasOwnProperty(dataName[0]) && this.validationData[dataName[0]] !== null) {
+          if (_.isEqual(newSelectOptions, oldSelectOptions)) {
+            return;
+          }
+          this.$emit('input', null);
+        }
+      }
     },
     watch: {
       sourceConfig: {
@@ -214,6 +224,9 @@
           this.fillSelectListOptions();
         }
       },
+      selectListOptions(newValue, oldValue) {
+        this.updateWatcherDependentFieldValue(newValue, oldValue);
+      }
     },
     computed: {
       validatorErrors() {
