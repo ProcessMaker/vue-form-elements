@@ -207,6 +207,20 @@
           }
           this.$emit('input', null);
         }
+      },
+      arrayHasSelectedOptions(list) {
+        if (!Array.isArray(list)) {
+          return true;
+        }
+
+        const itemsInOptionsList = list.filter(item => {
+          if (typeof item[this.optionsKey] === 'undefined') {
+            return false;
+          }
+          return this.selectListOptions.some(option => option[this.optionsKey] === item[this.optionsKey]);
+        });
+
+        return itemsInOptionsList.length > 0;
       }
     },
     watch: {
@@ -247,8 +261,15 @@
         };
       },
       valueProxy: {
-        get() { return this.value; },
-        set(val) { return this.$emit('input', val); }
+        get() {
+          if (this.options.renderAs === "dropdown") {
+            return this.arrayHasSelectedOptions(this.value) ? this.value : [];
+          }
+          return this.value;
+        },
+        set(val) {
+          return this.$emit('input', val);
+        }
       },
       optionsKey() {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
