@@ -208,16 +208,25 @@
           this.$emit('input', null);
         }
       },
-      arrayHasSelectedOptions(list) {
+      /**
+       * Returns true if one or more items in list (an array) are in Select List's options
+       */
+      areItemsInSelectListOptions(list) {
         if (!Array.isArray(list)) {
           return true;
         }
 
         const itemsInOptionsList = list.filter(item => {
-          if (typeof item[this.optionsKey] === 'undefined') {
+          // if items are objects use the object's key attribute, use the item itself otherwise
+          const testValue = (typeof item === 'object' && item[this.optionsKey] !== undefined)
+                            ? item[this.optionsKey]
+                            : item;
+
+          if (testValue === 'undefined') {
             return false;
           }
-          return this.selectListOptions.some(option => option[this.optionsKey] === item[this.optionsKey]);
+
+          return this.selectListOptions.some(option => option[this.optionsKey] === testValue);
         });
 
         return itemsInOptionsList.length > 0;
@@ -263,7 +272,7 @@
       valueProxy: {
         get() {
           if (this.options.renderAs === "dropdown") {
-            return this.arrayHasSelectedOptions(this.value) ? this.value : [];
+            return this.areItemsInSelectListOptions(this.value) ? this.value : [];
           }
           return this.value;
         },
