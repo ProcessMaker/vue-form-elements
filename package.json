@@ -1,6 +1,6 @@
 {
   "name": "@processmaker/vue-form-elements",
-  "version": "0.18.2",
+  "version": "0.18.3",
   "description": "Reusable VueJS Based Form Elements styled with Bootstrap 4",
   "scripts": {
     "serve": "NODE_ENV=standalone vue-cli-service serve",
