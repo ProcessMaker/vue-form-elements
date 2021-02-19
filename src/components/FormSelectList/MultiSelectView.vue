@@ -37,6 +37,11 @@ import ValidationMixin from '../mixins/validation'
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
+  mounted() {
+    if (this.value === null && this.emitArray) {
+      this.$emit('input', []);
+    }
+  },
   inheritAttrs: false,
   components: {
     Multiselect
