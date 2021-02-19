@@ -37,11 +37,6 @@ import ValidationMixin from '../mixins/validation'
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  mounted() {
-    if (this.value === null && this.emitArray) {
-      this.$emit('input', []);
-    }
-  },
   inheritAttrs: false,
   components: {
     Multiselect
@@ -120,9 +115,3 @@ export default {
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-
-<style>
-.form-group .multiselect__tag {
-  min-height: 22px;
-}
-</style>
