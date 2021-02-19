@@ -120,3 +120,9 @@ export default {
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
+<style>
+.form-group .multiselect__tag {
+  min-height: 22px;
+}
+</style>
