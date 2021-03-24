@@ -1,6 +1,8 @@
 /* global ProcessMaker*/
 import moment from 'moment-timezone';
 
+moment.tz.setDefault(getTimezone())
+
 function getProcessMakerUserValue(key) {
   if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
     return ProcessMaker.user[key];
@@ -29,4 +31,20 @@ export function getUserDateTimeFormat() {
 
 export function isValidDate(date, format = getUserDateFormat()) {
   return moment(date, format).isValid();
+}
+
+export function formatIfDate(string) {
+  let d;
+
+  d = moment(string, 'YYYY-MM-DDTHH:mm:ss.SSSZ', true);
+  if (d.isValid()) {
+    return d.format(getUserDateTimeFormat());
+  }
+  
+  d = moment(string, 'YYYY-MM-DDD', true);
+  if (d.isValid()) {
+    return d.format(getUserDateFormat());
+  }
+
+  return string;
 }
