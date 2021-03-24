@@ -236,7 +236,10 @@
       sourceConfig: {
         immediate:true,
         deep: true,
-        handler() {
+        handler(newValue,oldValue) {
+          if (_.isEqual(newValue,oldValue)) {
+            return;
+          }
           this.fillSelectListOptions();
         }
       },
@@ -244,7 +247,10 @@
       validationData: {
         immediate:true,
         deep: true,
-        handler() {
+        handler(newValue, oldValue) {
+          if (_.isEqual(newValue,oldValue)) {
+            return;
+          }
           this.fillSelectListOptions();
         }
       },
