@@ -293,6 +293,10 @@
           return 'value';
         }
 
+        if (this.options.dataSource && this.options.dataSource === 'dataConnector' && this.options.valueTypeReturned === 'object') {
+          return this.optionsValue;
+        }
+
         const fieldName = this.options.key || 'value';
 
         return this.stripMustache(fieldName);
