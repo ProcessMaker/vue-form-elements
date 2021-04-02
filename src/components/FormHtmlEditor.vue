@@ -24,6 +24,7 @@ import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
 import Mustache from 'mustache';
 import Editor from './Editor'
+import { formatIfDate } from '../dateUtils'
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()
@@ -60,12 +61,11 @@ export default {
         return this.content;
       }
 
+      this.originalEscapeFn = Mustache.escape;
+      Mustache.escape = this.mustacheEscapeFn;
       try {
         if (this.renderVarHtml) {
-          let escape = Mustache.escape;
-          Mustache.escape = function(text) {return text;};
           let render = Mustache.render(this.content, {...this.customFunctions, ...this.validationData});
-          Mustache.escape = escape;
           return render;
         }
         return Mustache.render(this.content, {...this.customFunctions, ...this.validationData});
@@ -74,6 +74,8 @@ export default {
           return this.renderVarName;
         }
         return this.content;
+      } finally {
+        Mustache.escape = this.originalEscapeFn;
       }
     }
   },
@@ -81,6 +83,13 @@ export default {
     registerCustomFunction(name, implementation) {
       this.customFunctions[name] = implementation;
     },
+    mustacheEscapeFn(text) {
+      text = formatIfDate(text);
+      if (this.renderVarHtml) {
+        return text;
+      }
+      return this.originalEscapeFn(text);
+    }
   },
   data() {
     return {

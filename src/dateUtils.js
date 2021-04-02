@@ -3,6 +3,8 @@ import moment from 'moment-timezone';
 
 moment.tz.setDefault(getTimezone())
 
+const startsWithNumbers = /^\d{4}-/;
+
 function getProcessMakerUserValue(key) {
   if (typeof ProcessMaker !== 'undefined' && ProcessMaker.user) {
     return ProcessMaker.user[key];
@@ -35,6 +37,11 @@ export function isValidDate(date, format = getUserDateFormat()) {
 
 export function formatIfDate(string) {
   let d;
+
+  // Quick check for performance before calling moment
+  if (!startsWithNumbers.test(string)) {
+    return string;
+  }
 
   d = moment(string, 'YYYY-MM-DDTHH:mm:ss.SSSZ', true);
   if (d.isValid()) {
