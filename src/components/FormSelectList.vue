@@ -240,8 +240,16 @@
           this.fillSelectListOptions();
         }
       },
+      // React to local data scope
       validationData: {
         immediate:true,
+        deep: true,
+        handler() {
+          this.fillSelectListOptions();
+        }
+      },
+      // React to a parent data scope
+      "validationData._parent": {
         deep: true,
         handler() {
           this.fillSelectListOptions();
