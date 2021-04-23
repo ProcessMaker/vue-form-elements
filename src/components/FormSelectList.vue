@@ -91,7 +91,7 @@
     data() {
       return {
         lastRequest: {},
-        apiClient: window.ProcessMaker.apiClient.create(),
+        // apiClient: window.ProcessMaker.apiClient.create(),
         selectListOptions: [],
         doDebounce: _.debounce(options => {
           const selectedEndPoint = options.selectedEndPoint;
@@ -103,21 +103,32 @@
             return;
           }
 
-          let dataSourceUrl = '/requests/data_sources/' + selectedDataSource;
+          // Do not run in sandalone mode
+          if (!this.$dataProvider) {
+            return;
+          }
+
+          let params = {
+            config: {
+              endpoint: selectedEndPoint,
+            }
+          }
+
           if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '' && this.options.pmqlQuery !== null) {
             const pmql = Mustache.render(this.options.pmqlQuery, {data: this.validationData});
-            dataSourceUrl += '?pmql=' + pmql;
+            params.config.outboundConfig = [
+              { type: 'PARAM', key: 'pmql', value: pmql }
+            ];
           }
 
           // Do not re-run the same request
-          const request = { dataSourceUrl, selectedEndPoint };
+          const request = { selectedDataSource, params };
           if (_.isEqual(this.lastRequest, request)) {
             return;
           }
           this.lastRequest = _.cloneDeep(request);
 
-          this.apiClient
-              .post(dataSourceUrl, { config: { endpoint: selectedEndPoint, } })
+          this.$dataProvider.postDataSource(selectedDataSource, null, params)
               .then(response => {
                 const list = dataName ? eval('response.data.' + dataName) : response.data;
 
