@@ -64,11 +64,11 @@ export default {
       this.originalEscapeFn = Mustache.escape;
       Mustache.escape = this.mustacheEscapeFn;
       try {
+        const parent = Object.assign({_parent: this.validationData._parent}, this.validationData);
         if (this.renderVarHtml) {
-          let render = Mustache.render(this.content, {...this.customFunctions, ...this.validationData});
-          return render;
+          return Mustache.render(this.content, {...this.customFunctions, ...this.validationData, ...parent});
         }
-        return Mustache.render(this.content, {...this.customFunctions, ...this.validationData});
+        return Mustache.render(this.content, {...this.customFunctions, ...this.validationData, ...parent});
       } catch (error) {
         if (this.renderVarHtml) {
           return this.renderVarName;
