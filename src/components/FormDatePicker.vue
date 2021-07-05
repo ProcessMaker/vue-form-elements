@@ -7,6 +7,8 @@
       :disabled="disabled"
       :placeholder="placeholder"
       :data-test="dataTest"
+      :aria-label="$attrs['aria-label']"
+      :tabindex="$attrs['tabindex']"
     />
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(error, index) in errors" :key="index">{{error}}</div>
