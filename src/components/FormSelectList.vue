@@ -108,6 +108,11 @@
             return;
           }
 
+          // If no endpoint has been specified, do not make the api call
+          if(selectedEndPoint === null || typeof selectedEndPoint === 'undefined' || selectedEndPoint.toString().trim().length === 0) {
+            return;
+          }
+
           let params = {
             config: {
               endpoint: selectedEndPoint,
