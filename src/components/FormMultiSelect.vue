@@ -31,7 +31,6 @@
 </template>
 
 <script>
-  import Multiselect from 'vue-multiselect';
   import {createUniqIdsMixin} from 'vue-uniq-ids'
   import ValidationMixin from './mixins/validation'
 
@@ -39,9 +38,6 @@
 
   export default {
     inheritAttrs: false,
-    components: {
-      Multiselect
-    },
     mixins: [uniqIdsMixin, ValidationMixin],
     props: [
       'value',
@@ -64,5 +60,3 @@
     }
   }
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

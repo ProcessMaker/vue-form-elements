@@ -28,7 +28,6 @@
 </template>
 
 <script>
-  import Multiselect from 'vue-multiselect';
   import {createUniqIdsMixin} from 'vue-uniq-ids'
   import ValidationMixin from './mixins/validation'
   import DisplayErrors from './common/DisplayErrors';
@@ -39,7 +38,6 @@
   export default {
     inheritAttrs: false,
     components: {
-      Multiselect,
       DisplayErrors
     },
     mixins: [uniqIdsMixin, ValidationMixin],
@@ -174,5 +172,3 @@
     }
   }
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
