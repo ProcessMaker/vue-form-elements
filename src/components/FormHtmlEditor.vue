@@ -61,14 +61,15 @@ export default {
       }
 
       try {
+        const parent = Object.assign({_parent: this.validationData._parent}, this.validationData);
         if (this.renderVarHtml) {
           let escape = Mustache.escape;
           Mustache.escape = function(text) {return text;};
-          let render = Mustache.render(this.content, {...this.customFunctions, ...this.validationData});
+          let render = Mustache.render(this.content, {...this.customFunctions, ...this.validationData, ...parent});
           Mustache.escape = escape;
           return render;
         }
-        return Mustache.render(this.content, {...this.customFunctions, ...this.validationData});
+        return Mustache.render(this.content, {...this.customFunctions, ...this.validationData, ...parent});
       } catch (error) {
         if (this.renderVarHtml) {
           return this.renderVarName;
