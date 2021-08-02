@@ -48,7 +48,7 @@ export function formatIfDate(string) {
     return d.format(getUserDateTimeFormat());
   }
   
-  d = moment(string, 'YYYY-MM-DDD', true);
+  d = moment(string, 'YYYY-MM-DD', true);
   if (d.isValid()) {
     return d.format(getUserDateFormat());
   }
