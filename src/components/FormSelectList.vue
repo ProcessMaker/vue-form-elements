@@ -90,6 +90,7 @@
     ],
     data() {
       return {
+        lastRequest: {},
         apiClient: window.ProcessMaker.apiClient.create(),
         selectListOptions: [],
         doDebounce: _.debounce(options => {
@@ -107,6 +108,13 @@
             const pmql = Mustache.render(this.options.pmqlQuery, {data: this.validationData});
             dataSourceUrl += '?pmql=' + encodeURIComponent(pmql);
           }
+
+          // Do not re-run the same request
+          const request = { dataSourceUrl, selectedEndPoint };
+          if (_.isEqual(this.lastRequest, request)) {
+            return;
+          }
+          this.lastRequest = _.cloneDeep(request);
 
           this.apiClient
               .post(dataSourceUrl, { config: { endpoint: selectedEndPoint, } })
