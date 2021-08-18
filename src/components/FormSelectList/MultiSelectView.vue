@@ -19,13 +19,6 @@
         {{ $t('No Data Available') }}
       </template>
     </multiselect>
-
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
-    </div>
-
-    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
 
