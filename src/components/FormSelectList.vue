@@ -41,7 +41,7 @@
       />
     </div>
 
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
+    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
       <div v-for="(error, index) in validatorErrors" :key="index">{{error}}</div>
       <div v-if="error">{{error}}</div>
     </div>
@@ -323,4 +323,3 @@
     },
   }
 </script>
-
