@@ -38,6 +38,12 @@ export default {
         label() {
             this.updateValidation()
         },
+        readonly() {
+            this.updateValidation();
+        },
+        disabled() {
+            this.updateValidation();
+        },
         validationData: {
             handler: function() {
                 this.updateValidation()
