@@ -8,6 +8,15 @@ export default {
         'validationField',
         'validationMessages'
     ],
+    computed: {
+        isReadOnly() {
+            if (this.readonly || this.disabled || this.$attrs.readonly || this.$attrs.disabled) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
     data() {
         return {
             validator: null
@@ -53,7 +62,7 @@ export default {
             globalObject.validatorLanguageSet = true;
         },
         updateValidation() {
-            if (this.validation) {
+            if (this.validation && !this.isReadOnly) {
                 let fieldName = this.validationField ? this.validationField : this.name;
                 let data = this.validationData ? this.validationData : {[fieldName]: this.value}
                 let validationRules = '';
