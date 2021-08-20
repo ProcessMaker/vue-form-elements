@@ -24,7 +24,8 @@ export default {
     },
     mounted() {
         this.setValidatorLanguage();
-        this.updateValidation()
+        this.updateValidation();
+        this.observeElementMutations();
     },
     watch: {
         // Triggered whenever the v-model is updated
@@ -52,6 +53,20 @@ export default {
         }
     },
     methods: {
+        observeElementMutations() {
+            new MutationObserver(this.handleMutations).observe(this.$el, {
+                attributes: true,
+                attributeFilter: ['readonly', 'disabled'],
+                subtree: true
+            });  
+        },
+        handleMutations(mutations) {
+            mutations.forEach(mutation => {
+                if (mutation.type == "attributes") {
+                    this.updateValidation()
+                }
+            });
+        },
         setValidatorLanguage() {
             let globalObject = typeof window === 'undefined' ? global : window;
 
