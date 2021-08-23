@@ -8,6 +8,15 @@ export default {
         'validationField',
         'validationMessages'
     ],
+    computed: {
+        isReadOnly() {
+            if (this.readonly || this.disabled || this.$attrs.readonly || this.$attrs.disabled) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
     data() {
         return {
             validator: null
@@ -15,7 +24,8 @@ export default {
     },
     mounted() {
         this.setValidatorLanguage();
-        this.updateValidation()
+        this.updateValidation();
+        this.observeElementMutations();
     },
     watch: {
         // Triggered whenever the v-model is updated
@@ -29,6 +39,12 @@ export default {
         label() {
             this.updateValidation()
         },
+        readonly() {
+            this.updateValidation();
+        },
+        disabled() {
+            this.updateValidation();
+        },
         validationData: {
             handler: function() {
                 this.updateValidation()
@@ -37,6 +53,20 @@ export default {
         }
     },
     methods: {
+        observeElementMutations() {
+            new MutationObserver(this.handleMutations).observe(this.$el, {
+                attributes: true,
+                attributeFilter: ['readonly', 'disabled'],
+                subtree: true
+            });  
+        },
+        handleMutations(mutations) {
+            mutations.forEach(mutation => {
+                if (mutation.type == "attributes") {
+                    this.updateValidation()
+                }
+            });
+        },
         setValidatorLanguage() {
             let globalObject = typeof window === 'undefined' ? global : window;
 
@@ -53,7 +83,7 @@ export default {
             globalObject.validatorLanguageSet = true;
         },
         updateValidation() {
-            if (this.validation) {
+            if (this.validation && !this.isReadOnly) {
                 let fieldName = this.validationField ? this.validationField : this.name;
                 let data = this.validationData ? this.validationData : {[fieldName]: this.value}
                 let validationRules = '';
