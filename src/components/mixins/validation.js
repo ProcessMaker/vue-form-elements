@@ -83,6 +83,7 @@ export default {
             globalObject.validatorLanguageSet = true;
         },
         updateValidation() {
+            console.log("UPDATE VALIDATION", this.validation);
             if (this.validation && !this.isReadOnly) {
                 let fieldName = this.validationField ? this.validationField : this.name;
                 let data = this.validationData ? this.validationData : {[fieldName]: this.value}
@@ -106,6 +107,7 @@ export default {
                 let rules = {
                     [fieldName]: validationRules
                 }
+                console.log("VALIDATION RULES", validationRules);
                 this.registerCustomRules(data);
                 this.validator = new Validator(data, rules, this.validationMessages ? this.validationMessages : null)
                 this.validator.setAttributeNames({ [fieldName]: this.label });
@@ -118,7 +120,9 @@ export default {
         },
         registerCustomRules(data) {
 
-            Validator.register('custom-same', function(val, req) {
+            Validator.register('same', function(val, req) {
+                // TODO: This is not running when a user updates a field in conversational forms. 
+                // Needs to run validation to check if the field is empty
                 let val1;
                 let val2 = val;
                 if (!req.includes('.')) {
@@ -132,7 +136,7 @@ export default {
                 }
                 
                 return false;
-            }, 'The :attribute and :custom-same fields must match.');
+            }, 'The :attribute and :custom-same fields must match. VFE CUSTOM MESSAGE');
 
             Validator.register('after', function(date, params) {
                 // checks if incoming 'params' is a date or a key reference.
