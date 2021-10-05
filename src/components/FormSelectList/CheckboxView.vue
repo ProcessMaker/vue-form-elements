@@ -9,6 +9,7 @@
           :value="emitObjects ? option : getOptionValue(option)"
           v-model="selected"
           v-bind="$attrs"
+          :disabled="isReadOnly"
       >
       <label :class="labelClass" v-uni-for="getOptionId(option)">
         {{getOptionContent(option)}}
