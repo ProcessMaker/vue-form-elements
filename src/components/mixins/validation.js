@@ -231,12 +231,12 @@ export default {
                 }
                 return true;
             }, 'The :attribute field is required.');
-            
+
             Validator.register('between_length', function (value, req) {
                 const length = value.length;
                 const min = req.split(',')[0];
                 const max = req.split(',')[1];
-                if (length > min && length < max) {
+                if (length >= min && length <= max) {
                     return true;
                 }
                 return false;
