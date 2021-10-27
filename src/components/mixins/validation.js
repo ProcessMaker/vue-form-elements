@@ -232,15 +232,15 @@ export default {
                 return true;
             }, 'The :attribute field is required.');
 
-            Validator.register('between_length', function (value, req) {
-                const length = value.length;
+            Validator.register('between', function (value, req) {
+                const number = Number(value);
                 const min = req.split(',')[0];
                 const max = req.split(',')[1];
-                if (length >= min && length <= max) {
+                if (number >= min && number <= max) {
                     return true;
                 }
                 return false;
-            }, 'The :attribute field must have a character length between :between_length');
+            }, 'Must have a value between :between');
         },
     }
 }
