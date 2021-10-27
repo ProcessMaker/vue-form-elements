@@ -231,6 +231,16 @@ export default {
                 }
                 return true;
             }, 'The :attribute field is required.');
+
+            Validator.register('between', function (value, req) {
+                const number = Number(value);
+                const min = req.split(',')[0];
+                const max = req.split(',')[1];
+                if (number >= min && number <= max) {
+                    return true;
+                }
+                return false;
+            }, 'Must have a value between :between');
         },
     }
 }
