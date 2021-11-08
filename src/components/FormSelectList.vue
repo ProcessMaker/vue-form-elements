@@ -324,11 +324,9 @@
       optionsValue() {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           return 'content';
+        } else {
+          return '__content__';
         }
-
-        const fieldName = this.options.value || 'content';
-
-        return this.stripMustache(fieldName);
       },
       classList() {
         return {
