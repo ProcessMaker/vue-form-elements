@@ -162,7 +162,7 @@
        * @param {*|*[]} list, array of objects
        */
       transformOptions(list) {
-        const suffix = this.attributeParent(this.options.value);
+        const suffix = this.options.key;
         let resultList = [];
 
         list.forEach(item => {
@@ -181,11 +181,14 @@
           parsedOption[this.optionsKey] = itemValue;
           parsedOption[this.optionsValue] = itemContent;
           if (this.options.valueTypeReturned === 'object') {
-            resultList.push(eval( suffix.length > 0 ? 'item.' +  suffix : 'item'));
+            parsedOption = suffix.length > 0 ?  get(item, suffix) : item;
+            Object.defineProperty(parsedOption, this.optionsValue, {
+              get: function() {
+                return itemContent;
+              }
+            });
           }
-          else {
-            resultList.push(parsedOption);
-          }
+          resultList.push(parsedOption);
         });
         return resultList
       },
@@ -196,13 +199,6 @@
             .pop();
 
         return removed ? removed : str;
-      },
-      attributeParent(str) {
-        let parts =  str.replace(/{{/g,'')
-            .replace(/}}/g,'')
-            .split('.')
-        parts.pop();
-        return parts.join('.');
       },
       updateWatcherDependentFieldValue(newSelectOptions, oldSelectOptions) {
         let dataName = this.options.dataName.split('.');
@@ -315,11 +311,9 @@
       optionsValue() {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           return 'content';
+        } else {
+          return '__content__';
         }
-
-        const fieldName = this.options.value || 'content';
-
-        return this.stripMustache(fieldName);
       },
       classList() {
         return {
