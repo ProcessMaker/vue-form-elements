@@ -57,15 +57,10 @@
   import OptionboxView from "./FormSelectList/OptionboxView";
   import FormMultiSelect from "./FormMultiSelect";
   import Mustache from "mustache";
-  import { get } from 'lodash';
+  import { debounce, isEqual, cloneDeep, get } from 'lodash';
 
 
   const uniqIdsMixin = createUniqIdsMixin()
-
-  function removeInvalidOptions(option) {
-    return Object.keys(option).includes('value', 'content') &&
-      option.content != null;
-  }
 
   export default {
     inheritAttrs: false,
@@ -91,9 +86,12 @@
     data() {
       return {
         lastRequest: {},
-        // apiClient: window.ProcessMaker.apiClient.create(),
+        previousSourceConfig: null,
+        previousValidationData: null,
+        previousValidationDataParent: null,
+        //apiClient: window.ProcessMaker.apiClient.create(),
         selectListOptions: [],
-        doDebounce: _.debounce(options => {
+        doDebounce: debounce(options => {
           const selectedEndPoint = options.selectedEndPoint;
           const selectedDataSource = options.selectedDataSource;
           const dataName = options.dataName;
@@ -128,10 +126,10 @@
 
           // Do not re-run the same request
           const request = { selectedDataSource, params };
-          if (_.isEqual(this.lastRequest, request)) {
+          if (isEqual(this.lastRequest, request)) {
             return;
           }
-          this.lastRequest = _.cloneDeep(request);
+          this.lastRequest = cloneDeep(request);
 
           this.$dataProvider.postDataSource(selectedDataSource, null, params)
               .then(response => {
@@ -222,7 +220,7 @@
         let dataName = this.options.dataName.split('.');
         // Check to see if the watcher output variable has been loaded.
         if (this.validationData && this.validationData.hasOwnProperty(dataName[0]) && this.validationData[dataName[0]] !== null) {
-          if (_.isEqual(newSelectOptions, oldSelectOptions)) {
+          if (isEqual(newSelectOptions, oldSelectOptions)) {
             return;
           }
           this.$emit('input', null);
@@ -256,23 +254,32 @@
       sourceConfig: {
         immediate:true,
         deep: true,
-        handler() {
-          this.fillSelectListOptions();
+        handler(value) {
+          if (!isEqual(this.previousSourceConfig, value)) {
+            this.fillSelectListOptions();
+          }
+          this.previousSourceConfig = cloneDeep(value);
         }
       },
       // React to local data scope
       validationData: {
         immediate:true,
         deep: true,
-        handler() {
-          this.fillSelectListOptions();
+        handler(value) {
+          if (!isEqual(this.previousValidationData, value)) {
+            this.fillSelectListOptions();
+          }
+          this.previousValidationData = cloneDeep(value);
         }
       },
       // React to a parent data scope
       "validationData._parent": {
         deep: true,
-        handler() {
-          this.fillSelectListOptions();
+        handler(value) {
+          if (!isEqual(this.previousValidationDataParent, value)) {
+            this.fillSelectListOptions();
+          }
+          this.previousValidationDataParent = cloneDeep(value);
         }
       },
       selectListOptions(newValue, oldValue) {
