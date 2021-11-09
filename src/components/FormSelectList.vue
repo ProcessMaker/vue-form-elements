@@ -178,7 +178,17 @@
        * @param {*|*[]} list, array of objects
        */
       transformOptions(list) {
-        const suffix = this.options.key;
+        let suffix;
+        if (this.options.key && this.options.key.startsWith('value.')) {
+          // points a property of the item
+          suffix = this.options.key.substr(6);
+        } else if (this.options.key==='value') {
+          // points to item itself
+          suffix = '';
+        } else {
+          // points a property of the item
+          suffix = this.options.key;
+        }
         let resultList = [];
 
         list.forEach(item => {
