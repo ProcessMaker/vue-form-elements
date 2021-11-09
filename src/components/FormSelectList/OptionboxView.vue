@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <form>
     <div :class="divClass" :key="getOptionValue(option)" v-for="option in options">
       <input
           :class="inputClass"
@@ -15,7 +15,7 @@
         {{getOptionContent(option)}}
       </label>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
