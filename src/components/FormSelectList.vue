@@ -178,14 +178,14 @@
        * @param {*|*[]} list, array of objects
        */
       transformOptions(list) {
-        let suffix;
+        let suffix = '';
         if (this.options.key && this.options.key.startsWith('value.')) {
           // points a property of the item
           suffix = this.options.key.substr(6);
         } else if (this.options.key==='value') {
           // points to item itself
           suffix = '';
-        } else {
+        } else if (this.options.key) {
           // points a property of the item
           suffix = this.options.key;
         }
@@ -195,24 +195,30 @@
           // if the content has a mustache expression
           const escape = Mustache.escape;
           Mustache.escape = (t) => t; // Do not escape mustache content
+
+          let parsedOption = {};
+          if (this.options.key) {
+            let itemValue = (this.options.key.indexOf('{{') >= 0)
+                          ? Mustache.render(this.options.key, item)
+                          : Mustache.render('{{'+ (this.options.key || 'value') + '}}', item);
+            parsedOption[this.optionsKey] = itemValue;
+          }
           let itemContent = (this.options.value.indexOf('{{') >= 0)
                               ? Mustache.render(this.options.value, item)
                               : Mustache.render('{{'+ (this.options.value || 'content') + '}}', item);
-          let itemValue = (this.options.key.indexOf('{{') >= 0)
-                          ? Mustache.render(this.options.key, item)
-                          : Mustache.render('{{'+ (this.options.key || 'value') + '}}', item);
+
           Mustache.escape = escape; // Reset mustache to original escape function
 
-          let parsedOption = {};
-          parsedOption[this.optionsKey] = itemValue;
           parsedOption[this.optionsValue] = itemContent;
           if (this.options.valueTypeReturned === 'object') {
             parsedOption = suffix.length > 0 ?  get(item, suffix) : item;
-            Object.defineProperty(parsedOption, this.optionsValue, {
-              get: function() {
-                return itemContent;
-              }
-            });
+            if (!parsedOption.hasOwnProperty(this.optionsValue)) {
+              Object.defineProperty(parsedOption, this.optionsValue, {
+                get: function() {
+                  return itemContent;
+                }
+              });
+            }
           }
           resultList.push(parsedOption);
         });
@@ -246,15 +252,24 @@
 
         const itemsInOptionsList = list.filter(item => {
           // if items are objects use the object's key attribute, use the item itself otherwise
-          const testValue = (typeof item === 'object' && item[this.optionsKey] !== undefined)
-                            ? item[this.optionsKey]
-                            : item;
+          let testValue = item;
+          if (typeof item === 'object') {
+            testValue = item;
+          } else if (item[this.optionsKey] !== undefined) {
+            testValue = item[this.optionsKey];
+          }
 
           if (testValue === 'undefined') {
             return false;
           }
 
-          return this.selectListOptions.some(option => option[this.optionsKey] === testValue);
+          return this.selectListOptions.some(option => {
+            if (typeof item === 'object') {
+              return isEqual(option, testValue);
+            } else {
+              return option[this.optionsKey] === testValue;
+            }
+          });
         });
 
         return itemsInOptionsList.length > 0;
