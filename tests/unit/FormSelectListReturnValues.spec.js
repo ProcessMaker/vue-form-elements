@@ -16,7 +16,7 @@ describe('FormSelectList', () => {
     {
         'value': 'foo',
         'content': 'Foo'
-    }, 
+    },
     {
         'value': 'bar',
         'content': 'Bar'
@@ -60,7 +60,7 @@ describe('FormSelectList', () => {
     const label = 'Form Select Label';
     const helper = 'This is some text';
     const name = 'FormSelect';
-    const testOptions: [{"content":"aaa","value":"a"},{"content":"bbb","value":"b"},{"content":"ccc","value":"c"}];
+    const testOptions = [{"content":"aaa","value":"a"},{"content":"bbb","value":"b"},{"content":"ccc","value":"c"}];
 
     const wrapper = factory({
       label: label,
