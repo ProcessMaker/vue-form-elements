@@ -232,13 +232,17 @@
 
         return removed ? removed : str;
       },
-      updateWatcherDependentFieldValue(newSelectOptions, oldSelectOptions) {
-        let dataName = this.options.dataName.split('.');
-        // Check to see if the watcher output variable has been loaded.
-        if (this.validationData && this.validationData.hasOwnProperty(dataName[0]) && this.validationData[dataName[0]] !== null) {
-          if (isEqual(newSelectOptions, oldSelectOptions)) {
-            return;
-          }
+      /**
+       * If the options list changes due to a dependant field change, we need to check if
+       * the selected value still exists in the new set of options. If it's gone now, then
+       * set this control's value to null.
+       */
+      updateWatcherDependentFieldValue() {
+        const hasKeyInOptions = this.selectListOptions.find(option => {
+          return _.get(option, this.optionsKey) === this.value;
+        });
+
+        if (!hasKeyInOptions) {
           this.$emit('input', null);
         }
       },
@@ -337,6 +341,7 @@
           return this.value;
         },
         set(val) {
+          console.log('SETTING emit input', val);
           return this.$emit('input', val);
         }
       },
