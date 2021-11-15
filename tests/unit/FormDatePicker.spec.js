@@ -1,4 +1,4 @@
-import { mount, shallowMount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import FormDatePicker from '../../src/components/FormDatePicker.vue'
 
 const JANUARY = 0;
