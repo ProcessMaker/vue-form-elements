@@ -3,9 +3,9 @@ process.env.TZ = 'America/Toronto';
 module.exports = {
   preset: '@vue/cli-plugin-unit-jest',
   transform: {
-    "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
+    "^.+\\.[t|j]sx?$": "babel-jest"
   },
   transformIgnorePatterns: [
-    "node_modules/(?!(vue-uniq-ids)/)"
+    "node_modules/(?!(vue-uniq-ids|lodash-es)/)"
   ]
 };

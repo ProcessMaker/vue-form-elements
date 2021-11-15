@@ -22,6 +22,7 @@
     "@tinymce/tinymce-vue": "2.0.0",
     "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
+    "lodash-es": "^4.17.21",
     "luxon": "^1.11.3",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.26",
@@ -34,6 +35,7 @@
     "weekstart": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.16.0",
     "@panter/vue-i18next": "^0.15.0",
     "@processmaker/vue-multiselect": "2.2.0",
     "@types/jest": "^24.0.18",
