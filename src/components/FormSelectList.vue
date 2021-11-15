@@ -196,6 +196,10 @@
           parsedOption[this.optionsValue] = itemContent;
           if (this.options.valueTypeReturned === 'object') {
             parsedOption = suffix.length > 0 ?  get(item, suffix) : item;
+
+            if (typeof parsedOption !== 'object') {
+              parsedOption = item;
+            }
             if (!parsedOption.hasOwnProperty(this.optionsValue)) {
               Object.defineProperty(parsedOption, this.optionsValue, {
                 get: function() {
