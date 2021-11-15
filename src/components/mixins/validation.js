@@ -1,3 +1,5 @@
+import {has} from 'lodash-es';
+
 let Validator = require('validatorjs');
 import moment from 'moment-timezone';
 
@@ -58,7 +60,7 @@ export default {
                 attributes: true,
                 attributeFilter: ['readonly', 'disabled'],
                 subtree: true
-            });  
+            });
         },
         handleMutations(mutations) {
             mutations.forEach(mutation => {
@@ -74,7 +76,7 @@ export default {
                 return;
             }
 
-            if (_.has(globalObject, 'ProcessMaker.user.lang')) {
+            if (has(globalObject, 'ProcessMaker.user.lang')) {
                 Validator.useLang(globalObject.ProcessMaker.user.lang);
             } else if (document.documentElement.lang) {
                 Validator.useLang(document.documentElement.lang);
@@ -87,7 +89,7 @@ export default {
                 let fieldName = this.validationField ? this.validationField : this.name;
                 let data = this.validationData ? this.validationData : {[fieldName]: this.value}
                 let validationRules = '';
-               
+
                 if (typeof this.validation !== 'string' && this.validation.length) {
                     let rules = [];
 
@@ -95,9 +97,9 @@ export default {
                         if (!configs.value) {
                             return;
                         }
-                        rules.push(configs.value); 
+                        rules.push(configs.value);
                     });
-            
+
                     validationRules = rules;
                 } else {
                     validationRules = this.validation;
@@ -126,11 +128,11 @@ export default {
                 } else {
                     val1 = req.split('.').reduce((obj,i)=>obj[i], this.validator.input);
                 }
-                
+
                 if (val1 === val2) {
                     return true;
                 }
-                
+
                 return false;
             }, 'The :attribute and :custom-same fields must match.');
 
@@ -140,13 +142,13 @@ export default {
                 if (!checkDate.isValid()) {
                     params = data[params];
                 }
-                
+
                 const inputDate = moment(date).toISOString();
                 const afterDate = moment(params).toISOString();
-            
+
                 return inputDate > afterDate;
             }, 'The :attribute must be after :after.');
-            
+
             Validator.register('after_or_equal', function(date, params) {
                 // checks if incoming 'params' is a date or a key reference.
                 let checkDate = moment(params);
@@ -156,10 +158,10 @@ export default {
 
                 const inputDate = moment(date).toISOString();
                 const equalOrAfterDate = moment(params).toISOString();
-                
+
                 return inputDate >= equalOrAfterDate;
             }, 'The :attribute must be equal or after :after_or_equal.');
-            
+
             Validator.register('before', function(date, params) {
                 // checks if incoming 'params' is a date or a key reference.
                 let checkDate = moment(params);
@@ -169,20 +171,20 @@ export default {
 
                 const inputDate = moment(date).toISOString();
                 const beforeDate = moment(params).toISOString();
-                
+
                 return inputDate < beforeDate;
             }, 'The :attribute must be before :before.');
-            
+
             Validator.register('before_or_equal', function(date, params) {
                 // checks if incoming 'params' is a date or a key reference.
                 let checkDate = moment(params);
                 if (!checkDate.isValid()) {
                     params = data[params];
                 }
-                
+
                 const inputDate = moment(date).toISOString();
                 const beforeDate = moment(params).toISOString();
-                
+
                 return inputDate <= beforeDate;
             }, 'The :attribute must be equal or before :before_or_equal.');
 
@@ -190,9 +192,9 @@ export default {
                 if (typeof req === 'string') {
                     req = req.split(',');
                 }
-                
+
                 let inputtedValue = this.validator._objectPath(this.validator.input, req[0]);
-            
+
                 switch (typeof inputtedValue) {
                     case 'boolean':
                     case 'number':
@@ -213,9 +215,9 @@ export default {
                 if (typeof req === 'string') {
                     req = req.split(',');
                 }
-                
+
                 let inputtedValue = this.validator._objectPath(this.validator.input, req[0]);
-            
+
                 switch (typeof inputtedValue) {
                     case 'boolean':
                     case 'number':

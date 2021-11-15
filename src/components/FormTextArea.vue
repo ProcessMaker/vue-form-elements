@@ -38,7 +38,7 @@ import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
 import Editor from './Editor'
-import _ from 'lodash'
+import {throttle} from 'lodash-es';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -88,7 +88,7 @@ export default {
     },
   },
   created() {
-    this.rebootEditor = _.throttle(() => {
+    this.rebootEditor = throttle(() => {
       this.editorActive = false;
       this.$nextTick(() => {
         this.editorActive = true
