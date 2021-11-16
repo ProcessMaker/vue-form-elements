@@ -341,7 +341,6 @@
           return this.value;
         },
         set(val) {
-          console.log('SETTING emit input', val);
           return this.$emit('input', val);
         }
       },
