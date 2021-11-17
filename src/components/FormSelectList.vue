@@ -178,17 +178,7 @@
        * @param {*|*[]} list, array of objects
        */
       transformOptions(list) {
-        let suffix = '';
-        if (this.options.key && this.options.key.startsWith('value.')) {
-          // points a property of the item
-          suffix = this.options.key.substr(6);
-        } else if (this.options.key==='value') {
-          // points to item itself
-          suffix = '';
-        } else if (this.options.key) {
-          // points a property of the item
-          suffix = this.options.key;
-        }
+        let suffix = this.attributeParent(this.options.value);
         let resultList = [];
 
         list.forEach(item => {
@@ -231,6 +221,34 @@
             .pop();
 
         return removed ? removed : str;
+      },
+      attributeParent(str) {
+        // Check if the value has a mustache expression
+        const isMustache = str.indexOf('{{') >= 0;
+        // If mustache is present, find variables inside mustache
+        if (isMustache) {
+          const mustacheVariables = str.match(/{{[^}]+}}/g);
+          if (mustacheVariables) {
+            let result;
+            mustacheVariables.forEach(variable => {
+              // Get owner variable. Ex. for `data.name.first` owner is `data.name`
+              const stripped = variable.substr(2, variable.length - 4).trim();
+              const splitted = stripped.split('.');
+              splitted.pop();
+              const owner = splitted.join('.');
+              // Select the smallest owner
+              if (!result || result.length > owner.length) {
+                result = owner;
+              }
+            });
+            return result;
+          }
+        } else {
+          const splitted = str.trim().split('.');
+          splitted.pop();
+          const owner = splitted.join('.');
+          return owner;
+        }
       },
       /**
        * If the options list changes due to a dependant field change, we need to check if
