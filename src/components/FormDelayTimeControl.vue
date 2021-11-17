@@ -23,7 +23,7 @@
 
 <script>
 import ValidationMixin from './mixins/validation'
-import last from 'lodash/last';
+import {last} from 'lodash-es';
 
 const periodNames = {
   minute: 'minute',
@@ -76,7 +76,7 @@ export default {
   computed: {
     classList(){
       let classList = {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error, 
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
       }
       if(this.controlClass) {
         classList[this.controlClass] = true
