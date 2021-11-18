@@ -66,6 +66,7 @@
   import DataFormatMixin from './mixins/DataFormat';
   import FormPlainMultiSelect from "./FormPlainMultiSelect";
   import Mustache from "mustache";
+	import {debounce, get} from 'lodash-es';
 
 
   const uniqIdsMixin = createUniqIdsMixin()
@@ -103,7 +104,7 @@
         allowMultiSelect: false,
         optionsList: [],
         onlyKey: true,
-        debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
+        debounceGetDataSource: debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
                                            selOptions) => {
           let options = [];
 
@@ -294,7 +295,7 @@
 
           if (this.options.valueTypeReturned === 'single') {
             try {
-            options = Object.values(_.get(this.validationData, dataName))
+            options = Object.values(get(this.validationData, dataName))
                 .map(convertToSelectOptions)
                 .filter(removeInvalidOptions);
               this.optionsList = options;
@@ -309,7 +310,7 @@
               content: (option[value || 'content']).toString(),
             });
             try {
-              options = Object.values(_.get(this.validationData, dataName))
+              options = Object.values(get(this.validationData, dataName))
                 .map(convertObjectToSelectOptions);
               this.optionsList = options;
             } catch(error) {
