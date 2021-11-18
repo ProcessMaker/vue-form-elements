@@ -36,6 +36,7 @@
     "weekstart": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.16.4",
     "@panter/vue-i18next": "^0.15.0",
     "@types/jest": "^24.0.18",
     "@vue/cli-plugin-babel": "^3.12.1",
