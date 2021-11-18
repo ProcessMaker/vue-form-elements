@@ -59,7 +59,6 @@
   import Mustache from "mustache";
   import { debounce, isEqual, cloneDeep, get } from 'lodash';
 
-
   const uniqIdsMixin = createUniqIdsMixin()
 
   export default {
@@ -121,7 +120,7 @@
 
                 const transformedList = this.transformOptions(list);
                 this.$root.$emit('selectListOptionsUpdated', transformedList);
-                this.selectListOptions =  transformedList;
+                this.selectListOptions = transformedList;
               })
               .catch(err => {
                 /* Ignore error */
@@ -238,13 +237,38 @@
           return owner;
         }
       },
-      updateWatcherDependentFieldValue(newSelectOptions, oldSelectOptions) {
-        let dataName = this.options.dataName.split('.');
-        // Check to see if the watcher output variable has been loaded.
-        if (this.validationData && this.validationData.hasOwnProperty(dataName[0]) && this.validationData[dataName[0]] !== null) {
-          if (isEqual(newSelectOptions, oldSelectOptions)) {
-            return;
-          }
+      /**
+       * If the options list changes due to a dependant field change, we need to check if
+       * the selected value still exists in the new set of options. If it's gone now, then
+       * set this control's value to null.
+       */
+      updateWatcherDependentFieldValue() {
+        let hasKeyInOptions = true;
+
+        if (Array.isArray(this.value)) {
+          hasKeyInOptions = true;
+          this.value.forEach(item => {
+            let hasItemInOption = this.selectListOptions.find(option => {
+              if (this.options.valueTypeReturned === 'object') {
+                return isEqual(option, item);
+              } else {
+                return get(option, this.optionsKey) === item;
+              }
+            });
+
+            hasKeyInOptions = hasKeyInOptions && hasItemInOption;
+          });
+        } else {
+          hasKeyInOptions = this.selectListOptions.find(option => {
+            if (this.options.valueTypeReturned === 'object') {
+              return isEqual(option, this.value);
+            } else {
+              return get(option, this.optionsKey) === this.value;
+            }
+          });
+        }
+
+        if (!hasKeyInOptions) {
           this.$emit('input', null);
         }
       },
@@ -338,7 +362,14 @@
       valueProxy: {
         get() {
           if (this.options.renderAs === "dropdown") {
-            return this.areItemsInSelectListOptions(this.value) ? this.value : [];
+            let newValue = this.value;
+            if (this.options.valueTypeReturned === 'object' && this.value) {
+              if (!Array.isArray(this.value)) {
+                newValue = [this.value];
+              }
+              newValue = this.transformOptions(newValue);
+            }
+            return this.areItemsInSelectListOptions(newValue) ? this.value : [];
           }
           return this.value;
         },
