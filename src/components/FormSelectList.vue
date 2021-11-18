@@ -62,12 +62,12 @@
 </template>
 
 <script>
-import {createUniqIdsMixin} from 'vue-uniq-ids';
+import { createUniqIdsMixin } from 'vue-uniq-ids';
 import Mustache from 'mustache';
+import { debounce, get } from 'lodash-es';
 import ValidationMixin from './mixins/validation';
 import DataFormatMixin from './mixins/DataFormat';
 import FormPlainMultiSelect from './FormPlainMultiSelect.vue';
-import {debounce, get} from 'lodash-es';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -105,7 +105,7 @@ export default {
       optionsList: [],
       onlyKey: true,
       debounceGetDataSource: debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
-                                       selOptions) => {
+        selOptions) => {
         const options = [];
 
         // If no ProcessMaker object is available return and do nothing
@@ -115,7 +115,7 @@ export default {
 
         let dataSourceUrl = `/requests/data_sources/${selectedDataSource}`;
         if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
-          const pmql = Mustache.render(this.options.pmqlQuery, {data: this.formData});
+          const pmql = Mustache.render(this.options.pmqlQuery, { data: this.formData });
           dataSourceUrl += `?pmql=${pmql}`;
         }
 
@@ -284,7 +284,8 @@ export default {
       }
 
       if (selectedDataSource && selectedEndPoint && dataSource === 'dataConnector') {
-        this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value, this.cachedSelOptions);
+        this.debounceGetDataSource(selectedDataSource, selectedEndPoint, dataName, this.value, key, value,
+          this.cachedSelOptions);
       }
       if (dataName) {
         if (this.options.valueTypeReturned === null) {
@@ -328,8 +329,8 @@ export default {
     },
     inputClass() {
       return [
-        {[this.controlClass]: !!this.controlClass},
-        {'is-invalid': (this.validator && this.validator.errorCount) || this.error},
+        { [this.controlClass]: !!this.controlClass },
+        { 'is-invalid': (this.validator && this.validator.errorCount) || this.error },
         this.toggle ? 'custom-control-input' : 'form-check-input'
       ];
     },
