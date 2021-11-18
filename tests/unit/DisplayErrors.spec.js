@@ -19,13 +19,16 @@ describe('Display Errors', () => {
     }
   });
 
+  const errorText = 'Custom error';
+  const errorText1 = 'Validator error 1';
+  const errorText2 = 'Validator error 2';
+
   it('renders the component', () => {
     const wrapper = factory();
     expect(wrapper.html()).toContain('div');
   });
 
   it('display error with custom error', () => {
-    const errorText = 'Custom error';
     const wrapper = factory({
       error: errorText
     });
@@ -35,8 +38,6 @@ describe('Display Errors', () => {
   });
 
   it('display error with validator object', () => {
-    const errorText1 = 'Validator error 1';
-    const errorText2 = 'Validator error 2';
     validator.errors.errors.example = [
       errorText1,
       errorText2
@@ -53,9 +54,6 @@ describe('Display Errors', () => {
   });
 
   it('errors should be displayed with custom error and validator object', () => {
-    const errorText = 'Custom error';
-    const errorText1 = 'Validator error 1';
-    const errorText2 = 'Validator error 2';
     validator.errors.errors.example = [
       errorText1,
       errorText2
@@ -74,9 +72,6 @@ describe('Display Errors', () => {
   });
 
   it('the error no longer appears when set to blank ', () => {
-    const errorText = 'Custom error';
-    const errorText1 = 'Validator error 1';
-    const errorText2 = 'Validator error 2';
     validator.errors.errors.example = [
       errorText1,
       errorText2
