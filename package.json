@@ -38,12 +38,17 @@
     "@panter/vue-i18next": "^0.15.0",
     "@types/jest": "^24.0.18",
     "@vue/cli-plugin-babel": "^3.12.1",
-    "@vue/cli-plugin-eslint": "^3.0.0-beta.15",
-    "@vue/cli-plugin-unit-jest": "^4.1.2",
+    "@vue/cli-plugin-eslint": "^4.5.15",
+    "@vue/cli-plugin-unit-jest": "^4.5.15",
     "@vue/cli-service": "^3.0.0-beta.15",
-    "@vue/test-utils": "1.0.0-beta.29",
+    "@vue/eslint-config-airbnb": "^5.0.2",
+    "@vue/test-utils": "^1.0.3",
     "babel-core": "7.0.0-bridge.0",
+    "babel-eslint": "^10.1.0",
     "babel-jest": "^23.6.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-vue": "^6.2.2",
     "i18next": "^15.1.1",
     "mustache": "^3.0.1",
     "node-sass": "^4.9.0",
@@ -54,20 +59,6 @@
   },
   "peerDependencies": {
     "mustache": "^3.0.1"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
   },
   "postcss": {
     "plugins": {
