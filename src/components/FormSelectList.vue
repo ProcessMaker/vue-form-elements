@@ -1,76 +1,79 @@
 <template>
   <div class="form-group">
-    <label v-uni-for="name">{{label}}</label>
+    <label v-uni-for="name">{{ label }}</label>
     <form-plain-multi-select
       v-if="options.renderAs === 'dropdown'"
-      option-value="value"
-      option-content="content"
-      v-uni-id="name"
-      v-bind="$attrs"
-      v-on="$listeners"
       v-model="selectedOptions"
+      v-uni-id="name"
+      :class="classList"
+      :multiple="allowMultiSelect"
+      :only-key="onlyKey"
+      :options="optionsList"
       :placeholder="placeholder ? placeholder : $t('Select...')"
       :show-labels="false"
-      :options="optionsList"
-      :class="classList"
-      :only-key="onlyKey"
-      :multiple="allowMultiSelect"
+      option-content="content"
+      option-value="value"
+      v-bind="$attrs"
+      v-on="$listeners"
     >
     </form-plain-multi-select>
 
     <div v-if="options.renderAs === 'checkbox' && allowMultiSelect">
-      <div :class="divClass" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value" v-for="option in optionsList">
+      <div v-for="option in optionsList" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value"
+           :class="divClass">
         <input
-          v-bind="$attrs"
-          :class="inputClass"
-          type="checkbox"
-          :value="option.value"
-          v-uni-id="`${name}-${option.value}`"
-          :name="`${name}`"
-          :checked="selectedOptions.indexOf(option.value)>=0"
           v-model="selectedOptions"
+          v-uni-id="`${name}-${option.value}`"
+          :checked="selectedOptions.indexOf(option.value)>=0"
+          :class="inputClass"
+          :name="`${name}`"
+          :value="option.value"
+          type="checkbox"
+          v-bind="$attrs"
           @change="sendSelectedOptions($event)"
         >
-        <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
+        <label v-uni-for="`${name}-${option.value}`" :class="labelClass">{{ option.content }}</label>
       </div>
     </div>
 
     <div v-if="options.renderAs === 'checkbox' && !allowMultiSelect">
-      <div :class="divClass" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value" v-for="option in optionsList">
+      <div v-for="option in optionsList" :key="typeof option.value == 'object' ? option.value[optionKey] : option.value"
+           :class="divClass">
         <input
-          v-bind="$attrs"
-          type="radio"
-          :class="inputClass"
-          :value="option.value"
-          v-uni-id="`${name}-${option.value}`"
-          :name="`${name}`"
           v-model="selectedOptions[0]"
+          v-uni-id="`${name}-${option.value}`"
+          :class="inputClass"
+          :name="`${name}`"
+          :value="option.value"
+          type="radio"
+          v-bind="$attrs"
           @change="sendSelectedOptions($event)"
         >
-        <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
+        <label v-uni-for="`${name}-${option.value}`" :class="labelClass">{{ option.content }}</label>
       </div>
     </div>
 
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
+      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{ error }}</div>
+      <div v-if="error">{{ error }}</div>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+    <small v-if="helper" class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
 
 <script>
-import { createUniqIdsMixin } from 'vue-uniq-ids';
+import {createUniqIdsMixin} from 'vue-uniq-ids';
 import Mustache from 'mustache';
 import ValidationMixin from './mixins/validation';
 import DataFormatMixin from './mixins/DataFormat';
-import FormPlainMultiSelect from './FormPlainMultiSelect';
+import FormPlainMultiSelect from './FormPlainMultiSelect.vue';
+import {debounce, get} from 'lodash-es';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 function removeInvalidOptions(option) {
   return Object.keys(option).includes('value', 'content')
-      && option.content != null;
+    && option.content != null;
 }
 
 export default {
@@ -101,8 +104,8 @@ export default {
       allowMultiSelect: false,
       optionsList: [],
       onlyKey: true,
-      debounceGetDataSource: _.debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
-        selOptions) => {
+      debounceGetDataSource: debounce((selectedDataSource, selectedEndPoint, dataName, currentValue, key, value,
+                                       selOptions) => {
         const options = [];
 
         // If no ProcessMaker object is available return and do nothing
@@ -112,7 +115,7 @@ export default {
 
         let dataSourceUrl = `/requests/data_sources/${selectedDataSource}`;
         if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '') {
-          const pmql = Mustache.render(this.options.pmqlQuery, { data: this.formData });
+          const pmql = Mustache.render(this.options.pmqlQuery, {data: this.formData});
           dataSourceUrl += `?pmql=${pmql}`;
         }
 
@@ -290,7 +293,7 @@ export default {
 
         if (this.options.valueTypeReturned === 'single') {
           try {
-            options = Object.values(_.get(this.validationData, dataName))
+            options = Object.values(get(this.validationData, dataName))
               .map(convertToSelectOptions)
               .filter(removeInvalidOptions);
             this.optionsList = options;
@@ -305,7 +308,7 @@ export default {
             content: (option[value || 'content']).toString()
           });
           try {
-            options = Object.values(_.get(this.validationData, dataName))
+            options = Object.values(get(this.validationData, dataName))
               .map(convertObjectToSelectOptions);
             this.optionsList = options;
           } catch (error) {
@@ -325,8 +328,8 @@ export default {
     },
     inputClass() {
       return [
-        { [this.controlClass]: !!this.controlClass },
-        { 'is-invalid': (this.validator && this.validator.errorCount) || this.error },
+        {[this.controlClass]: !!this.controlClass},
+        {'is-invalid': (this.validator && this.validator.errorCount) || this.error},
         this.toggle ? 'custom-control-input' : 'form-check-input'
       ];
     },
