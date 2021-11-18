@@ -19,15 +19,15 @@
 </template>
 
 <script>
-import {createUniqIdsMixin} from 'vue-uniq-ids'
+import { createUniqIdsMixin } from 'vue-uniq-ids';
 import DataFormatMixin from './mixins/DataFormat';
 import hasDefaultOptionKey from './mixins/hasDefaultOptionKey';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 function removeInvalidOptions(option) {
-  return Object.keys(option).includes('value', 'contemnt') &&
-    option.content != null;
+  return Object.keys(option).includes('value', 'contemnt')
+    && option.content != null;
 }
 
 export default {
@@ -48,18 +48,19 @@ export default {
     radioOptions() {
       if (Array.isArray(this.options)) {
         return this.options;
-      } else {
-        return this.optionsFromDataSource;
       }
+      return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
-      const { jsonData, key, value, dataName } = this.options;
+      const {
+        jsonData, key, value, dataName
+      } = this.options;
       let options = [];
 
-      const convertToSelectOptions = option => ({
+      const convertToSelectOptions = (option) => ({
         value: option[key || 'value'],
-        content: option[value || 'content'],
-      })
+        content: option[value || 'content']
+      });
 
       if (jsonData) {
         try {
@@ -87,7 +88,7 @@ export default {
       return this.toggle ? 'custom-control custom-radio' : 'form-check';
     },
     labelClass() {
-      return this.toggle ? 'custom-control-label': 'form-check-label';
+      return this.toggle ? 'custom-control-label' : 'form-check-label';
     },
     inputClass() {
       return [
@@ -97,5 +98,5 @@ export default {
       ];
     }
   }
-}
+};
 </script>

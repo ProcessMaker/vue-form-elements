@@ -1,4 +1,4 @@
-/* global ProcessMaker*/
+/* global ProcessMaker */
 import moment from 'moment-timezone';
 
 function getProcessMakerUserValue(key) {

@@ -1,16 +1,14 @@
-import {shallowMount} from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils';
 import FormTextArea from '../../src/components/FormTextArea.vue';
 import DisplayErrors from '../../src/components/common/DisplayErrors.vue';
 
 describe('FormTextArea', () => {
-  const factory = (propsData) => {
-    return shallowMount(FormTextArea, {
-      propsData: {
-        ...propsData
-      },
-      stubs: {'Editor': true, 'DisplayErrors': true},
-    });
-  };
+  const factory = (propsData) => shallowMount(FormTextArea, {
+    propsData: {
+      ...propsData
+    },
+    stubs: { Editor: true, DisplayErrors: true }
+  });
 
   it('renders the component', () => {
     const wrapper = factory();
@@ -50,7 +48,7 @@ describe('FormTextArea', () => {
     const wrapper = factory();
     const value = 'Hello World';
 
-    wrapper.setProps({value: value});
+    wrapper.setProps({ value });
     expect(wrapper.find('textarea').element.value).toBe(value);
   });
 
@@ -58,7 +56,7 @@ describe('FormTextArea', () => {
     const value = 'Hello World';
     const newVal = 'Goodbye World';
     const wrapper = factory({
-      value: value
+      value
     });
     expect(wrapper.find('textarea').element.value).toBe(value);
 
@@ -91,7 +89,7 @@ describe('FormTextArea', () => {
     expect(wrapper.find(DisplayErrors).exists()).toBe(true);
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
 
-    wrapper.setProps({value: null, error: "", validation: 'required'});
+    wrapper.setProps({ value: null, error: '', validation: 'required' });
     expect(wrapper.html()).toContain(helperText);
     expect(wrapper.find('textarea').element.name).toBe(nameText);
     expect(wrapper.find('textarea').element.placeholder).toBe(placeholderText);
@@ -103,15 +101,15 @@ describe('FormTextArea', () => {
   it('displays validation error messages when the field is invalid', () => {
     const errorText = 'This field has an error';
     const wrapper = factory({
-      name: 'FormTextAreaField',
+      name: 'FormTextAreaField'
     });
 
-    wrapper.setProps({value: "", validation: 'required'});
+    wrapper.setProps({ value: '', validation: 'required' });
     expect(wrapper.find('.is-invalid').exists()).toBe(true);
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
     expect(wrapper.find(DisplayErrors).exists()).toBe(true);
 
-    wrapper.setProps({value: "text", error: errorText});
+    wrapper.setProps({ value: 'text', error: errorText });
     expect(wrapper.find('.is-invalid').exists()).toBe(true);
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
     expect(wrapper.find(DisplayErrors).exists()).toBe(true);
@@ -119,14 +117,14 @@ describe('FormTextArea', () => {
 
   it('removes the validation error messages when the field is valid.', () => {
     const wrapper = factory({
-      name: 'FormTextAreaField',
+      name: 'FormTextAreaField'
     });
 
-    wrapper.setProps({value: '', validation: 'required'});
+    wrapper.setProps({ value: '', validation: 'required' });
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(true);
     expect(wrapper.find(DisplayErrors).exists()).toBe(true);
 
-    wrapper.setProps({value: 'Hello World', error: '', validation: 'required'});
+    wrapper.setProps({ value: 'Hello World', error: '', validation: 'required' });
     expect(wrapper.find('textarea').classes('is-invalid')).toBe(false);
     expect(wrapper.find(DisplayErrors).exists()).toBe(false);
   });

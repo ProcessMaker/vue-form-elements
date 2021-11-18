@@ -40,21 +40,21 @@ export default {
   data() {
     return {
       initiallyOpen: Boolean(this.config.initiallyOpen),
-      items: [],
-    }
+      items: []
+    };
   },
   watch: {
     value: {
       handler() {
         this.items = this.value;
       },
-      immediate: true,
+      immediate: true
     },
     items() {
       this.$emit('input', this.items);
-    },
-  },
-}
+    }
+  }
+};
 </script>
 
 <style scoped lang="scss">

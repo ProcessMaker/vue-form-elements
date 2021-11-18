@@ -29,16 +29,16 @@
 </template>
 
 <script>
-import ValidationMixin from './mixins/validation'
-import { createUniqIdsMixin } from 'vue-uniq-ids'
+import { createUniqIdsMixin } from 'vue-uniq-ids';
+import ValidationMixin from './mixins/validation';
 import DataFormatMixin from './mixins/DataFormat';
 import hasDefaultOptionKey from './mixins/hasDefaultOptionKey';
 
-const uniqIdsMixin = createUniqIdsMixin()
+const uniqIdsMixin = createUniqIdsMixin();
 
 function removeInvalidOptions(option) {
-  return Object.keys(option).includes('value', 'contemnt') &&
-    option.content != null;
+  return Object.keys(option).includes('value', 'contemnt')
+    && option.content != null;
 }
 
 export default {
@@ -53,14 +53,14 @@ export default {
     'name',
     'controlClass',
     'validationData',
-    'placeholder',
+    'placeholder'
   ],
-  computed:{
+  computed: {
     classList() {
       return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass
-      }
+      };
     },
     selectOptions() {
       if (Array.isArray(this.options)) {
@@ -70,13 +70,15 @@ export default {
       return this.optionsFromDataSource;
     },
     optionsFromDataSource() {
-      const { jsonData, key, value, dataName } = this.options;
+      const {
+        jsonData, key, value, dataName
+      } = this.options;
       let options = [];
 
-      const convertToSelectOptions = option => ({
+      const convertToSelectOptions = (option) => ({
         value: option[key || 'value'],
-        content: option[value || 'content'],
-      })
+        content: option[value || 'content']
+      });
 
       if (jsonData) {
         try {
@@ -99,7 +101,7 @@ export default {
       }
 
       return options;
-    },
-  },
-}
+    }
+  }
+};
 </script>

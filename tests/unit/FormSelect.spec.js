@@ -1,31 +1,29 @@
-import { shallowMount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils';
 import FormSelect from '../../src/components/FormSelect.vue';
 
 describe('FormSelect', () => {
   const $t = () => {};
-  const factory = (propsData) => {
-    return shallowMount(FormSelect, {
-      mocks: {$t},
-      propsData: {
-        ...propsData
-      }
-    });
-  }
-  const options =  [
+  const factory = (propsData) => shallowMount(FormSelect, {
+    mocks: { $t },
+    propsData: {
+      ...propsData
+    }
+  });
+  const options = [
     {
-        'value': 'foo',
-        'content': 'Foo'
-    }, 
+      value: 'foo',
+      content: 'Foo'
+    },
     {
-        'value': 'bar',
-        'content': 'Bar'
+      value: 'bar',
+      content: 'Bar'
     }
   ];
 
   it('renders the component', () => {
     const wrapper = factory({ options });
     expect(wrapper.html()).toContain('select');
-    expect(wrapper.findAll('option').length).toBe(options.length + 1); 
+    expect(wrapper.findAll('option').length).toBe(options.length + 1);
   });
 
   it('renders the component from a data source', () => {
@@ -37,12 +35,12 @@ describe('FormSelect', () => {
     });
 
     expect(wrapper.html()).toContain('select');
-    expect(wrapper.findAll('option')).toHaveLength(options.length + 1); 
+    expect(wrapper.findAll('option')).toHaveLength(options.length + 1);
   });
 
   it('should have an empty value on mount', () => {
     const wrapper = factory({ options });
-    expect(wrapper.find('select').element.value).toBe("");
+    expect(wrapper.find('select').element.value).toBe('');
   });
 
   it('should emit a value on mount', () => {
@@ -54,7 +52,7 @@ describe('FormSelect', () => {
     const wrapper = factory({ options });
     const selectOptions = wrapper.findAll('option');
     const value = selectOptions.at(1);
-    
+
     value.setSelected();
     expect(wrapper.emitted().input[1]).toEqual([value.element.value]);
   });
@@ -71,13 +69,13 @@ describe('FormSelect', () => {
   it('should update the value when a initial value is set and the input changes', () => {
     const value = 'foo';
     const newVal = 'bar';
-    const wrapper = factory({ 
-      options: options,
-      value: value
-     });
+    const wrapper = factory({
+      options,
+      value
+    });
     const selectOptions = wrapper.findAll('option');
     expect(selectOptions.at(1).element.selected).toBe(true);
-    
+
     wrapper.setProps({
       value: newVal
     });
@@ -92,14 +90,14 @@ describe('FormSelect', () => {
     const placeholder = 'select an option';
 
     const wrapper = factory({
-      label: label,
-      helper: helper,
-      name: name,
+      label,
+      helper,
+      name,
       error: errorText,
-      placeholder: placeholder,
+      placeholder,
       disabled: true,
       validation: 'required',
-      options: options,
+      options,
       defaultOptionKey: 'bar'
     });
 
@@ -111,7 +109,7 @@ describe('FormSelect', () => {
     expect(wrapper.find('.invalid-feedback').isVisible()).toBe(true);
     expect(wrapper.find('.invalid-feedback').text()).toBe(errorText);
     expect(wrapper.find('select').classes('is-invalid')).toBe(true);
-    
+
     const selectOptions = wrapper.findAll('option');
     expect(selectOptions.at(0).text()).toEqual(placeholder);
     expect(selectOptions.at(2).element.selected).toBe(true);
@@ -125,7 +123,7 @@ describe('FormSelect', () => {
       name: 'FormSelect',
       error: errorText,
       validation: 'required',
-      options: options
+      options
     });
 
     expect(wrapper.find('select').classes('is-invalid')).toBe(true);
@@ -141,9 +139,9 @@ describe('FormSelect', () => {
       name: 'FormSelect',
       error: errorText,
       validation: 'required',
-      options: options
+      options
     });
-    
+
     wrapper.setProps({ value });
     expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
     expect(wrapper.find('select').classes('is-invalid')).toBe(false);

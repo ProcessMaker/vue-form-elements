@@ -24,11 +24,11 @@
 </template>
 
 <script>
-import { createUniqIdsMixin } from 'vue-uniq-ids'
-import ValidationMixin from './mixins/validation'
+import { createUniqIdsMixin } from 'vue-uniq-ids';
+import ValidationMixin from './mixins/validation';
 import DataFormatMixin from './mixins/DataFormat';
 
-const uniqIdsMixin = createUniqIdsMixin()
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   inheritAttrs: false,
@@ -39,20 +39,20 @@ export default {
     'error',
     'helper',
     'name',
-    'controlClass',
+    'controlClass'
   ],
-  computed:{
+  computed: {
     classList() {
       return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass
-      }
+      };
     }
   },
   data() {
     return {
       validator: null
-    }
-  },
-}
+    };
+  }
+};
 </script>

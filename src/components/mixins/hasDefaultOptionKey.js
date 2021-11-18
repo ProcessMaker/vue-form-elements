@@ -2,7 +2,7 @@ export default {
   computed: {
     valueOrDefault() {
       return this.value || this.options.defaultOptionKey;
-    },
+    }
   },
   watch: {
     'options.defaultOptionKey': {
@@ -16,6 +16,6 @@ export default {
       handler() {
         !this.value && this.options.defaultOptionKey ? this.$emit('input', this.options.defaultOptionKey) : null;
       }
-    },
-  },
-}
+    }
+  }
+};

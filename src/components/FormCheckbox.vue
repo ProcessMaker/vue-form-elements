@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import ValidationMixin from './mixins/validation'
-import {createUniqIdsMixin} from 'vue-uniq-ids'
+import { createUniqIdsMixin } from 'vue-uniq-ids';
+import ValidationMixin from './mixins/validation';
 import DataFormatMixin from './mixins/DataFormat';
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -43,7 +43,7 @@ export default {
     'controlClass',
     'toggle',
     'checked',
-    'initiallyChecked',
+    'initiallyChecked'
   ],
   computed: {
     isChecked() {
@@ -60,10 +60,10 @@ export default {
         this.toggle ? 'custom-control-input' : 'form-check-input',
         {
           'is-invalid': (this.validator && this.validator.errorCount) || this.error,
-          [this.controlClass]: !!this.controlClass,
+          [this.controlClass]: !!this.controlClass
         }
-      ]
+      ];
     }
-  },
-}
+  }
+};
 </script>

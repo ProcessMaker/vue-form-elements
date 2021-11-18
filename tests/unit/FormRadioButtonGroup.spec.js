@@ -1,28 +1,26 @@
-import { shallowMount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils';
 import FormRadioButton from '../../src/components/FormRadioButtonGroup.vue';
 
 describe('FormRadioButton', () => {
-  const factory = (propsData) => {
-    return shallowMount(FormRadioButton, { propsData });
-  }
-  const options =  [
+  const factory = (propsData) => shallowMount(FormRadioButton, { propsData });
+  const options = [
     {
-        'value': 'foo',
-        'content': 'Foo'
+      value: 'foo',
+      content: 'Foo'
     },
     {
-        'value': 'bar',
-        'content': 'Bar'
+      value: 'bar',
+      content: 'Bar'
     }
   ];
   const json = JSON.stringify(options);
-  
+
   it('renders the component', () => {
     const wrapper = factory({ options });
 
     expect(wrapper.html()).toContain('input');
     expect(wrapper.find('input').attributes().type).toBe('radio');
-    expect(wrapper.findAll('input').length).toBe(options.length); 
+    expect(wrapper.findAll('input').length).toBe(options.length);
   });
 
   it('renders the component as a data source', () => {
@@ -45,14 +43,14 @@ describe('FormRadioButton', () => {
 
   it('should emit a value on mount', () => {
     const wrapper = factory({ options });
-    expect(wrapper.emitted().input).toBeTruthy();    
+    expect(wrapper.emitted().input).toBeTruthy();
   });
 
   it('should emit the value when input changes', () => {
     const wrapper = factory({ options });
     const radioOptions = wrapper.findAll('input');
     const value = radioOptions.at(1);
-    
+
     value.setChecked();
     expect(wrapper.emitted().input[1]).toEqual([value.element.value]);
   });
@@ -69,13 +67,13 @@ describe('FormRadioButton', () => {
   it('should update the value when a initial value is set and the input changes', () => {
     const value = 'foo';
     const newVal = 'bar';
-    const wrapper = factory({ 
-      options: options,
-      value: value
-     });
+    const wrapper = factory({
+      options,
+      value
+    });
     const radioOptions = wrapper.findAll('input');
     expect(radioOptions.at(0).element.checked).toBe(true);
-    
+
     wrapper.setProps({
       value: newVal
     });
@@ -84,20 +82,20 @@ describe('FormRadioButton', () => {
   });
 
   it('renders all configured properties', () => {
-    const label = "Form Radio Label";
-    const helper = "This is some text";
-    const name = "FormRadioButton";
+    const label = 'Form Radio Label';
+    const helper = 'This is some text';
+    const name = 'FormRadioButton';
     const defaultOptionKey = 'foo';
     const wrapper = factory({
-      label: label,
-      helper: helper,
-      name: name,
+      label,
+      helper,
+      name,
       toggle: true,
-      defaultOptionKey: defaultOptionKey,
+      defaultOptionKey,
       disabled: true,
-      options: options
+      options
     });
-    
+
     expect(wrapper.html()).toContain(label);
     expect(wrapper.html()).toContain(helper);
     expect(wrapper.find('input').attributes().name).toBe(name);
@@ -113,14 +111,14 @@ describe('FormRadioButton', () => {
     const defaultOptionKey = 'bar';
 
     wrapper.setProps({
-        dataSource: dataSource,
-        defaultOptionKey: defaultOptionKey,
-        jsonData: json    
+      dataSource,
+      defaultOptionKey,
+      jsonData: json
     });
-    
+
     const radioInputs = wrapper.findAll('input');
     expect(radioInputs.at(1).element.checked).toBe(true);
-  
+
     expect(wrapper.props().options.dataSource).toBe(dataSource);
     expect(wrapper.props().options.jsonData).toBe(json);
   });
@@ -132,7 +130,7 @@ describe('FormRadioButton', () => {
       name: 'FormRadioButton',
       error: errorText,
       validation: 'required',
-      options: options
+      options
     });
 
     expect(wrapper.find('input').classes('is-invalid')).toBe(true);
@@ -148,9 +146,9 @@ describe('FormRadioButton', () => {
       name: 'FormRadioButton',
       error: errorText,
       validation: 'required',
-      options: options
+      options
     });
-    
+
     wrapper.setProps({ value });
     expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
     expect(wrapper.find('input').classes('is-invalid')).toBe(false);

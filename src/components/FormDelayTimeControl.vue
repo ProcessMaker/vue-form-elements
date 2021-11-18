@@ -22,14 +22,14 @@
 </template>
 
 <script>
-import ValidationMixin from './mixins/validation'
-import {last} from 'lodash-es';
+import { last } from 'lodash-es';
+import ValidationMixin from './mixins/validation';
 
 const periodNames = {
   minute: 'minute',
   hour: 'hour',
   day: 'day',
-  month: 'month',
+  month: 'month'
 };
 
 export default {
@@ -37,25 +37,25 @@ export default {
   props: {
     value: {
       type: String,
-      default: 'PT1M',
+      default: 'PT1M'
     },
     error: null,
     name: String,
     label: String,
-    helper: String,
+    helper: String
   },
   data() {
     const periods = [
       { name: periodNames.minute, value: 'M', isTime: true },
       { name: periodNames.hour, value: 'H', isTime: true },
       { name: periodNames.day, value: 'D' },
-      { name: periodNames.month, value: 'M' },
+      { name: periodNames.month, value: 'M' }
     ];
 
     return {
       repeat: null,
       periodicity: null,
-      periods,
+      periods
     };
   },
   watch: {
@@ -64,24 +64,24 @@ export default {
         this.periodicity = this.getPeriodFromDelayString(value);
         this.repeat = this.getRepeatNumberFromDelayString(value);
       },
-      immediate: true,
+      immediate: true
     },
     durationExpression: {
       handler(durationExpression) {
         this.$emit('input', durationExpression);
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   computed: {
-    classList(){
-      let classList = {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
+    classList() {
+      const classList = {
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error
+      };
+      if (this.controlClass) {
+        classList[this.controlClass] = true;
       }
-      if(this.controlClass) {
-        classList[this.controlClass] = true
-      }
-      return classList
+      return classList;
     },
     durationExpression() {
       if (!this.repeat) return '';
@@ -91,7 +91,7 @@ export default {
       }
 
       return `P${this.repeat}${this.periodicity.value}`;
-    },
+    }
   },
   methods: {
     getPeriodFromDelayString(delayString) {
@@ -114,8 +114,8 @@ export default {
     getRepeatNumberFromDelayString(delayString) {
       const match = delayString.match(/\d+/);
       return match && match[0];
-    },
-  },
+    }
+  }
 };
 </script>
 

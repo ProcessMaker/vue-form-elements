@@ -1,20 +1,21 @@
-require('bootstrap')
 import Vue from 'vue';
 import i18next from 'i18next';
 import VueI18Next from '@panter/vue-i18next';
 
-import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/css/bootstrap.css';
 
-import DemoApp from './DemoApp'
+import DemoApp from './DemoApp';
+
+require('bootstrap');
 
 // Allow strings to be wrapped in $t(...) for translating
 // outside this package. This standalone app just returns
 // the English string
-Vue.use(VueI18Next)
-i18next.init({lng: 'en'})
-Vue.mixin({ i18n: new VueI18Next(i18next) })
+Vue.use(VueI18Next);
+i18next.init({ lng: 'en' });
+Vue.mixin({ i18n: new VueI18Next(i18next) });
 
 new Vue({
-    el: '#app',
-    render: h => h(DemoApp)
-})
+  el: '#app',
+  render: (h) => h(DemoApp)
+});

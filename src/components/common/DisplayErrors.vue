@@ -5,26 +5,25 @@
 </template>
 
 <script>
-  export default {
-    props: [
-      'name',
-      'error',
-      'validator',
-    ],
-    computed: {
-      displayErrors() {
-        let errors = [];
-        if (this.error) {
-          errors.push(this.error);
-        }
-        if (this.name && this.validator &&  this.validator.errors.errors[this.name]) {
-          this.validator.errors.errors[this.name].forEach(error => {
-            errors.push(error);
-          });
-        }
-        return errors;
+export default {
+  props: [
+    'name',
+    'error',
+    'validator'
+  ],
+  computed: {
+    displayErrors() {
+      const errors = [];
+      if (this.error) {
+        errors.push(this.error);
       }
+      if (this.name && this.validator && this.validator.errors.errors[this.name]) {
+        this.validator.errors.errors[this.name].forEach((error) => {
+          errors.push(error);
+        });
+      }
+      return errors;
     }
   }
+};
 </script>
-

@@ -17,20 +17,23 @@
 
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids';
-import ValidationMixin from './mixins/validation';
-import DataFormatMixin from "./mixins/DataFormat";
 import datePicker from 'vue-bootstrap-datetimepicker';
 import moment from 'moment-timezone';
-import { getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
 import Mustache from 'mustache';
-let Validator = require('validatorjs');
+import ValidationMixin from './mixins/validation';
+import DataFormatMixin from './mixins/DataFormat';
+import {
+  getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat
+} from '../dateUtils';
+
+const Validator = require('validatorjs');
 
 const uniqIdsMixin = createUniqIdsMixin();
 const checkFormats = ['YYYY-MM-DD', moment.ISO_8601];
 
 moment.tz.setDefault(getTimezone());
 
-Validator.register('date_or_mustache', function(value, requirement, attribute) {
+Validator.register('date_or_mustache', (value, requirement, attribute) => {
   let rendered = null;
   try {
     // Clear out any mustache statements
@@ -54,7 +57,6 @@ Validator.register('date_or_mustache', function(value, requirement, attribute) {
   }
 
   return false;
-
 }, 'Must be YYYY-MM-DD, ISO8601, or mustache syntax');
 
 export default {
@@ -70,11 +72,11 @@ export default {
     helper: String,
     dataFormat: String,
     value: [String, Boolean],
-    inputClass: {type: [String, Array, Object], default: 'form-control'},
+    inputClass: { type: [String, Array, Object], default: 'form-control' },
     dataTest: String,
     disabled: null,
     minDate: { type: [String, Boolean], default: false },
-    maxDate: { type: [String, Boolean], default: false },
+    maxDate: { type: [String, Boolean], default: false }
   },
   data() {
     return {
@@ -98,9 +100,9 @@ export default {
           today: 'fas fa-calendar-check',
           clear: 'far fa-trash-alt',
           close: 'far fa-times-circle'
-        },
-      },
-    }
+        }
+      }
+    };
   },
   computed: {
     errors() {
@@ -121,7 +123,7 @@ export default {
         this.validatorErrors = this.validator && this.validator.errors.get(this.name)
           ? this.validator.errors.get(this.name)
           : [];
-      },
+      }
     },
     date() {
       if (this.value && !this.date) {
@@ -155,7 +157,7 @@ export default {
           ? this.generateDate().format(this.config.format)
           : '';
       }
-    },
+    }
   },
   methods: {
     setMinMaxValues() {
@@ -166,7 +168,6 @@ export default {
       let date = false;
 
       if (typeof val === 'string' && val !== '') {
-
         try {
           date = Mustache.render(val, this.validationData);
         } catch (error) {
@@ -176,7 +177,7 @@ export default {
         date = moment(date, checkFormats, true);
         if (!date.isValid()) {
           date = false;
-        } 
+        }
       }
 
       return date;
@@ -205,8 +206,8 @@ export default {
       }
 
       return date;
-    },
-  },
+    }
+  }
 };
 </script>
 

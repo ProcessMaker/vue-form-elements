@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 import { getUserDateFormat, getUserDateTimeFormat } from '../../dateUtils';
 
 // To include another language in the Validator with variable processmaker
-let globalObject = typeof window === 'undefined'
+const globalObject = typeof window === 'undefined'
   ? global
   : window;
 
@@ -11,13 +11,13 @@ if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.
   Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
 
-Validator.register('custom-date', function(date) {
-  let checkDate = moment(date, [getUserDateFormat(), moment.ISO_8601], true);
+Validator.register('custom-date', (date) => {
+  const checkDate = moment(date, [getUserDateFormat(), moment.ISO_8601], true);
   return checkDate.isValid();
 }, 'The :attribute must be a valid date.');
 
-Validator.register('custom-datetime', function(date) {
-  let checkDate = moment(date, [getUserDateTimeFormat(), moment.ISO_8601], true);
+Validator.register('custom-datetime', (date) => {
+  const checkDate = moment(date, [getUserDateTimeFormat(), moment.ISO_8601], true);
   return checkDate.isValid();
 }, 'The :attribute must be a valid date and time.');
 
@@ -27,8 +27,8 @@ export default {
       type: String,
       default() {
         return 'string';
-      },
-    },
+      }
+    }
   },
   data() {
     return {
@@ -43,7 +43,7 @@ export default {
       if (typedValue !== value) {
         this.$emit('input', typedValue);
       }
-    },
+    }
   },
   methods: {
     formatValueWith(value, format) {
@@ -62,14 +62,14 @@ export default {
         return true;
       }
       const rules = {
-        'int': 'integer',
-        'boolean': 'boolean',
-        'string': 'string',
-        'datetime': 'custom-datetime',
-        'date': 'custom-date',
-        'float': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
-        'currency': 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
-        'array': 'array',
+        int: 'integer',
+        boolean: 'boolean',
+        string: 'string',
+        datetime: 'custom-datetime',
+        date: 'custom-date',
+        float: 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
+        currency: 'regex:/^[+-]?\\d+(\\.\\d+)?$/',
+        array: 'array'
       };
       if (this.$options._componentTag === 'FormSelectList') {
         return true;
@@ -80,11 +80,11 @@ export default {
         return true;
       }
 
-      this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
+      this.dataTypeValidator = new Validator({ [this.name]: value }, { [this.name]: rules[this.dataFormat] }, null);
       return this.dataTypeValidator.passes();
     },
     formatFloatValue() {
-      if ( this.dataFormat == 'float' && this.dataTypeValidator.passes() ) {
+      if (this.dataFormat == 'float' && this.dataTypeValidator.passes()) {
         this.value = Number(this.value);
         return this.$emit('input', this.value);
       }
@@ -109,14 +109,14 @@ export default {
         case 'int':
           newValue = parseInt(newValue);
           break;
-       case 'array':
+        case 'array':
           break;
         default:
           newValue = newValue.toString();
           break;
       }
       return newValue;
-    },
+    }
 
-  },
+  }
 };

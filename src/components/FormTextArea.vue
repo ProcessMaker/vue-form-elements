@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import { createUniqIdsMixin } from 'vue-uniq-ids'
-import ValidationMixin from './mixins/validation'
+import { createUniqIdsMixin } from 'vue-uniq-ids';
+import ValidationMixin from './mixins/validation';
 import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
 
@@ -68,14 +68,14 @@ export default {
       return {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass,
-        'richtext': this.richtext && !this.readonly,
+        richtext: this.richtext && !this.readonly
       };
     },
     height() {
       if (!this.rows) {
         return false;
       }
-      return String(parseInt(this.rows) * 55) + 'px';
+      return `${String(parseInt(this.rows) * 55)}px`;
     }
   },
   watch: {
@@ -83,7 +83,7 @@ export default {
       handler() {
         this.setHeight();
       },
-      immediate: true,
+      immediate: true
     }
   },
   methods: {
@@ -106,7 +106,7 @@ export default {
         statusbar: false,
         content_style: 'body { font-family: Arial; } .pagebreak { border: 1px solid #ccc; }',
         menubar: false,
-        plugins: [ 'link', 'lists', 'image'],
+        plugins: ['link', 'lists', 'image'],
         toolbar: 'undo redo | link image pagebreak | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
         skin: false,
         relative_urls: false,
@@ -119,16 +119,16 @@ export default {
           editor.ui.registry.addButton('pagebreak', {
             tooltip: this.$t('Insert Page Break For PDF'),
             icon: 'page-break',
-            onAction: function (_) {
+            onAction(_) {
               editor.insertContent("<hr class='pagebreak' style='page-break-after: always;' />");
             }
           });
-        },
+        }
       },
-      editorInstance: null,
-    }
+      editorInstance: null
+    };
   }
-}
+};
 </script>
 
 <style lang="scss">
@@ -144,4 +144,3 @@ export default {
   }
 }
 </style>
-

@@ -12,11 +12,11 @@
 </template>
 
 <script>
-import FormHtmlEditor from './FormHtmlEditor'
+import FormHtmlEditor from './FormHtmlEditor';
 
 export default {
-  extends: FormHtmlEditor,
-}
+  extends: FormHtmlEditor
+};
 </script>
 
 <style scoped>

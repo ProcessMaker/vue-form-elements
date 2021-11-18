@@ -59,8 +59,6 @@
                        helper="">
         </form-checkbox>
 
-
-
         <form-select name="sampleSelect"
                      label="Sample Select"
                      :options="selectOptions"
@@ -122,100 +120,99 @@
     </div>
 </template>
 
-
 <script>
-  // We're bringing in our Vue plugin
-  import Vue from 'vue'
-  import VueFormElements from './components/index';
-  import FormDatePicker from './components/FormDatePicker';
-  import { DateTime } from 'luxon';
+// We're bringing in our Vue plugin
+import Vue from 'vue';
+import { DateTime } from 'luxon';
+import VueFormElements from './components/index';
+import FormDatePicker from './components/FormDatePicker';
 
-  // Register our plugin
-  Vue.use(VueFormElements)
+// Register our plugin
+Vue.use(VueFormElements);
 
-  export default {
-    components: {FormDatePicker},
-    data() {
-      return {
-        // The data model to bind our elements to
-        data: {
-          sampleInput: '',
-          sampleText: '',
-          sampleHtmlText: '<h3>Edit this text inline</h3> <ul> <li>Add some <a href="https://github.com/ProcessMaker/vue-form-elements/branches">links</a></li> <li><span style="color: #8e44ad;">Color</span> some text</li> </ul>',
-          // Shows off ability to nest and refer to items deep in data model
-          password: {
-            value: '',
-            confirm: ''
-          },
-          sampleCheckbox: false,
-          sampleCustomCheckbox: false,
-          sampleRadioButtonGroup: '',
-          sampleSelect: '',
-          sampleCustomValidationError: '',
-          sampleDatePicker: DateTime.local().toISO(),
-          sampleDelayTimeControl: '',
+export default {
+  components: { FormDatePicker },
+  data() {
+    return {
+      // The data model to bind our elements to
+      data: {
+        sampleInput: '',
+        sampleText: '',
+        sampleHtmlText: '<h3>Edit this text inline</h3> <ul> <li>Add some <a href="https://github.com/ProcessMaker/vue-form-elements/branches">links</a></li> <li><span style="color: #8e44ad;">Color</span> some text</li> </ul>',
+        // Shows off ability to nest and refer to items deep in data model
+        password: {
+          value: '',
+          confirm: ''
         },
-        richtext: false,
-        inputValidationRules: 'required|min:2',
-        textValidationRules: 'max:255',
-        passwordValidationRules: 'required|regex:/(?=.{9,})(?=.*?[^\\w\\s])(?=.*?[0-9])(?=.*?[A-Z]).*?[a-z].*/',
-        confirmPasswordValidationRules: 'required|same:password.value',
-        selectOptions: {
-          defaultOptionKey: 'red',
-          key: 'value',
-          value: 'content',
-          jsonData: JSON.stringify([
-            {
-              content: 'Green',
-              value: 'green'
-            },
-            {
-              content: 'Red',
-              value: 'red'
-            },
-            {
-              content: 'Blue',
-              value: 'blue'
-            },
-            {
-              content: 'Yellow',
-              value: 'yellow'
-            },
-            {
-              content: 'White',
-              value: 'white'
-            },
-            {
-              content: 'Black',
-              value: 'black'
-            },
-          ])
+        sampleCheckbox: false,
+        sampleCustomCheckbox: false,
+        sampleRadioButtonGroup: '',
+        sampleSelect: '',
+        sampleCustomValidationError: '',
+        sampleDatePicker: DateTime.local().toISO(),
+        sampleDelayTimeControl: ''
+      },
+      richtext: false,
+      inputValidationRules: 'required|min:2',
+      textValidationRules: 'max:255',
+      passwordValidationRules: 'required|regex:/(?=.{9,})(?=.*?[^\\w\\s])(?=.*?[0-9])(?=.*?[A-Z]).*?[a-z].*/',
+      confirmPasswordValidationRules: 'required|same:password.value',
+      selectOptions: {
+        defaultOptionKey: 'red',
+        key: 'value',
+        value: 'content',
+        jsonData: JSON.stringify([
+          {
+            content: 'Green',
+            value: 'green'
+          },
+          {
+            content: 'Red',
+            value: 'red'
+          },
+          {
+            content: 'Blue',
+            value: 'blue'
+          },
+          {
+            content: 'Yellow',
+            value: 'yellow'
+          },
+          {
+            content: 'White',
+            value: 'white'
+          },
+          {
+            content: 'Black',
+            value: 'black'
+          }
+        ])
+      },
+      radioButtonOptions: [
+        {
+          content: 'Small',
+          value: 'small'
         },
-        radioButtonOptions: [
-          {
-            content: 'Small',
-            value: 'small'
-          },
-          {
-            content: 'Medium',
-            value: 'medium'
-          },
-          {
-            content: 'Large',
-            value: 'large'
-          },
-          {
-            content: 'X-Large',
-            value: 'xlarge'
-          },
-        ],
-        customValidationMessages: {
-          required: 'This field is totally required and you should, like, put it in.'
+        {
+          content: 'Medium',
+          value: 'medium'
+        },
+        {
+          content: 'Large',
+          value: 'large'
+        },
+        {
+          content: 'X-Large',
+          value: 'xlarge'
         }
+      ],
+      customValidationMessages: {
+        required: 'This field is totally required and you should, like, put it in.'
       }
-    }
-
+    };
   }
+
+};
 </script>
 
 <style lang="scss" scoped>

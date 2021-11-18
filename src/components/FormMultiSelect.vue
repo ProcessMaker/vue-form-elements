@@ -31,38 +31,38 @@
 </template>
 
 <script>
-  import Multiselect from 'vue-multiselect';
-  import {createUniqIdsMixin} from 'vue-uniq-ids'
-  import ValidationMixin from './mixins/validation'
+import Multiselect from 'vue-multiselect';
+import { createUniqIdsMixin } from 'vue-uniq-ids';
+import ValidationMixin from './mixins/validation';
 
-  const uniqIdsMixin = createUniqIdsMixin();
+const uniqIdsMixin = createUniqIdsMixin();
 
-  export default {
-    inheritAttrs: false,
-    components: {
-      Multiselect
-    },
-    mixins: [uniqIdsMixin, ValidationMixin],
-    props: [
-      'value',
-      'optionValue',
-      'optionContent',
-      'label',
-      'error',
-      'helper',
-      'name',
-      'controlClass',
-      'placeholder',
-    ],
-    computed: {
-      classList() {
-        return {
-          'is-invalid border border-danger': (this.validator && this.validator.errorCount) || this.error,
-          [this.controlClass]: !!this.controlClass
-        }
-      },
+export default {
+  inheritAttrs: false,
+  components: {
+    Multiselect
+  },
+  mixins: [uniqIdsMixin, ValidationMixin],
+  props: [
+    'value',
+    'optionValue',
+    'optionContent',
+    'label',
+    'error',
+    'helper',
+    'name',
+    'controlClass',
+    'placeholder'
+  ],
+  computed: {
+    classList() {
+      return {
+        'is-invalid border border-danger': (this.validator && this.validator.errorCount) || this.error,
+        [this.controlClass]: !!this.controlClass
+      };
     }
   }
+};
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

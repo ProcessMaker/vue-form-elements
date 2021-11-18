@@ -1,4 +1,4 @@
-import {shallowMount} from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import DisplayErrors from '../../src/components/common/DisplayErrors.vue';
 
 describe('Display Errors', () => {
@@ -13,13 +13,11 @@ describe('Display Errors', () => {
     errorCount: 0,
     rules: {}
   };
-  const factory = (propsData) => {
-    return shallowMount(DisplayErrors, {
-      propsData: {
-        ...propsData
-      },
-    });
-  };
+  const factory = (propsData) => shallowMount(DisplayErrors, {
+    propsData: {
+      ...propsData
+    }
+  });
 
   it('renders the component', () => {
     const wrapper = factory();
@@ -41,12 +39,12 @@ describe('Display Errors', () => {
     const errorText2 = 'Validator error 2';
     validator.errors.errors.example = [
       errorText1,
-      errorText2,
+      errorText2
     ];
     validator.errorCount = 2;
     const wrapper = factory({
       name: 'example',
-      validator: validator
+      validator
     });
 
     expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
@@ -60,13 +58,13 @@ describe('Display Errors', () => {
     const errorText2 = 'Validator error 2';
     validator.errors.errors.example = [
       errorText1,
-      errorText2,
+      errorText2
     ];
     validator.errorCount = 2;
     const wrapper = factory({
       name: 'example',
       error: errorText,
-      validator: validator
+      validator
     });
 
     expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
@@ -81,13 +79,13 @@ describe('Display Errors', () => {
     const errorText2 = 'Validator error 2';
     validator.errors.errors.example = [
       errorText1,
-      errorText2,
+      errorText2
     ];
     validator.errorCount = 2;
     const wrapper = factory({
       name: 'example',
       error: errorText,
-      validator: validator
+      validator
     });
 
     expect(wrapper.find('.invalid-feedback').exists()).toBe(true);
@@ -95,12 +93,12 @@ describe('Display Errors', () => {
     expect(wrapper.html()).toContain(errorText1);
     expect(wrapper.html()).toContain(errorText2);
 
-    wrapper.setProps({error: ''});
+    wrapper.setProps({ error: '' });
     expect(wrapper.html()).not.toContain(errorText);
     expect(wrapper.html()).toContain(errorText1);
     expect(wrapper.html()).toContain(errorText2);
 
-    wrapper.setProps({error: '', validator: ''});
+    wrapper.setProps({ error: '', validator: '' });
     expect(wrapper.html()).not.toContain(errorText);
     expect(wrapper.html()).not.toContain(errorText1);
     expect(wrapper.html()).not.toContain(errorText2);

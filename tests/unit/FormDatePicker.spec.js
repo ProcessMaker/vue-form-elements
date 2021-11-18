@@ -1,5 +1,5 @@
-import { mount, shallowMount } from '@vue/test-utils'
-import FormDatePicker from '../../src/components/FormDatePicker.vue'
+import { mount, shallowMount } from '@vue/test-utils';
+import FormDatePicker from '../../src/components/FormDatePicker.vue';
 
 const JANUARY = 0;
 
@@ -39,9 +39,7 @@ describe('FormDatePicker', () => {
       await wrapper.vm.$nextTick();
       wrapper.find('[title="Select Time"]').trigger('click');
       wrapper.find('[title="Pick Minute"]').trigger('click');
-      wrapper.findAll('[data-action="selectMinute"]').wrappers.find(wrapper => {
-        return wrapper.text() === '30';
-      }).trigger('click');
+      wrapper.findAll('[data-action="selectMinute"]').wrappers.find((wrapper) => wrapper.text() === '30').trigger('click');
       await wrapper.vm.$nextTick();
 
       const emittedInput = wrapper.emitted('input');
@@ -56,7 +54,7 @@ describe('FormDatePicker', () => {
         propsData: {
           dataTest,
           dataFormat: 'datetime',
-          value: new Date(Date.now()).toISOString(),
+          value: new Date(Date.now()).toISOString()
         }
       });
       await wrapper.vm.$nextTick();
@@ -82,9 +80,7 @@ describe('FormDatePicker', () => {
       await wrapper.vm.$nextTick();
       wrapper.find('[title="Select Time"]').trigger('click');
       wrapper.find('[title="Pick Minute"]').trigger('click');
-      wrapper.findAll('[data-action="selectMinute"]').wrappers.find(wrapper => {
-        return wrapper.text() === '30';
-      }).trigger('click');
+      wrapper.findAll('[data-action="selectMinute"]').wrappers.find((wrapper) => wrapper.text() === '30').trigger('click');
       await wrapper.vm.$nextTick();
 
       const emittedInput = wrapper.emitted('input');
@@ -97,7 +93,7 @@ describe('FormDatePicker', () => {
       const wrapper = mount(FormDatePicker, {
         propsData: {
           dataTest,
-          value: new Date(Date.now()).toISOString(),
+          value: new Date(Date.now()).toISOString()
         }
       });
 
@@ -123,13 +119,13 @@ describe('FormDatePicker', () => {
         placeholder,
         helper,
         error,
-        disabled,
+        disabled
       }
     });
 
     await wrapper.vm.$nextTick();
 
-    [label, placeholder, helper, error].forEach(text => {
+    [label, placeholder, helper, error].forEach((text) => {
       expect(wrapper.html()).toContain(text);
     });
     expect(wrapper.find(`[data-test=${dataTest}`).element.disabled).toBe(true);
@@ -142,7 +138,7 @@ describe('FormDatePicker', () => {
         propsData: {
           name: 'myDate',
           validation: 'required',
-          value: new Date(Date.now()).toISOString(),
+          value: new Date(Date.now()).toISOString()
         }
       });
 
@@ -163,7 +159,7 @@ describe('FormDatePicker', () => {
         propsData: {
           name: 'myDate',
           validation: 'required',
-          value: '',
+          value: ''
         }
       });
 
@@ -184,8 +180,8 @@ describe('FormDatePicker', () => {
           dataTest,
           name: 'myDate',
           dataFormat: 'date',
-          value: null,
-        },
+          value: null
+        }
       });
 
       await wrapper.vm.$nextTick();

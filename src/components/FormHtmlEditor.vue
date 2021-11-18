@@ -18,14 +18,13 @@
   </div>
 </template>
 
-
 <script>
-import { createUniqIdsMixin } from 'vue-uniq-ids'
-import ValidationMixin from './mixins/validation'
+import { createUniqIdsMixin } from 'vue-uniq-ids';
 import Mustache from 'mustache';
+import ValidationMixin from './mixins/validation';
 
 // Create the mixin
-const uniqIdsMixin = createUniqIdsMixin()
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   inheritAttrs: false,
@@ -45,18 +44,18 @@ export default {
     'content',
     'validationData',
     'label',
-    'renderVarHtml',
+    'renderVarHtml'
     // 'value'
   ],
-  computed:{
-    classList(){
-      let classList = {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
+  computed: {
+    classList() {
+      const classList = {
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error
+      };
+      if (this.controlClass) {
+        classList[this.controlClass] = true;
       }
-      if(this.controlClass){
-        classList[this.controlClass] = true
-      }
-      return classList
+      return classList;
     },
     rendered() {
       if (!this.validationData) {
@@ -66,12 +65,12 @@ export default {
       if (this.renderVarHtml) {
         this.variableToRender = `{${this.content}}`;
       }
-    
+
       try {
         if (this.renderVarHtml) {
-          return Mustache.render(this.variableToRender, {...this.customFunctions, ...this.validationData});  
+          return Mustache.render(this.variableToRender, { ...this.customFunctions, ...this.validationData });
         }
-        return Mustache.render(this.content, {...this.customFunctions, ...this.validationData});
+        return Mustache.render(this.content, { ...this.customFunctions, ...this.validationData });
       } catch (error) {
         if (this.renderVarHtml) {
           return this.renderVarName;
@@ -83,7 +82,7 @@ export default {
   methods: {
     registerCustomFunction(name, implementation) {
       this.customFunctions[name] = implementation;
-    },
+    }
   },
   data() {
     return {
@@ -91,16 +90,16 @@ export default {
       editorSettings: {
         inline: true,
         menubar: false,
-        plugins: [ 'link', 'lists' ],
+        plugins: ['link', 'lists'],
         toolbar: 'undo redo | link | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
         skin: false,
         relative_urls: false,
-        remove_script_host: false,
+        remove_script_host: false
       },
-      variableToRender: null,
-    }
+      variableToRender: null
+    };
   }
-}
+};
 </script>
 
 <style scoped>
