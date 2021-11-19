@@ -57,7 +57,7 @@
   import OptionboxView from "./FormSelectList/OptionboxView";
   import FormMultiSelect from "./FormMultiSelect";
   import Mustache from "mustache";
-  import { debounce, isEqual, cloneDeep, get } from 'lodash';
+  import { debounce, isEqual, cloneDeep, get, set } from 'lodash';
 
   const uniqIdsMixin = createUniqIdsMixin()
 
@@ -129,7 +129,7 @@
             return;
           }
           this.lastRequest = cloneDeep(request);
-
+          
           this.$dataProvider.postDataSource(selectedDataSource, null, params)
               .then(response => {
                 const list = dataName ? eval('response.data.' + dataName) : response.data;
@@ -213,6 +213,26 @@
         });
         return resultList
       },
+      addObjectContentProp(parsedOption) {
+        if (!(parsedOption instanceof Object)) {
+          return parsedOption;
+        }
+        let suffix = this.attributeParent(this.options.value);
+        let contentProperty = this.options.value;
+        if (contentProperty.indexOf('{{') === -1) {
+          contentProperty = `{{ ${contentProperty} }}`;
+        }
+        if (!parsedOption.hasOwnProperty(this.optionsValue)) {
+          Object.defineProperty(parsedOption, this.optionsValue, {
+            get: function() {
+              const data = {};
+              set(data, suffix, this);
+              return Mustache.render(contentProperty, data);
+            }
+          });
+        }
+        return parsedOption;
+      },
       stripMustache(str) {
         const removed =  str.replace(/{{/g,'')
             .replace(/}}/g,'')
@@ -293,25 +313,14 @@
         }
 
         const itemsInOptionsList = list.filter(item => {
-          // if items are objects use the object's key attribute, use the item itself otherwise
-          let testValue = item;
-          if (typeof item === 'object') {
-            testValue = item;
-          } else if (item[this.optionsKey] !== undefined) {
-            testValue = item[this.optionsKey];
-          }
-
-          if (testValue === 'undefined') {
-            return false;
-          }
-
-          return this.selectListOptions.some(option => {
-            if (typeof item === 'object') {
-              return isEqual(option, testValue);
+          let hasItemInOption = this.selectListOptions.find(option => {
+            if (this.options.valueTypeReturned === 'object') {
+              return isEqual(option, item);
             } else {
-              return option[this.optionsKey] === testValue;
+              return get(option, this.optionsKey) === item;
             }
           });
+          return hasItemInOption !== undefined;
         });
 
         return itemsInOptionsList.length > 0;
@@ -379,7 +388,9 @@
               if (!Array.isArray(this.value)) {
                 newValue = [this.value];
               }
-              newValue = this.transformOptions(newValue);
+              newValue.forEach(item => {
+                this.addObjectContentProp(item);
+              });
             }
             return this.areItemsInSelectListOptions(newValue) ? this.value : [];
           }
