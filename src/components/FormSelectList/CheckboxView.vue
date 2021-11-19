@@ -1,17 +1,17 @@
 <template>
   <div>
-    <div :class="divClass" :key="getOptionValue(option)" v-for="option in options">
+    <div :class="divClass" :key="getOptionValue(option)" v-for="(option, index) in options">
       <input
           :class="inputClass"
           type="checkbox"
-          v-uni-id="getOptionId(option)"
+          v-uni-id="getOptionId(option, index)"
           :name="`${name}`"
           :value="emitObjects ? option : getOptionValue(option)"
           v-model="selected"
           v-bind="$attrs"
           :disabled="isReadOnly"
       >
-      <label :class="labelClass" v-uni-for="getOptionId(option)">
+      <label :class="labelClass" v-uni-for="getOptionId(option, index)">
         {{getOptionContent(option)}}
       </label>
     </div>
@@ -77,8 +77,8 @@ export default {
     getOptionContent(option) {
       return option[this.optionContent || 'content'];
     },
-    getOptionId(option) {
-      return `${this.name}-${this.getOptionValue(option)}`;
+    getOptionId(option, index) {
+      return `${this.name}-${this.getOptionValue(option)}-${index}`;
     }
   }
 }

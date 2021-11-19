@@ -57,8 +57,7 @@
   import OptionboxView from "./FormSelectList/OptionboxView";
   import FormMultiSelect from "./FormMultiSelect";
   import Mustache from "mustache";
-  import { debounce, isEqual, cloneDeep, get } from 'lodash';
-
+  import { debounce, isEqual, cloneDeep, get, set } from 'lodash';
 
   const uniqIdsMixin = createUniqIdsMixin()
 
@@ -130,14 +129,14 @@
             return;
           }
           this.lastRequest = cloneDeep(request);
-
+          
           this.$dataProvider.postDataSource(selectedDataSource, null, params)
               .then(response => {
                 const list = dataName ? eval('response.data.' + dataName) : response.data;
 
                 const transformedList = this.transformOptions(list);
                 this.$root.$emit('selectListOptionsUpdated', transformedList);
-                this.selectListOptions =  transformedList;
+                this.selectListOptions = transformedList;
               })
               .catch(err => {
                 /* Ignore error */
@@ -178,17 +177,7 @@
        * @param {*|*[]} list, array of objects
        */
       transformOptions(list) {
-        let suffix = '';
-        if (this.options.key && this.options.key.startsWith('value.')) {
-          // points a property of the item
-          suffix = this.options.key.substr(6);
-        } else if (this.options.key==='value') {
-          // points to item itself
-          suffix = '';
-        } else if (this.options.key) {
-          // points a property of the item
-          suffix = this.options.key;
-        }
+        let suffix = this.attributeParent(this.options.value);
         let resultList = [];
 
         list.forEach(item => {
@@ -224,6 +213,26 @@
         });
         return resultList
       },
+      addObjectContentProp(parsedOption) {
+        if (!(parsedOption instanceof Object)) {
+          return parsedOption;
+        }
+        let suffix = this.attributeParent(this.options.value);
+        let contentProperty = this.options.value;
+        if (contentProperty.indexOf('{{') === -1) {
+          contentProperty = `{{ ${contentProperty} }}`;
+        }
+        if (!parsedOption.hasOwnProperty(this.optionsValue)) {
+          Object.defineProperty(parsedOption, this.optionsValue, {
+            get: function() {
+              const data = {};
+              set(data, suffix, this);
+              return Mustache.render(contentProperty, data);
+            }
+          });
+        }
+        return parsedOption;
+      },
       stripMustache(str) {
         const removed =  str.replace(/{{/g,'')
             .replace(/}}/g,'')
@@ -232,15 +241,64 @@
 
         return removed ? removed : str;
       },
+      attributeParent(str) {
+        // Check if the value has a mustache expression
+        const isMustache = str.indexOf('{{') >= 0;
+        // If mustache is present, find variables inside mustache
+        if (isMustache) {
+          const mustacheVariables = str.match(/{{[^}]+}}/g);
+          if (mustacheVariables) {
+            let result;
+            mustacheVariables.forEach(variable => {
+              // Get owner variable. Ex. for `data.name.first` owner is `data.name`
+              const stripped = variable.substr(2, variable.length - 4).trim();
+              const splitted = stripped.split('.');
+              splitted.pop();
+              const owner = splitted.join('.');
+              // Select the smallest owner
+              if (!result || result.length > owner.length) {
+                result = owner;
+              }
+            });
+            return result;
+          }
+        } else {
+          const splitted = str.trim().split('.');
+          splitted.pop();
+          const owner = splitted.join('.');
+          return owner;
+        }
+      },
       /**
        * If the options list changes due to a dependant field change, we need to check if
        * the selected value still exists in the new set of options. If it's gone now, then
        * set this control's value to null.
        */
       updateWatcherDependentFieldValue() {
-        const hasKeyInOptions = this.selectListOptions.find(option => {
-          return _.get(option, this.optionsKey) === this.value;
-        });
+        let hasKeyInOptions = true;
+
+        if (Array.isArray(this.value)) {
+          hasKeyInOptions = true;
+          this.value.forEach(item => {
+            let hasItemInOption = this.selectListOptions.find(option => {
+              if (this.options.valueTypeReturned === 'object') {
+                return isEqual(option, item);
+              } else {
+                return get(option, this.optionsKey) === item;
+              }
+            });
+
+            hasKeyInOptions = hasKeyInOptions && hasItemInOption;
+          });
+        } else {
+          hasKeyInOptions = this.selectListOptions.find(option => {
+            if (this.options.valueTypeReturned === 'object') {
+              return isEqual(option, this.value);
+            } else {
+              return get(option, this.optionsKey) === this.value;
+            }
+          });
+        }
 
         if (!hasKeyInOptions) {
           this.$emit('input', null);
@@ -255,25 +313,14 @@
         }
 
         const itemsInOptionsList = list.filter(item => {
-          // if items are objects use the object's key attribute, use the item itself otherwise
-          let testValue = item;
-          if (typeof item === 'object') {
-            testValue = item;
-          } else if (item[this.optionsKey] !== undefined) {
-            testValue = item[this.optionsKey];
-          }
-
-          if (testValue === 'undefined') {
-            return false;
-          }
-
-          return this.selectListOptions.some(option => {
-            if (typeof item === 'object') {
-              return isEqual(option, testValue);
+          let hasItemInOption = this.selectListOptions.find(option => {
+            if (this.options.valueTypeReturned === 'object') {
+              return isEqual(option, item);
             } else {
-              return option[this.optionsKey] === testValue;
+              return get(option, this.optionsKey) === item;
             }
           });
+          return hasItemInOption !== undefined;
         });
 
         return itemsInOptionsList.length > 0;
@@ -336,7 +383,16 @@
       valueProxy: {
         get() {
           if (this.options.renderAs === "dropdown") {
-            return this.areItemsInSelectListOptions(this.value) ? this.value : [];
+            let newValue = this.value;
+            if (this.options.valueTypeReturned === 'object' && this.value) {
+              if (!Array.isArray(this.value)) {
+                newValue = [this.value];
+              }
+              newValue.forEach(item => {
+                this.addObjectContentProp(item);
+              });
+            }
+            return this.areItemsInSelectListOptions(newValue) ? this.value : [];
           }
           return this.value;
         },
