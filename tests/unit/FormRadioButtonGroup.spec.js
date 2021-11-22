@@ -55,16 +55,18 @@ describe('FormRadioButton', () => {
     expect(wrapper.emitted().input[1]).toEqual([value.element.value]);
   });
 
-  it('sets the value on input', () => {
+  it('sets the value on input', async () => {
     const wrapper = factory({ options });
     const value = 'foo';
 
     wrapper.setProps({ value });
+
+    await wrapper.vm.$nextTick();
     const radioOptions = wrapper.findAll('input');
     expect(radioOptions.at(0).element.checked).toBe(true);
   });
 
-  it('should update the value when a initial value is set and the input changes', () => {
+  it('should update the value when a initial value is set and the input changes', async () => {
     const value = 'foo';
     const newVal = 'bar';
     const wrapper = factory({
@@ -77,6 +79,7 @@ describe('FormRadioButton', () => {
     wrapper.setProps({
       value: newVal
     });
+    await wrapper.vm.$nextTick();
     expect(radioOptions.at(1).element.checked).toBe(true);
     expect(radioOptions.at(0).element.checked).toBe(false);
   });
@@ -95,12 +98,13 @@ describe('FormRadioButton', () => {
       disabled: true,
       options
     });
+    const input = wrapper.find('input');
 
     expect(wrapper.html()).toContain(label);
     expect(wrapper.html()).toContain(helper);
-    expect(wrapper.find('input').attributes().name).toBe(name);
-    expect(wrapper.find('input').attributes().disabled).toBe('disabled');
-    expect(wrapper.find('input').classes('custom-control-input')).toBe(true);
+    expect(input.attributes().name).toBe(name);
+    expect(input.attributes().disabled).toBe('disabled');
+    expect(input.classes('custom-control-input')).toBe(true);
 
     const radioInputs = wrapper.findAll('input');
     expect(radioInputs.at(0).element.checked).toBe(true);
@@ -109,6 +113,7 @@ describe('FormRadioButton', () => {
   it('renders all configured properties for a data source', () => {
     const dataSource = 'provideData';
     const defaultOptionKey = 'bar';
+    const wrapper = factory({ options });
 
     wrapper.setProps({
       dataSource,
