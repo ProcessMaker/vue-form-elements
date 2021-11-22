@@ -6,10 +6,11 @@
       <input
         v-bind="$attrs"
         type="radio"
+        :name="name"
         :class="inputClass"
         :value="option.value"
         v-uni-id="`${name}-${option.value}`"
-        :checked="option.value == valueOrDefault"
+        :checked="option.value === valueOrDefault"
         @change="$emit('input', $event.target.value)"
       >
       <label :class="labelClass" v-uni-for="`${name}-${option.value}`">{{option.content}}</label>
