@@ -13,7 +13,7 @@
       <option :value="null">{{placeholder ? placeholder : $t('Select')}}</option>
       <option
         v-for="(option, index) in selectOptions"
-        :selected="option.value == valueOrDefault"
+        :selected="option.value === valueOrDefault"
         :value="option.value"
         :key="index"
       >
@@ -38,7 +38,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 
 function removeInvalidOptions(option) {
   return Object.keys(option).includes('value', 'contemnt')
-    && option.content != null;
+    && option.content !== null;
 }
 
 export default {

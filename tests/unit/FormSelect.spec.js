@@ -57,16 +57,17 @@ describe('FormSelect', () => {
     expect(wrapper.emitted().input[1]).toEqual([value.element.value]);
   });
 
-  it('sets the value on input', () => {
+  it('sets the value on input', async () => {
     const wrapper = factory({ options });
     const value = 'foo';
 
     wrapper.setProps({ value });
+    await wrapper.vm.$nextTick();
     const selectOptions = wrapper.findAll('option');
     expect(selectOptions.at(1).element.selected).toBe(true);
   });
 
-  it('should update the value when a initial value is set and the input changes', () => {
+  it('should update the value when a initial value is set and the input changes', async () => {
     const value = 'foo';
     const newVal = 'bar';
     const wrapper = factory({
@@ -79,6 +80,7 @@ describe('FormSelect', () => {
     wrapper.setProps({
       value: newVal
     });
+    await wrapper.vm.$nextTick();
     expect(selectOptions.at(2).element.selected).toBe(true);
   });
 

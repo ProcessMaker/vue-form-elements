@@ -28,7 +28,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 
 function removeInvalidOptions(option) {
   return Object.keys(option).includes('value', 'contemnt')
-    && option.content != null;
+    && option.content !== null;
 }
 
 export default {
