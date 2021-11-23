@@ -7,6 +7,6 @@ module.exports = {
     '<rootDir>/src/components/**/*.vue'
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(vue-uniq-ids)/)'
+    'node_modules/(?!(vue-uniq-ids|lodash-es)/)'
   ]
 };
