@@ -71,10 +71,9 @@ import FormPlainMultiSelect from './FormPlainMultiSelect.vue';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
-function removeInvalidOptions(option) {
-  return Object.keys(option).includes('value', 'content')
-    && option.content != null;
-}
+  function removeInvalidOptions(option) {
+    return Object.keys(option).includes('value') && !!option.content;
+  }
 
 export default {
   inheritAttrs: false,
