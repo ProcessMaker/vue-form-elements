@@ -2,7 +2,8 @@ import { shallowMount } from '@vue/test-utils';
 import FormSelectList from '../../src/components/FormSelectList.vue';
 
 describe('FormSelectList', () => {
-  const $t = () => {};
+  const $t = () => {
+  };
   const factory = (propsData) => shallowMount(FormSelectList, {
     mocks: { $t },
     propsData: {
@@ -22,7 +23,12 @@ describe('FormSelectList', () => {
   const json = JSON.stringify(options);
 
   it('renders the component', () => {
-    const wrapper = factory({ options });
+    const wrapper = factory({
+      options: {
+        renderAs: 'dropdown',
+        jsonData: json
+      }
+    });
     expect(wrapper.html()).toContain('select');
     expect(wrapper.findAll('option').length).toBe(options.length + 1);
   });
@@ -48,8 +54,8 @@ describe('FormSelectList', () => {
     });
 
     expect(wrapper.find('select').exists()).toBe(false);
-    expect(wrapper.html()).toContain('form-multi-select-stub');
-    expect(wrapper.find('form-multi-select-stub').vm.$attrs.options.length).toBe(2);
+    expect(wrapper.html()).toContain('form-plain-multi-select-stub');
+    expect(wrapper.find('form-plain-multi-select-stub').attributes('options')).toHaveLength(2);
   });
 
   it('can render the component as a data source checkbox', () => {
@@ -165,6 +171,7 @@ describe('FormSelectList', () => {
     const dataName = 'dataSelectList';
     const dataSource = 'provideData';
     const pmql = '';
+    const defaultOptionKey = 'foo';
     const wrapper = factory({
       label,
       helper,
@@ -173,7 +180,7 @@ describe('FormSelectList', () => {
         allowMultiSelect: true,
         dataName,
         dataSource,
-        defaultOptionKey: defaultOption,
+        defaultOptionKey,
         jsonData: json,
         pmqlQuery: pmql,
         renderAs: 'checkbox'
@@ -186,7 +193,7 @@ describe('FormSelectList', () => {
     expect(wrapper.find('input').attributes().type).toBe('checkbox');
     expect(wrapper.props().options.dataName).toBe(dataName);
     expect(wrapper.props().options.dataSource).toBe(dataSource);
-    expect(wrapper.props().options.jsonData).toBe(JSON.stringify(optionsArray));
+    expect(wrapper.props().options.jsonData).toBe(JSON.stringify(json));
     expect(wrapper.props().options.pmqlQuery).toBe(pmql);
   });
 
@@ -206,12 +213,13 @@ describe('FormSelectList', () => {
   it('displays validation error messages when the field is invalid', () => {
     const requiredText = 'The FormSelectList field is required.';
     const errorText = 'This field has an error';
+    const defaultOptionKey = 'foo';
     const wrapper = factory({
       name: 'FormSelectList',
       error: errorText,
       validation: 'required',
       options: {
-        defaultOptionKey: defaultOption,
+        defaultOptionKey,
         jsonData: json,
         renderAs: 'dropdown'
       }
@@ -226,12 +234,13 @@ describe('FormSelectList', () => {
   it('removes the validation error messages when the field is valid.', () => {
     const errorText = 'This field has an error';
     const value = 'bar';
+    const defaultOptionKey = 'foo';
     const wrapper = factory({
       name: 'FormSelectList',
       error: errorText,
       validation: 'required',
       options: {
-        defaultOptionKey: defaultOption,
+        defaultOptionKey,
         jsonData: json,
         renderAs: 'dropdown'
       }
