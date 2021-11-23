@@ -26,8 +26,7 @@ import hasDefaultOptionKey from './mixins/hasDefaultOptionKey';
 const uniqIdsMixin = createUniqIdsMixin();
 
 function removeInvalidOptions(option) {
-  return Object.keys(option).includes('value', 'contemnt') &&
-    option.content != null;
+  return Object.keys(option).includes('value') && !!option.content;
 }
 
 export default {
