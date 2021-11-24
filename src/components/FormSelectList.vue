@@ -212,8 +212,13 @@
         if (!parsedOption.hasOwnProperty(this.optionsValue)) {
           Object.defineProperty(parsedOption, this.optionsValue, {
             get: function() {
-              const data = {};
-              set(data, suffix, this);
+              // note this = parsedOption
+              let data = {};
+              if (suffix) {
+                set(data, suffix, this);
+              } else {
+                data = this;
+              }
               return Mustache.render(contentProperty, data);
             }
           });
