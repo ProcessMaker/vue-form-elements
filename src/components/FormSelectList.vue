@@ -113,7 +113,7 @@
           }
           this.lastRequest = cloneDeep(request);
           
-          this.$dataProvider.postDataSource(selectedDataSource, null, params)
+          this.apiClient.post(dataSourceUrl, { config: { endpoint: selectedEndPoint, } })
               .then(response => {
                 const list = dataName ? eval('response.data.' + dataName) : response.data;
 
@@ -323,7 +323,7 @@
         immediate:true,
         deep: true,
         handler(value) {
-          if (!isEqual(this.previousSourceConfig, value)) {
+          if (!isEqual(this.previousSourceConfig, value) || (this.options.dataSource && this.options.dataSource === 'provideData')) {
             this.fillSelectListOptions();
           }
           this.previousSourceConfig = cloneDeep(value);
@@ -334,7 +334,7 @@
         immediate:true,
         deep: true,
         handler(value) {
-          if (!isEqual(this.previousValidationData, value)) {
+          if (!isEqual(this.previousValidationData, value) || (this.options.dataSource && this.options.dataSource === 'provideData')) {
             this.fillSelectListOptions();
           }
           this.previousValidationData = cloneDeep(value);
@@ -344,7 +344,7 @@
       "validationData._parent": {
         deep: true,
         handler(value) {
-          if (!isEqual(this.previousValidationDataParent, value)) {
+          if (!isEqual(this.previousValidationDataParent, value) || (this.options.dataSource && this.options.dataSource === 'provideData')) {
             this.fillSelectListOptions();
           }
           this.previousValidationDataParent = cloneDeep(value);
