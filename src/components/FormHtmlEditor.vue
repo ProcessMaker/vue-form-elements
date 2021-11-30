@@ -26,7 +26,8 @@ import ValidationMixin from './mixins/validation';
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin();
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormHtmlEditor',
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin],
   components: {

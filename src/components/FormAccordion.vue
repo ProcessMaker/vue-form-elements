@@ -35,7 +35,8 @@
 </template>
 
 <script>
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormAccordion',
   props: ['transientData', 'value', 'name', 'config', 'selected'],
   data() {
     return {

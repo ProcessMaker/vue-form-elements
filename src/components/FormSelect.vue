@@ -40,7 +40,8 @@ function removeInvalidOptions(option) {
   return Object.keys(option).includes('value') && !!option.content;
 }
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormSelect',
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin, hasDefaultOptionKey],
   props: [

@@ -5,7 +5,8 @@
 </template>
 
 <script>
-export default {
+export default /* #__PURE__ */{
+  name: 'DisplayErrors',
   props: [
     'name',
     'error',

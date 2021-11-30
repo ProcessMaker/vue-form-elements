@@ -31,11 +31,12 @@
 import Multiselect from 'vue-multiselect';
 import { createUniqIdsMixin } from 'vue-uniq-ids';
 import ValidationMixin from './mixins/validation';
-import DisplayErrors from './common/DisplayErrors';
+import DisplayErrors from './common/DisplayErrors.vue';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormPlainMultiSelect',
   inheritAttrs: false,
   components: {
     Multiselect,

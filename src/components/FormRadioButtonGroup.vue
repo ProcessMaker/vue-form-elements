@@ -29,7 +29,8 @@ function removeInvalidOptions(option) {
   return Object.keys(option).includes('value') && !!option.content;
 }
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormRadioButtonGroup',
   inheritAttrs: false,
   mixins: [uniqIdsMixin, DataFormatMixin, hasDefaultOptionKey],
   props: [

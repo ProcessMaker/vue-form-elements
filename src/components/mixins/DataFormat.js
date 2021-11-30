@@ -21,7 +21,8 @@ Validator.register('custom-datetime', (date) => {
   return checkDate.isValid();
 }, 'The :attribute must be a valid date and time.');
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'DateFormatMixin',
   props: {
     dataFormat: {
       type: String,
@@ -84,7 +85,7 @@ export default {
       return this.dataTypeValidator.passes();
     },
     formatFloatValue() {
-      if (this.dataFormat == 'float' && this.dataTypeValidator.passes()) {
+      if (this.dataFormat === 'float' && this.dataTypeValidator.passes()) {
         this.value = Number(this.value);
         return this.$emit('input', this.value);
       }

@@ -30,7 +30,8 @@ import DataFormatMixin from './mixins/DataFormat';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormInput',
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [

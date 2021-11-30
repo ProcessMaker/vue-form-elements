@@ -12,9 +12,10 @@
 </template>
 
 <script>
-import FormHtmlEditor from './FormHtmlEditor';
+import FormHtmlEditor from './FormHtmlEditor.vue';
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormHtmlViewer',
   extends: FormHtmlEditor
 };
 </script>

@@ -59,7 +59,8 @@ Validator.register('date_or_mustache', (value, requirement, attribute) => {
   return false;
 }, 'Must be YYYY-MM-DD, ISO8601, or mustache syntax');
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormDatePicker',
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   components: {
     datePicker

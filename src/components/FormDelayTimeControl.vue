@@ -32,7 +32,8 @@ const periodNames = {
   month: 'month'
 };
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormDelayTimeControl',
   mixins: [ValidationMixin],
   props: {
     value: {

@@ -37,7 +37,8 @@ import ValidationMixin from './mixins/validation';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormMultiSelect',
   inheritAttrs: false,
   components: {
     Multiselect

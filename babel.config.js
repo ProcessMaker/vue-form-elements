@@ -3,8 +3,6 @@ module.exports = function (api) {
 
   return {
     presets: [
-      ['@babel/preset-env', { targets: { node: 'current' } }],
-      '@vue/app'
-    ]
+      ['@babel/preset-env', { targets: { node: 'current' } }]]
   };
 };

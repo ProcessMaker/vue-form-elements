@@ -11,7 +11,8 @@ if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.
   Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
 
-export default {
+export default /* #__PURE__ */{
+  name: 'ValidationMixin',
   props: [
     'validation',
     'validationData',

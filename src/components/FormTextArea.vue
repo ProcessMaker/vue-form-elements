@@ -36,11 +36,12 @@
 import { createUniqIdsMixin } from 'vue-uniq-ids';
 import ValidationMixin from './mixins/validation';
 import DataFormatMixin from './mixins/DataFormat';
-import DisplayErrors from './common/DisplayErrors';
+import DisplayErrors from './common/DisplayErrors.vue';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
-export default {
+export default /* #__PURE__ */ {
+  name: 'FormTextArea',
   inheritAttrs: false,
   components: {
     DisplayErrors,
