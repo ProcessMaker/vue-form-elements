@@ -7,7 +7,11 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import babel from '@rollup/plugin-babel';
+import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
+import scss from 'rollup-plugin-scss';
+import sass from 'sass';
+import postcss from 'postcss';
 import minimist from 'minimist';
 
 const packageName = 'vue-form-elements';
@@ -40,19 +44,27 @@ const baseConfig = {
       })
     ],
     replace: {
-      'process.env.NODE_ENV': JSON.stringify('production')
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      preventAssignment: true
     },
     vue: {
       css: true,
       template: {
         isProduction: true
-      }
+      },
+      preprocessStyles: true
     },
     postVue: [
       resolve({
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue']
       }),
-      commonjs()
+      json(),
+      commonjs(),
+      scss({
+        output: `dist/${packageName}.css`,
+        runtime: sass
+      }),
+      postcss()
     ],
     babel: {
       exclude: 'node_modules/**',
@@ -67,7 +79,8 @@ const baseConfig = {
 const external = [
   // list external dependencies, exactly the way it is written in the import statement.
   // eg. 'jquery'
-  'vue'
+  'vue',
+  '@tinymce/tinymce-vue'
 ];
 
 // UMD/IIFE shared settings: output.globals
@@ -87,6 +100,7 @@ if (!argv.format || argv.format === 'es') {
     external,
     output: {
       file: `dist/${packageName}.esm.js`,
+      inlineDynamicImports: true,
       format: 'esm',
       exports: 'named'
     },
@@ -118,8 +132,9 @@ if (!argv.format || argv.format === 'cjs') {
     external,
     output: {
       compact: true,
-      file: `dist/${packageName}.esm.js`,
+      file: `dist/${packageName}.ssr.js`,
       format: 'cjs',
+      inlineDynamicImports: true,
       name: 'VueFormElements',
       exports: 'auto',
       globals
@@ -147,8 +162,9 @@ if (!argv.format || argv.format === 'iife') {
     external,
     output: {
       compact: true,
-      file: `dist/${packageName}.esm.js`,
+      file: `dist/${packageName}.min.js`,
       format: 'iife',
+      inlineDynamicImports: true,
       name: 'VueFormElements',
       exports: 'auto',
       globals

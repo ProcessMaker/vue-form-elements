@@ -126,7 +126,7 @@ export default /* #__PURE__ */ {
             }
           })
           .then((response) => {
-            const list = dataName ? eval(`response.data.${dataName}`) : response.data;
+            const list = dataName ? response.data.dataName : response.data;
             list.forEach((item) => {
               // if the content has a mustache expression
               const itemContent = (value.indexOf('{{') >= 0)
