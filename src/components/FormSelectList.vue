@@ -130,7 +130,7 @@
           }
           this.lastRequest = cloneDeep(request);
           
-          this.apiClient.post(dataSourceUrl, { config: { endpoint: selectedEndPoint, } })
+          this.$dataProvider.postDataSource(selectedDataSource, null, params)
               .then(response => {
                 const list = dataName ? eval('response.data.' + dataName) : response.data;
 
