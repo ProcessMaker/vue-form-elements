@@ -44,6 +44,9 @@ export default {
       selected:[]
     }
   },
+  mounted() {
+    this.selected = this.value;
+  },
   watch: {
     value(val) {
       this.selected = val ? val : [];
