@@ -134,7 +134,10 @@
       },
       fillSelectListOptions() {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
-          this.selectListOptions = this.options && this.options.optionsList ? this.options.optionsList : [];
+          if (this.options && this.options.optionsList && !isEqual(this.selectListOptions, this.options.optionsList)) {
+            this.selectListOptions = this.options.optionsList;
+          }
+          this.selectListOptions = this.selectListOptions || [];
         }
 
         if (this.options.dataSource && this.options.dataSource === 'dataObject') {
