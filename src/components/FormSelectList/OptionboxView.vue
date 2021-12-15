@@ -45,7 +45,7 @@ export default {
     }
   },
   mounted() {
-    this.selected = this.value ? this.value : [];
+    this.selected = this.value;
   },
   watch: {
     value(val) {
