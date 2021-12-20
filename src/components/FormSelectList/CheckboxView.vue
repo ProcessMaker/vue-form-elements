@@ -10,6 +10,7 @@
           v-model="selected"
           v-bind="$attrs"
           :disabled="isReadOnly"
+          @change="$emit('input', selected)"
       >
       <label :class="labelClass" v-uni-for="getOptionId(option, index)">
         {{getOptionContent(option)}}
@@ -45,15 +46,12 @@ export default {
     }
   },
   mounted() {
-    this.selected = this.value ? this.value : [];
+    this.selected = this.value instanceof Array ? this.value : [];
   },
   watch: {
-    value(val) {
-      this.selected = val ? val : [];
+    value(value) {
+      this.selected = value instanceof Array ? value : [];
     },
-    selected() {
-      this.$emit('input', this.selected);
-    }
   },
   computed: {
     divClass() {
