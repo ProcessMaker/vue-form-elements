@@ -6,7 +6,7 @@
       <div v-else>
         <editor
           class="editor"
-          v-if="!readonly"
+          v-if="!readonly && editorActive"
           v-bind="$attrs"
           :value="value"
           :init="editorSettings"
@@ -37,6 +37,7 @@ import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
+import _ from 'lodash'
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -78,12 +79,28 @@ export default {
       return String(parseInt(this.rows) * 55) + 'px';
     }
   },
+  created() {
+    this.rebootEditor = _.throttle(() => {
+      this.editorActive = false;
+      this.$nextTick(() => {
+        this.editorActive = true
+      });
+    }, 500);
+  },
+  mounted() {
+    window.ProcessMaker.EventBus.$on('modal-shown', () => {
+      this.rebootEditor();
+    });
+  },
   watch: {
     rows: {
       handler() {
         this.setHeight();
       },
       immediate: true,
+    },
+    name() {
+      this.rebootEditor();
     }
   },
   methods: {
@@ -126,6 +143,7 @@ export default {
         },
       },
       editorInstance: null,
+      editorActive: true,
     }
   }
 }
