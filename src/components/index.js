@@ -12,6 +12,7 @@ import FormHtmlViewer from './FormHtmlViewer'
 import FormDelayTimeControl from './FormDelayTimeControl'
 import FormMultiSelect from './FormMultiSelect';
 import FormPlainMultiSelect from './FormPlainMultiSelect';
+import * as dateUtils from '../dateUtils';
 
 // Export our components
 let components = {
@@ -28,6 +29,7 @@ let components = {
     FormDelayTimeControl,
     FormMultiSelect,
     FormPlainMultiSelect,
+    dateUtils,
 }
 
 // Export our named exports
