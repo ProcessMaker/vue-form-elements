@@ -155,7 +155,6 @@ export default {
   },
   methods: {
     parseDate(val) {
-        console.log(9999);
       let date = false;
 
       if (typeof val === 'string' && val !== '') {
