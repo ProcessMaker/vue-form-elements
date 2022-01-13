@@ -95,6 +95,11 @@ export default {
       });
     }, 500);
   },
+  mounted() {
+    window.ProcessMaker.EventBus.$on('modal-shown', () => {
+      this.rebootEditor();
+    });
+  },
   methods: {
     setHeight() {
       if (!this.editorInstance) {
