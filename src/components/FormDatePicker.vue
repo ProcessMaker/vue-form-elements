@@ -21,14 +21,12 @@ import ValidationMixin from './mixins/validation';
 import DataFormatMixin from "./mixins/DataFormat";
 import datePicker from 'vue-bootstrap-datetimepicker';
 import moment from 'moment-timezone';
-import { getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
+import { getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
 import Mustache from 'mustache';
 let Validator = require('validatorjs');
 
 const uniqIdsMixin = createUniqIdsMixin();
 const checkFormats = ['YYYY-MM-DD', moment.ISO_8601];
-
-moment.tz.setDefault(getTimezone());
 
 Validator.register('date_or_mustache', function(value, requirement, attribute) {
   let rendered = null;
@@ -93,7 +91,6 @@ export default {
     config() {
       return {
         format: this.dataFormat === 'datetime' ? getUserDateTimeFormat() : getUserDateFormat(),
-        timeZone: getTimezone(),
         locale: getLang(),
         useCurrent: false,
         showClose: true,
