@@ -82,12 +82,20 @@ export default {
       date: null,
     }
   },
+  created() {
+    let that = this;
+    Validator.register('after_min_date', function(value, requirement, attribute) {
+      if (that.parseDate(value) < that.parseDate(that.minDate)) {
+        return false;
+      }
+      return true;
+    }, 'Must be after or equal Minimum Date');
+  },
   computed: {
     errors() {
       if (this.error) {
         return [...this.validatorErrors, this.error];
       }
-
       return this.validatorErrors;
     },
     config() {
@@ -97,7 +105,7 @@ export default {
         useCurrent: false,
         showClose: true,
         minDate: this.parseDate(this.minDate),
-        maxDate: this.parseDate(this.maxDate),
+        maxDate: this.checkValidMaxDate(),
         icons: {
           time: 'far fa-clock',
           date: 'far fa-calendar',
@@ -119,6 +127,9 @@ export default {
         this.validatorErrors = this.validator && this.validator.errors.get(this.name)
           ? this.validator.errors.get(this.name)
           : [];
+          console.log('watch validator');
+          console.log(this.validatorErrors);
+
       },
     },
     date() {
@@ -156,6 +167,15 @@ export default {
     },
   },
   methods: {
+    checkValidMaxDate() {
+      if (this.minDate == '') {
+        return this.parseDate(this.maxDate);
+      }
+      if (this.parseDate(this.maxDate) >= this.parseDate(this.minDate)) {
+        return this.parseDate(this.maxDate);
+      }
+      return false;
+    },
     parseDate(val) {
       let date = false;
 
