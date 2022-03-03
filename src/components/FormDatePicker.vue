@@ -127,8 +127,6 @@ export default {
         this.validatorErrors = this.validator && this.validator.errors.get(this.name)
           ? this.validator.errors.get(this.name)
           : [];
-          console.log('watch validator');
-          console.log(this.validatorErrors);
 
       },
     },
