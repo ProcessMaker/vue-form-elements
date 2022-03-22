@@ -83,9 +83,8 @@ export default {
     }
   },
   created() {
-    let that = this;
-    Validator.register('after_min_date', function(value, requirement, attribute) {
-      if (that.parseDate(value) < that.parseDate(that.minDate)) {
+    Validator.register('after_min_date', (value, requirement, attribute) => {
+      if (this.parseDate(value) < this.parseDate(this.minDate)) {
         return false;
       }
       return true;
