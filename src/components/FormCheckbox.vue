@@ -1,5 +1,6 @@
 <template>
   <div class="form-group">
+    <h3>TEST BUILD VFE</h3>
     <div :class="divClass">
       <input
         v-bind="$attrs"
