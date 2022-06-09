@@ -9,6 +9,7 @@
       :data-test="dataTest"
       :aria-label="$attrs['aria-label']"
       :tabindex="$attrs['tabindex']"
+      :class="classList"
     />
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(error, index) in errors" :key="index">{{error}}</div>
@@ -91,6 +92,11 @@ export default {
     }, 'Must be after or equal Minimum Date');
   },
   computed: {
+    classList() {
+      return {
+        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
+      }
+    },
     errors() {
       if (this.error) {
         return [...this.validatorErrors, this.error];
