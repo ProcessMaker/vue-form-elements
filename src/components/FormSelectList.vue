@@ -430,7 +430,7 @@
       },
       classList() {
         return {
-          'is-invalid': (this.validator && this.validator.errorCount) || this.error,
+          'has-errors': (this.validator && this.validator.errorCount) || this.error,
           [this.controlClass]: !!this.controlClass
         }
       },
