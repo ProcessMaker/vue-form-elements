@@ -8,10 +8,10 @@
           class="editor"
           v-if="!readonly && editorActive"
           v-bind="$attrs"
-          :value="value"
           :init="editorSettings"
           :name="name"
-          @input="$emit('input', $event)"
+					:value="internalValue"
+					@input="updateInternalValue"
         />
       </div>
     </div>
@@ -24,8 +24,8 @@
       class="form-control"
       :class="classList"
       :name="name"
-      :value="value"
-      @input="$emit('input', $event.target.value)"
+			:value="internalValue"
+			@input="updateInternalValue"
     />
     <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator"/>
     <small v-if='helper' class='form-text text-muted'>{{helper}}</small>
@@ -38,7 +38,8 @@ import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
 import Editor from './Editor'
-import _ from 'lodash'
+import throttle from 'lodash/throttle';
+import debounce from 'lodash/debounce';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -86,9 +87,12 @@ export default {
     name() {
       this.rebootEditor();
     },
+		value (value) {
+			if (!this.touched) this.internalValue = value
+		},
   },
   created() {
-    this.rebootEditor = _.throttle(() => {
+    this.rebootEditor = throttle(() => {
       this.editorActive = false;
       this.$nextTick(() => {
         this.editorActive = true
@@ -112,10 +116,21 @@ export default {
       if (this.editorInstance.getContainer() && this.editorInstance.getContainer().style) {
           this.editorInstance.getContainer().style.height = this.height;
       }
-    }
+    },
+		updateInternalValue (event) {
+			this.touched = true
+			this.updateValue(event.target.value)
+		},
+		updateValue: debounce(function (value) {
+			this.touched = false
+			this.$emit('input', value)
+			this.$emit('update:value', value)
+		}, 600),
   },
   data() {
     return {
+			internalValue: this.value,
+			touched: false,
       editorSettings: {
         inline: false,
         statusbar: false,
