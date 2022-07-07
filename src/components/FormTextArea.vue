@@ -39,7 +39,7 @@ import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
 import Editor from './Editor'
 import throttle from 'lodash/throttle';
-import debounce from 'lodash/debounce';
+import InputDebounce from '@/components/mixins/InputDebounce';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -49,8 +49,7 @@ export default {
     DisplayErrors,
     Editor
   },
-  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
-
+  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin, InputDebounce],
   props: [
     'label',
     'error',
@@ -87,9 +86,6 @@ export default {
     name() {
       this.rebootEditor();
     },
-		value (value) {
-			if (!this.touched) this.internalValue = value
-		},
   },
   created() {
     this.rebootEditor = throttle(() => {
@@ -116,21 +112,10 @@ export default {
       if (this.editorInstance.getContainer() && this.editorInstance.getContainer().style) {
           this.editorInstance.getContainer().style.height = this.height;
       }
-    },
-		updateInternalValue (event) {
-			this.touched = true
-			this.updateValue(event.target.value)
-		},
-		updateValue: debounce(function (value) {
-			this.touched = false
-			this.$emit('input', value)
-			this.$emit('update:value', value)
-		}, 600),
+    }
   },
   data() {
     return {
-			internalValue: this.value,
-			touched: false,
       editorSettings: {
         inline: false,
         statusbar: false,
