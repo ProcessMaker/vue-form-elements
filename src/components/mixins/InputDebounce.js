@@ -18,6 +18,15 @@ export default {
   },
   methods: {
     updateInternalValue(event) {
+      /** Rich text areas inputs an event that outputs a clean event string instead
+       * of an event object that has a target and inside a value property as a structure
+       * Checking if the event it is a string, if it is a truthy value, and it doesn't have
+       * the property target in it
+       * */
+      if (typeof event === 'string' && !!event && event.target === undefined) {
+        this.touched = true;
+        return this.updateValue(event);
+      }
       this.touched = true;
       this.updateValue(event.target.value);
     },
