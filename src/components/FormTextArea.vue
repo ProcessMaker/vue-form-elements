@@ -39,7 +39,7 @@ import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
 import Editor from './Editor'
 import throttle from 'lodash/throttle';
-import InputDebounce from '@/components/mixins/InputDebounce';
+import InputDebounce from './mixins/InputDebounce';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -132,6 +132,7 @@ export default {
           this.setHeight();
         },
         setup: (editor) => {
+          /* eslint-disable */
           editor.ui.registry.addButton('pagebreak', {
             tooltip: this.$t('Insert Page Break For PDF'),
             icon: 'page-break',
