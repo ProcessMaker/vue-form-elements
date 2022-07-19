@@ -1,10 +1,7 @@
 import debounce from 'lodash/debounce';
 
 export default {
-  props: {
-    value: String,
-    type: {type: String}
-  },
+  props: ['value'],
   data() {
     return {
       internalValue: this.value,
@@ -23,17 +20,37 @@ export default {
        * Checking if the event it is a string, if it is a truthy value, and it doesn't have
        * the property target in it
        * */
-      if (typeof event === 'string' && !!event && event.target === undefined) {
+      if (window.ProcessMaker && window.ProcessMaker.debounce) {
+        if (typeof event === 'string' && !!event && event.target === undefined) {
+          this.touched = true;
+          return this.updateValue(event);
+        }
         this.touched = true;
-        return this.updateValue(event);
+        this.updateValue(event.target.value);
       }
-      this.touched = true;
-      this.updateValue(event.target.value);
+      else {
+        let value = null;
+        if (!!event && event.target === undefined) {
+          value = event;
+        }
+        else {
+          value = event.target.value;
+        }
+        this.touched = false;
+
+        let valueToEmit = value;
+        if (typeof this.convertToData !== 'undefined') {
+          valueToEmit = this.convertToData(value);
+        }
+
+        this.$emit('input', valueToEmit);
+        this.$emit('update:value', valueToEmit);
+      }
     },
     updateValue: debounce(function (value) {
       this.touched = false;
       this.$emit('input', value);
       this.$emit('update:value', value);
-    }, 600)
+    }, window.ProcessMaker && !window.ProcessMaker.debounce ? 30 : 600)
   }
 };
