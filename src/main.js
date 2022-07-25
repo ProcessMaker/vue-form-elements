@@ -6,7 +6,7 @@ import Multiselect from '@processmaker/vue-multiselect';
 
 import 'bootstrap/dist/css/bootstrap.css'
 
-import DemoApp from './DemoApp'
+import DemoApp from './DemoApp.vue'
 
 // Allow strings to be wrapped in $t(...) for translating
 // outside this package. This standalone app just returns
