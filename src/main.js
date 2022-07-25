@@ -4,9 +4,9 @@ import i18next from 'i18next';
 import VueI18Next from '@panter/vue-i18next';
 import Multiselect from '@processmaker/vue-multiselect';
 
-import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/css/bootstrap.css';
 
-import DemoApp from './DemoApp.vue'
+import DemoApp from './DemoApp.vue';
 
 // Allow strings to be wrapped in $t(...) for translating
 // outside this package. This standalone app just returns
