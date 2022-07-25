@@ -20,13 +20,14 @@
 
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids';
-import ValidationMixin from './mixins/validation';
-import DataFormatMixin from "./mixins/DataFormat";
+import ValidationMixin from './mixins/validation.js';
+import DataFormatMixin from "./mixins/DataFormat.js";
 import datePicker from 'vue-bootstrap-datetimepicker';
 import moment from 'moment-timezone';
 import { getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils.js';
 import Mustache from 'mustache';
-let Validator = require('validatorjs');
+import * as Validator from 'validatorjs';
+import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.min.css';
 
 const uniqIdsMixin = createUniqIdsMixin();
 const checkFormats = ['YYYY-MM-DD', moment.ISO_8601];
@@ -223,8 +224,6 @@ export default {
 </script>
 
 <style lang="scss">
-  @import '../../node_modules/pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.min.css';
-
   .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
     font-size: 11px;
   }

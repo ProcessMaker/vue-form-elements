@@ -1,6 +1,6 @@
-import Validator from 'validatorjs';
-import moment from 'moment-timezone';
-import { getUserDateFormat, getUserDateTimeFormat } from '../../dateUtils';
+import * as Validator from 'validatorjs';
+import moment from 'moment';
+import { getUserDateFormat, getUserDateTimeFormat } from '../../dateUtils.js';
 
 // To include another language in the Validator with variable processmaker
 let globalObject = typeof window === 'undefined'
@@ -11,12 +11,13 @@ if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.
   Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
 
-Validator.register('custom-date', function(date) {
+
+Validator.register('custom-date', function(date, requirement, attribute) {
   let checkDate = moment(date, [getUserDateFormat(), moment.ISO_8601], true);
   return checkDate.isValid();
 }, 'The :attribute must be a valid date.');
 
-Validator.register('custom-datetime', function(date) {
+Validator.register('custom-datetime', function(date, requirement, attribute) {
   let checkDate = moment(date, [getUserDateTimeFormat(), moment.ISO_8601], true);
   return checkDate.isValid();
 }, 'The :attribute must be a valid date and time.');

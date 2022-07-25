@@ -126,7 +126,7 @@
 <script>
   // We're bringing in our Vue plugin
   import Vue from 'vue'
-  import VueFormElements from './components/index';
+  import VueFormElements from './components/index.js';
   import FormDatePicker from './components/FormDatePicker.vue';
   import { DateTime } from 'luxon';
 
