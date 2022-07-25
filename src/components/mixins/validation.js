@@ -1,5 +1,6 @@
 import * as Validator from 'validatorjs';
-import moment from 'moment-timezone';
+import moment from 'moment';
+import {has} from 'lodash';
 
 export default {
     props: [
@@ -74,7 +75,7 @@ export default {
                 return;
             }
 
-            if (_.has(globalObject, 'ProcessMaker.user.lang')) {
+            if (has(globalObject, 'ProcessMaker.user.lang')) {
                 Validator.useLang(globalObject.ProcessMaker.user.lang);
             } else if (document.documentElement.lang) {
                 Validator.useLang(document.documentElement.lang);
