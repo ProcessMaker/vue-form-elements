@@ -21,10 +21,10 @@
 
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
-import ValidationMixin from './mixins/validation'
+import ValidationMixin from './mixins/validation.js'
 import Mustache from 'mustache';
 import Editor from './Editor'
-import { formatIfDate } from '../dateUtils'
+import { formatIfDate } from '../dateUtils.js'
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin()

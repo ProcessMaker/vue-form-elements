@@ -26,11 +26,11 @@
 </template>
 
 <script>
-import ValidationMixin from './mixins/validation'
+import ValidationMixin from './mixins/validation.js'
 import { createUniqIdsMixin } from 'vue-uniq-ids'
-import DataFormatMixin from './mixins/DataFormat';
-import hasDefaultOptionKey from './mixins/hasDefaultOptionKey';
-import DisplayErrors from './common/DisplayErrors';
+import DataFormatMixin from './mixins/DataFormat.js';
+import hasDefaultOptionKey from './mixins/hasDefaultOptionKey.js';
+import DisplayErrors from './common/DisplayErrors.vue';
 
 const uniqIdsMixin = createUniqIdsMixin();
 

@@ -18,9 +18,9 @@
 
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
-import ValidationMixin from './mixins/validation'
-import DataFormatMixin from './mixins/DataFormat';
-import DisplayErrors from './common/DisplayErrors';
+import ValidationMixin from './mixins/validation.js'
+import DataFormatMixin from './mixins/DataFormat.js';
+import DisplayErrors from './common/DisplayErrors.vue';
 
 const uniqIdsMixin = createUniqIdsMixin();
 

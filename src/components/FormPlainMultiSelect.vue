@@ -29,9 +29,8 @@
 
 <script>
   import {createUniqIdsMixin} from 'vue-uniq-ids'
-  import ValidationMixin from './mixins/validation'
-  import DisplayErrors from './common/DisplayErrors';
-  import {get} from 'lodash';
+  import ValidationMixin from './mixins/validation.js'
+  import DisplayErrors from './common/DisplayErrors.vue';
 
   const uniqIdsMixin = createUniqIdsMixin();
 

@@ -22,9 +22,9 @@
 </template>
 
 <script>
-import ValidationMixin from './mixins/validation'
+import ValidationMixin from './mixins/validation.js'
 import {createUniqIdsMixin} from 'vue-uniq-ids'
-import DataFormatMixin from './mixins/DataFormat';
+import DataFormatMixin from './mixins/DataFormat.js';
 
 const uniqIdsMixin = createUniqIdsMixin();
 

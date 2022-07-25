@@ -34,11 +34,11 @@
 
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
-import ValidationMixin from './mixins/validation'
-import DataFormatMixin from './mixins/DataFormat';
-import DisplayErrors from './common/DisplayErrors';
+import ValidationMixin from './mixins/validation.js'
+import DataFormatMixin from './mixins/DataFormat.js';
+import DisplayErrors from './common/DisplayErrors.vue';
 import Editor from './Editor'
-import _ from 'lodash'
+import {throttle} from 'lodash';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -88,7 +88,7 @@ export default {
     },
   },
   created() {
-    this.rebootEditor = _.throttle(() => {
+    this.rebootEditor = throttle(() => {
       this.editorActive = false;
       this.$nextTick(() => {
         this.editorActive = true

@@ -50,12 +50,12 @@
 </template>
 
 <script>
-  import ValidationMixin from './mixins/validation'
+  import ValidationMixin from './mixins/validation.js'
   import {createUniqIdsMixin} from 'vue-uniq-ids'
-  import MultiSelectView from "./FormSelectList/MultiSelectView";
-  import CheckboxView from "./FormSelectList/CheckboxView";
-  import OptionboxView from "./FormSelectList/OptionboxView";
-  import FormMultiSelect from "./FormMultiSelect";
+  import MultiSelectView from "./FormSelectList/MultiSelectView.vue";
+  import CheckboxView from "./FormSelectList/CheckboxView.vue";
+  import OptionboxView from "./FormSelectList/OptionboxView.vue";
+  import FormMultiSelect from "./FormMultiSelect.vue";
   import Mustache from "mustache";
   import { debounce, isEqual, cloneDeep, get, set } from 'lodash';
 
@@ -129,7 +129,7 @@
             return;
           }
           this.lastRequest = cloneDeep(request);
-          
+
           this.$dataProvider.postDataSource(selectedDataSource, null, params)
               .then(response => {
                 const list = dataName ? eval('response.data.' + dataName) : response.data;

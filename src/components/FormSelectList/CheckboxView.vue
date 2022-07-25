@@ -21,7 +21,7 @@
 
 <script>
 import {createUniqIdsMixin} from 'vue-uniq-ids'
-import ValidationMixin from '../mixins/validation'
+import ValidationMixin from '../mixins/validation.js'
 
 const uniqIdsMixin = createUniqIdsMixin();
 

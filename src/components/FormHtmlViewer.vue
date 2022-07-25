@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import FormHtmlEditor from './FormHtmlEditor'
+import FormHtmlEditor from './FormHtmlEditor.vue'
 
 export default {
   extends: FormHtmlEditor,

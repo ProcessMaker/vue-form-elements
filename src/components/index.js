@@ -1,18 +1,18 @@
 // Import our components
-import FormInput from './FormInput'
-import FormCheckbox from './FormCheckbox'
-import FormRadioButtonGroup from './FormRadioButtonGroup'
-import FormSelect from './FormSelect'
-import FormSelectList from './FormSelectList'
-import FormTextArea from './FormTextArea'
-import FormDatePicker from './FormDatePicker'
-import FormAccordion from './FormAccordion'
-import FormHtmlEditor from './FormHtmlEditor'
-import FormHtmlViewer from './FormHtmlViewer'
-import FormDelayTimeControl from './FormDelayTimeControl'
-import FormMultiSelect from './FormMultiSelect';
-import FormPlainMultiSelect from './FormPlainMultiSelect';
-import * as dateUtils from '../dateUtils';
+import FormInput from './FormInput.vue';
+import FormCheckbox from './FormCheckbox.vue';
+import FormRadioButtonGroup from './FormRadioButtonGroup.vue';
+import FormSelect from './FormSelect.vue';
+import FormSelectList from './FormSelectList.vue';
+import FormTextArea from './FormTextArea.vue';
+import FormDatePicker from './FormDatePicker.vue';
+import FormAccordion from './FormAccordion.vue';
+import FormHtmlEditor from './FormHtmlEditor.vue';
+import FormHtmlViewer from './FormHtmlViewer.vue';
+import FormDelayTimeControl from './FormDelayTimeControl.vue';
+import FormMultiSelect from './FormMultiSelect.vue';
+import FormPlainMultiSelect from './FormPlainMultiSelect.vue';
+import * as dateUtils from '../dateUtils.js';
 
 // Export our components
 let components = {

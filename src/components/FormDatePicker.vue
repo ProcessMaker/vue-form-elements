@@ -24,7 +24,7 @@ import ValidationMixin from './mixins/validation';
 import DataFormatMixin from "./mixins/DataFormat";
 import datePicker from 'vue-bootstrap-datetimepicker';
 import moment from 'moment-timezone';
-import { getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
+import { getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils.js';
 import Mustache from 'mustache';
 let Validator = require('validatorjs');
 
@@ -222,8 +222,8 @@ export default {
 };
 </script>
 
-<style>
-  @import '~pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
+<style lang="scss">
+  @import '../../node_modules/pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.min.css';
 
   .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
     font-size: 11px;

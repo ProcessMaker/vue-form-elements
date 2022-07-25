@@ -3,7 +3,7 @@
   "version": "0.29.1",
   "description": "Reusable VueJS Based Form Elements styled with Bootstrap 4",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite serve public/",
     "serve": "NODE_ENV=standalone vue-cli-service serve",
     "build": "vite build",
     "preview": "vite preview",
@@ -12,14 +12,17 @@
     "build-bundle": "vue-cli-service build --target lib --name vue-form-elements ./src/components/index.js",
     "build-watch": "vue-cli-service build --target lib --name vue-form-elements --watch ./src/components/index.js"
   },
-  "main": "./dist/vue-form-elements.common.js",
-  "files": [
-    "dist/*",
-    "src/*",
-    "public/*",
-    "*.json",
-    "*.js"
-  ],
+  "main": "./dist/vue-form-elements.umd.js",
+  "module": "./dist/vue-form-elements.es.js",
+  "exports": {
+    ".": {
+      "import": {
+        "import": "./dist/vue-form-elements.es.js",
+        "require": "./dist/vue-form-elements.umd.js"
+      }
+    }
+  },
+  "files": ["dist"],
   "dependencies": {
     "@tinymce/tinymce-vue": "2.0.0",
     "bootstrap": "^4.5.3",
