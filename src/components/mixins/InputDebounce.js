@@ -24,9 +24,8 @@ export default {
 
       let value = (!!event && event.target === undefined) ? event : event.target.value;
 
-      //let valueToEmit = (typeof this.convertToData !== 'undefined') ? this.convertToData(value): value;
       let valueToEmit = value;
-      if (typeof this.convertToData !== 'undefined') {
+      if (this.convertToData !== undefined) {
         valueToEmit = this.convertToData(value);
       }
 
