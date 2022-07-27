@@ -20,29 +20,22 @@ export default {
        * Checking if the event it is a string, if it is a truthy value, and it doesn't have
        * the property target in it
        * */
-      if (window.ProcessMaker && window.ProcessMaker.debounce) {
-        if (typeof event === 'string' && !!event && event.target === undefined) {
-          this.touched = true;
-          return this.updateValue(event);
-        }
+      let useDebounce = window.ProcessMaker && (window.ProcessMaker.debounce === undefined || window.ProcessMaker.debounce === true)
+
+      let value = (!!event && event.target === undefined) ? event : event.target.value;
+
+      //let valueToEmit = (typeof this.convertToData !== 'undefined') ? this.convertToData(value): value;
+      let valueToEmit = value;
+      if (typeof this.convertToData !== 'undefined') {
+        valueToEmit = this.convertToData(value);
+      }
+
+      if (useDebounce) {
         this.touched = true;
-        this.updateValue(event.target.value);
+        this.updateValue(valueToEmit);
       }
       else {
-        let value = null;
-        if (!!event && event.target === undefined) {
-          value = event;
-        }
-        else {
-          value = event.target.value;
-        }
         this.touched = false;
-
-        let valueToEmit = value;
-        if (typeof this.convertToData !== 'undefined') {
-          valueToEmit = this.convertToData(value);
-        }
-
         this.$emit('input', valueToEmit);
         this.$emit('update:value', valueToEmit);
       }
@@ -51,6 +44,6 @@ export default {
       this.touched = false;
       this.$emit('input', value);
       this.$emit('update:value', value);
-    }, window.ProcessMaker && !window.ProcessMaker.debounce ? 30 : 600)
+    }, 600)
   }
 };
