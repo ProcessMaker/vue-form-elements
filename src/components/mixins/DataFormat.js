@@ -1,6 +1,7 @@
 import Validator from 'validatorjs';
-import moment from 'moment-timezone';
-import { getUserDateFormat, getUserDateTimeFormat } from '../../dateUtils';
+import { formatISO, format } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
+import { getUserDateFormat, getUserDateTimeFormat, getTimezone } from '../../dateUtils';
 
 // To include another language in the Validator with variable processmaker
 let globalObject = typeof window === 'undefined'
@@ -12,12 +13,12 @@ if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.
 }
 
 Validator.register('custom-date', function(date) {
-  let checkDate = moment(date, [getUserDateFormat(), moment.ISO_8601], true);
+  let checkDate = format(formatISO(new Date(date)), getUserDateFormat());
   return checkDate.isValid();
 }, 'The :attribute must be a valid date.');
 
 Validator.register('custom-datetime', function(date) {
-  let checkDate = moment(date, [getUserDateTimeFormat(), moment.ISO_8601], true);
+  let checkDate = format(formatISO(new Date(date)), getUserDateTimeFormat());
   return checkDate.isValid();
 }, 'The :attribute must be a valid date and time.');
 
@@ -114,12 +115,12 @@ export default {
           break;
         case 'date':
           if (this.componentName === 'FormDatePicker') {
-            newValue = moment.utc(newValue, [getUserDateFormat(), moment.ISO_8601], true).toISOString().split(RegExp('T[0-9]'))[0];
+            newValue = format(zonedTimeToUtc(newValue, getTimezone()), getUserDateFormat()).toISOString().split(RegExp('T[0-9]'))[0];
           }
           break;
         case 'datetime':
           if (this.componentName === 'FormDatePicker') {
-            newValue = moment(newValue, [getUserDateTimeFormat(), moment.ISO_8601], true).toISOString();
+            newValue = format(new Date(newValue), getUserDateTimeFormat()).toISOString
           }
           break;
         case 'array':

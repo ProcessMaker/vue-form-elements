@@ -23,13 +23,13 @@ import { createUniqIdsMixin } from 'vue-uniq-ids';
 import ValidationMixin from './mixins/validation';
 import DataFormatMixin from "./mixins/DataFormat";
 import datePicker from 'vue-bootstrap-datetimepicker';
-import moment from 'moment-timezone';
+import { isValid, format as formatDateFns, formatISO } from 'date-fns';
 import { getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
 import Mustache from 'mustache';
 let Validator = require('validatorjs');
 
 const uniqIdsMixin = createUniqIdsMixin();
-const checkFormats = ['YYYY-MM-DD', moment.ISO_8601];
+const checkFormats = formatDateFns(formatISO(new Date()), 'yyyy-MM-dd');
 
 Validator.register('date_or_mustache', function(value, requirement, attribute) {
   let rendered = null;
@@ -50,13 +50,19 @@ Validator.register('date_or_mustache', function(value, requirement, attribute) {
     return true;
   }
 
-  if (moment(value, checkFormats, true).isValid()) {
+  console.log('here');
+
+  if (isValid(value)) {
     return true;
   }
 
+  // if (moment(value, checkFormats, true).isValid()) {
+  //   return true;
+  // }
+
   return false;
 
-}, 'Must be YYYY-MM-DD, ISO8601, or mustache syntax');
+}, 'Must be yyyy-MM-dd, ISO8601, or mustache syntax');
 
 export default {
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
@@ -190,7 +196,7 @@ export default {
           date = val;
         }
 
-        date = moment(date, checkFormats, true);
+        date = formatDateFns(date, checkFormats);
         if (!date.isValid()) {
           date = false;
         }
@@ -210,10 +216,10 @@ export default {
       return currentDate.isSame(currentValue, comparatorString);
     },
     generateDate(value = this.value) {
-      let date = moment(value);
+      let date = new Date(value);
 
       if (!date.isValid()) {
-        date = moment();
+        date = new Date();
       }
 
       return date;

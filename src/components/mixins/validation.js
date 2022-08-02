@@ -1,5 +1,5 @@
 let Validator = require('validatorjs');
-import moment from 'moment-timezone';
+import { formatISO } from 'date-fns';
 
 export default {
     props: [
@@ -136,52 +136,52 @@ export default {
 
             Validator.register('after', function(date, params) {
                 // checks if incoming 'params' is a date or a key reference.
-                let checkDate = moment(params);
+                let checkDate = new Date(params);
                 if (!checkDate.isValid()) {
                     params = data[params];
                 }
                 
-                const inputDate = moment(date).toISOString();
-                const afterDate = moment(params).toISOString();
+                const inputDate = formatISO(date);
+                const afterDate = formatISO(params);
             
                 return inputDate > afterDate;
             }, 'The :attribute must be after :after.');
             
             Validator.register('after_or_equal', function(date, params) {
                 // checks if incoming 'params' is a date or a key reference.
-                let checkDate = moment(params);
+                let checkDate = new Date(params);
                 if (!checkDate.isValid()) {
                     params = data[params];
                 }
 
-                const inputDate = moment(date).toISOString();
-                const equalOrAfterDate = moment(params).toISOString();
+                const inputDate = formatISO(date);
+                const equalOrAfterDate = formatISO(params);
                 
                 return inputDate >= equalOrAfterDate;
             }, 'The :attribute must be equal or after :after_or_equal.');
             
             Validator.register('before', function(date, params) {
                 // checks if incoming 'params' is a date or a key reference.
-                let checkDate = moment(params);
+                let checkDate = new Date(params);
                 if (!checkDate.isValid()) {
                     params = data[params];
                 }
 
-                const inputDate = moment(date).toISOString();
-                const beforeDate = moment(params).toISOString();
+                const inputDate = formatISO(date);
+                const beforeDate = formatISO(params);
                 
                 return inputDate < beforeDate;
             }, 'The :attribute must be before :before.');
             
             Validator.register('before_or_equal', function(date, params) {
                 // checks if incoming 'params' is a date or a key reference.
-                let checkDate = moment(params);
+                let checkDate = new Date(params);
                 if (!checkDate.isValid()) {
                     params = data[params];
                 }
                 
-                const inputDate = moment(date).toISOString();
-                const beforeDate = moment(params).toISOString();
+                const inputDate = formatISO(date);
+                const beforeDate = formatISO(params);
                 
                 return inputDate <= beforeDate;
             }, 'The :attribute must be equal or before :before_or_equal.');

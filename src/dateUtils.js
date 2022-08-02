@@ -1,7 +1,8 @@
 /* global ProcessMaker*/
-import moment from 'moment-timezone';
+import { formatInTimeZone } from 'date-fns-tz';
+import { format as formatDateFns } from 'date-fns';
 
-moment.tz.setDefault(getTimezone())
+// formatInTimeZone(new Date(), getTimezone());
 
 const startsWithNumbers = /^\d{4}-/;
 
@@ -12,7 +13,7 @@ function getProcessMakerUserValue(key) {
 }
 
 export function getTimezone() {
-  return getProcessMakerUserValue('timezone') || moment.tz.guess();
+  return getProcessMakerUserValue('timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
 export function getLang() {
@@ -24,33 +25,33 @@ export function getUserDateFormat() {
     return ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, '');
   }
 
-  return 'MM/DD/YYYY';
+  return 'MM/dd/yyyy';
 }
 
 export function getUserDateTimeFormat() {
-  return getProcessMakerUserValue('datetime_format') || 'MM/DD/YYYY h:mm A';
+  return getProcessMakerUserValue('datetime_format') || 'MM/dd/yyyy h:mm A';
 }
 
 export function isValidDate(date, format = getUserDateFormat()) {
-  return moment(date, format).isValid();
+  return formatDateFns(new Date(date), format);
 }
 
 export function formatIfDate(string) {
   let d;
 
-  // Quick check for performance before calling moment
+  // Quick check for performance before calling date-fns
   if (!startsWithNumbers.test(string)) {
     return string;
   }
 
-  d = moment(string, 'YYYY-MM-DDTHH:mm:ss.SSSZ', true);
+  d = new Date(string).toISOString;
   if (d.isValid()) {
-    return d.format(getUserDateTimeFormat());
+    return formatDateFns(new Date(d), getUserDateTimeFormat());
   }
   
-  d = moment(string, 'YYYY-MM-DD', true);
+  d = formatDateFns(new Date(string), 'yyyy-MM-dd');
   if (d.isValid()) {
-    return d.format(getUserDateFormat());
+    return formatDateFns(new Date(d), getUserDateFormat());
   }
 
   return string;
