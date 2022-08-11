@@ -43,6 +43,6 @@ export default {
       this.touched = false;
       this.$emit('input', value);
       this.$emit('update:value', value);
-    }, 600)
+    }, 500, {'leading': true, 'trainling': false})
   }
 };
