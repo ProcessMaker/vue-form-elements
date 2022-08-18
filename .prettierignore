@@ -25,3 +25,9 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+*.json
+
+*.bpmn
+*.svg
+**/jest
+**/public
