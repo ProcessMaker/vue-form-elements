@@ -20,7 +20,8 @@ export default {
        * Checking if the event it is a string, if it is a truthy value, and it doesn't have
        * the property target in it
        * */
-      let useDebounce = window.ProcessMaker && (window.ProcessMaker.debounce === undefined || window.ProcessMaker.debounce === true)
+      let useDebounce = window.ProcessMaker &&
+        (window.ProcessMaker.debounce === undefined || window.ProcessMaker.debounce === true)
 
       let value = (!!event && event.target === undefined) ? event : event.target.value;
 
