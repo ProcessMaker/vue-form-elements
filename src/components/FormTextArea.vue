@@ -8,10 +8,10 @@
           class="editor"
           v-if="!readonly && editorActive"
           v-bind="$attrs"
-          :value="value"
           :init="editorSettings"
           :name="name"
-          @input="$emit('input', $event)"
+					:value="internalValue"
+					@input="updateInternalValue"
         />
       </div>
     </div>
@@ -24,8 +24,8 @@
       class="form-control"
       :class="classList"
       :name="name"
-      :value="value"
-      @input="$emit('input', $event.target.value)"
+			:value="internalValue"
+			@input="updateInternalValue"
     />
     <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator"/>
     <small v-if='helper' class='form-text text-muted'>{{helper}}</small>
@@ -38,7 +38,8 @@ import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
 import Editor from './Editor'
-import _ from 'lodash'
+import throttle from 'lodash/throttle';
+import InputDebounce from './mixins/InputDebounce';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -48,8 +49,7 @@ export default {
     DisplayErrors,
     Editor
   },
-  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
-
+  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin, InputDebounce],
   props: [
     'label',
     'error',
@@ -88,7 +88,7 @@ export default {
     },
   },
   created() {
-    this.rebootEditor = _.throttle(() => {
+    this.rebootEditor = throttle(() => {
       this.editorActive = false;
       this.$nextTick(() => {
         this.editorActive = true
@@ -132,6 +132,7 @@ export default {
           this.setHeight();
         },
         setup: (editor) => {
+          /* eslint-disable */
           editor.ui.registry.addButton('pagebreak', {
             tooltip: this.$t('Insert Page Break For PDF'),
             icon: 'page-break',
