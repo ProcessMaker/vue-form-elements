@@ -8,10 +8,10 @@
           class="editor"
           v-if="!readonly && editorActive"
           v-bind="$attrs"
+          :value="value"
           :init="editorSettings"
           :name="name"
-					:value="internalValue"
-					@input="updateInternalValue"
+          @input="$emit('input', $event)"
         />
       </div>
     </div>
@@ -24,8 +24,8 @@
       class="form-control"
       :class="classList"
       :name="name"
-			:value="internalValue"
-			@input="updateInternalValue"
+      :value="value"
+      @input="$emit('input', $event.target.value)"
     />
     <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator"/>
     <small v-if='helper' class='form-text text-muted'>{{helper}}</small>
@@ -39,7 +39,6 @@ import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
 import Editor from './Editor'
 import throttle from 'lodash/throttle';
-import InputDebounce from './mixins/InputDebounce';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -49,7 +48,8 @@ export default {
     DisplayErrors,
     Editor
   },
-  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin, InputDebounce],
+  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
+
   props: [
     'label',
     'error',
@@ -132,7 +132,6 @@ export default {
           this.setHeight();
         },
         setup: (editor) => {
-          /* eslint-disable */
           editor.ui.registry.addButton('pagebreak', {
             tooltip: this.$t('Insert Page Break For PDF'),
             icon: 'page-break',

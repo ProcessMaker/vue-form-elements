@@ -4,8 +4,8 @@
     <input
       v-bind="$attrs"
       v-uni-id="name"
-			:value="internalValue"
-			@input="updateInternalValue"
+      :value="value"
+      @input="$emit('input', $event.target.value)"
       :name="name"
       class="form-control"
       :class="classList"
@@ -21,7 +21,6 @@ import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
-import InputDebounce from './mixins/InputDebounce';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -30,7 +29,7 @@ export default {
   components: {
     DisplayErrors,
   },
-  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin, InputDebounce],
+  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [
     'value',
     'label',
