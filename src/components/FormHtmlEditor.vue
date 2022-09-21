@@ -7,7 +7,7 @@
         :value="content"
         :init="editorSettings"
       />
-      <div v-else v-html="rendered"></div>
+      <div v-else v-html="content"></div>
     </div>
   </div>
 </template>

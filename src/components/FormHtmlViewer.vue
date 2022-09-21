@@ -1,22 +1,81 @@
 <template>
-  <div class='form-group'>
-    <div :class="classList">
+  <div class="form-group">
+    <div>
+      aca
       <div v-html="rendered"></div>
     </div>
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
-      <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
-    </div>
-    <small v-if='helper' class='form-text text-muted'>{{helper}}</small>
   </div>
 </template>
 
 <script>
-import FormHtmlEditor from './FormHtmlEditor'
+import Mustache from "mustache";
+import ValidationMixin from "./mixins/validation";
+import { formatIfDate } from "../dateUtils";
 
 export default {
-  extends: FormHtmlEditor,
-}
+  props: [
+    "error",
+    "name",
+    "helper",
+    "controlClass",
+    "content",
+    "validationData",
+    "label",
+    "renderVarHtml"
+  ],
+  mixins: [ValidationMixin],
+  data() {
+    return {
+      customFunctions: {},
+      originalEscapeFn: null
+      
+    };
+  },
+  computed: {
+    rendered() {
+      console.log("test computed");
+      // if (!this.validationData) {
+      //   return this.content;
+      // }
+      //  this.originalEscapeFn = Mustache.escape;
+      //  Mustache.escape = this.mustacheEscapeFn;
+      // try {
+        // const parent = Object.assign(
+        //   { _parent: this.validationData._parent },
+        //   this.validationData
+        // );
+      //   if (this.renderVarHtml) {
+      //     return Mustache.render(this.content, {
+      //       ...this.customFunctions,
+      //       ...this.validationData,
+      //       ...parent
+      //     });
+      //   }
+        // return Mustache.render(this.content, {
+        //   ...this.customFunctions,
+        //   ...this.validationData,
+        //   ...parent
+        // });
+      // } catch (error) {
+      //   if (this.renderVarHtml) {
+      //     return this.renderVarName;
+      //   }
+      //   return this.content;
+      // } finally {
+      //   Mustache.escape = this.originalEscapeFn;
+      // }
+    }
+  },
+  methods: {
+    mustacheEscapeFn(text) {
+      text = formatIfDate(text);
+      if (this.renderVarHtml) {
+        return text;
+      }
+      return this.originalEscapeFn(text);
+    }
+  }
+};
 </script>
 
 <style scoped>
