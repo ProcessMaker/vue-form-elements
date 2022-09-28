@@ -3,12 +3,12 @@
     <div :class="classList">
       <editor
         v-if="!$attrs.disabled"
-        :value="rendered"
+        :value="content"
         :init="editorSettings"
         v-bind="$attrs"
         v-on="$listeners"
       />
-      <div v-else>{{ rendered }}</div>
+      <div v-else>{{ content }}</div>
     </div>
     <div
       v-if="(validator && validator.errorCount) || error"
@@ -27,16 +27,18 @@
 </template>
 
 <script>
+import { defineComponent } from "@vue/composition-api";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import Mustache from "mustache";
 import ValidationMixin from "./mixins/validation";
 import Editor from "./Editor";
 import { formatIfDate } from "../dateUtils";
 
+import { useHtmlEditorControl } from "../utils/composition.js";
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin();
 
-export default {
+export default defineComponent({
   components: {
     Editor
   },
@@ -52,6 +54,9 @@ export default {
     "label",
     "renderVarHtml"
   ],
+  setup(props) {
+    useHtmlEditorControl(props);
+  },
   data() {
     return {
       originalEscapeFn: null,
@@ -156,7 +161,7 @@ export default {
       return this.originalEscapeFn(formatedText);
     }
   }
-};
+});
 </script>
 
 <style scoped>

@@ -20,6 +20,7 @@
   ],
   "dependencies": {
     "@tinymce/tinymce-vue": "2.0.0",
+    "@vue/composition-api": "^1.7.1",
     "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
     "luxon": "^1.11.3",

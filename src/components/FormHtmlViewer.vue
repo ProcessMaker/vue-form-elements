@@ -1,7 +1,7 @@
 <template>
   <div class='form-group'>
     <div :class="classList">
-      <div v-html="rendered"></div>
+      <div v-html="content"></div>
     </div>
     <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
       <div v-for="(error, index) in validator.errors.get(this.name)" :key="index">{{error}}</div>
