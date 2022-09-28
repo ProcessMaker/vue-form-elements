@@ -10,6 +10,7 @@
       :placeholder="placeholder ? placeholder : $t('Select...')"
       :show-labels="false"
       :options="selectListOptions"
+      :react-options="reactOptions"
       :class="classList"
       :emit-objects="options.valueTypeReturned === 'object'"
       :emit-array="options.allowMultiSelect"
@@ -50,6 +51,7 @@
 </template>
 
 <script>
+  import { mapState } from "vuex";
   import ValidationMixin from './mixins/validation'
   import {createUniqIdsMixin} from 'vue-uniq-ids'
   import MultiSelectView from "./FormSelectList/MultiSelectView";
@@ -117,7 +119,8 @@
           }
 
           if (typeof this.options.pmqlQuery !== 'undefined' && this.options.pmqlQuery !== '' && this.options.pmqlQuery !== null) {
-            const pmql = Mustache.render(this.options.pmqlQuery, {data: this.validationData});
+            const data = this.makeProxyData();
+            const pmql = Mustache.render(this.options.pmqlQuery, { data });
             params.config.outboundConfig = [
               { type: 'PARAM', key: 'pmql', value: pmql }
             ];
@@ -150,6 +153,7 @@
         this.optionsFromDataSource();
       },
       fillSelectListOptions() {
+        console.log("fillSelectListOptions", this.name);
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           if (this.options && this.options.optionsList && !isEqual(this.selectListOptions, this.options.optionsList)) {
             this.selectListOptions = this.options.optionsList;
@@ -160,7 +164,9 @@
         if (this.options.dataSource && this.options.dataSource === 'dataObject') {
           let requestOptions = []
           try {
-            requestOptions = get(this.validationData, this.options.dataName);
+            const data = this.makeProxyData();
+            console.log(data, this.options.dataName);
+            requestOptions = get(data, this.options.dataName);
           }
           catch(e) {
             requestOptions = [];
@@ -334,48 +340,17 @@
         return itemsInOptionsList.length > 0;
       }
     },
-    watch: {
-      sourceConfig: {
-        immediate:true,
-        deep: true,
-        handler(value) {
-          if (!isEqual(this.previousSourceConfig, value) || (this.options.dataSource && this.options.dataSource === 'provideData')) {
-            this.fillSelectListOptions();
-          }
-          this.previousSourceConfig = cloneDeep(value);
-        }
-      },
-      // React to local data scope
-      validationData: {
-        immediate:true,
-        deep: true,
-        handler(value) {
-          if (!isEqual(this.previousValidationData, value) || (this.options.dataSource && this.options.dataSource === 'provideData')) {
-            this.fillSelectListOptions();
-          }
-          this.previousValidationData = cloneDeep(value);
-        }
-      },
-      // React to a parent data scope
-      "validationData._parent": {
-        deep: true,
-        handler(value) {
-          if (!isEqual(this.previousValidationDataParent, value) || (this.options.dataSource && this.options.dataSource === 'provideData')) {
-            this.fillSelectListOptions();
-          }
-          this.previousValidationDataParent = cloneDeep(value);
-        }
-      },
-      selectListOptions(newValue, oldValue) {
-        this.updateWatcherDependentFieldValue(newValue, oldValue);
-      }
-    },
     computed: {
+      ...mapState("globalDataModule", {globalData: "dataChanged"}),
       validatorErrors() {
         return this.validator && this.validator.errors.get(this.name) || [];
       },
       divClass() {
         return this.toggle ? 'custom-control custom-radio' : 'form-check';
+      },
+      reactOptions() {
+        console.log("reactOptions", this.name);
+        this.fillSelectListOptions();
       },
       sourceConfig() {
         return {
@@ -435,5 +410,13 @@
         }
       },
     },
+  mounted() {
+    this.fillSelectListOptions();
+  },
+  watch: {
+    selectListOptions(newValue, oldValue) {
+      this.updateWatcherDependentFieldValue(newValue, oldValue);
+    }
   }
+}
 </script>
