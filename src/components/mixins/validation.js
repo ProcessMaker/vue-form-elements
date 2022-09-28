@@ -53,6 +53,47 @@ export default {
         }
     },
     methods: {
+        /**
+         * Create a proxy for an empty object. in order to avoid unespected refresh
+         * @return {object} proxy
+         */
+        makeProxyData() {
+            const control = this;
+            const handler = {
+            get: (target, name) => {
+                if (control.customFunctions && control.customFunctions[name]) {
+                    return control.customFunctions[name];
+                }
+                if (name === "_parent") {
+                    const screenOwner = control.getScreenOwner();
+                    console.log(screenOwner);
+                    return (screenOwner && screenOwner._parent) // Get _parent for the current screen (e.g. Inside Loops, Inside Tabs?, RecordLists...?)
+                        || control.validationData._parent; // Get _parent for the Request Data (e.g. Inside a SubProcess)
+                }
+                return control.validationData[name];
+            },
+            has(target, name) {
+                if (control.customFunctions[name]) {
+                    return true;
+                }
+                if (name === "_parent") {
+                    return true;
+                }
+                return control.validationData[name] !== undefined;
+            }
+            };
+            return new Proxy({}, handler);
+        },
+        getScreenOwner() {
+            let parent = this.$parent;
+            while (parent) {
+                if (parent.$options.name === "ScreenContent") {
+                    return parent;
+                }
+                parent = parent.$parent;
+            }
+            return null;
+        },
         observeElementMutations() {
             new MutationObserver(this.handleMutations).observe(this.$el, {
                 attributes: true,
