@@ -61,19 +61,22 @@ export default {
             const control = this;
             const handler = {
             get: (target, name) => {
+                // customFunctions is used by RichText controls
+                // to add custom Mustache functions
                 if (control.customFunctions && control.customFunctions[name]) {
                     return control.customFunctions[name];
                 }
                 if (name === "_parent") {
                     const screenOwner = control.getScreenOwner();
-                    console.log(screenOwner);
                     return (screenOwner && screenOwner._parent) // Get _parent for the current screen (e.g. Inside Loops, Inside Tabs?, RecordLists...?)
                         || control.validationData._parent; // Get _parent for the Request Data (e.g. Inside a SubProcess)
                 }
                 return control.validationData[name];
             },
             has(target, name) {
-                if (control.customFunctions[name]) {
+                // customFunctions is used by RichText controls
+                // to add custom Mustache functions
+                if (control.customFunctions && control.customFunctions[name]) {
                     return true;
                 }
                 if (name === "_parent") {
