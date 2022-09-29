@@ -71,6 +71,13 @@ export default {
                     return (screenOwner && screenOwner._parent) // Get _parent for the current screen (e.g. Inside Loops, Inside Tabs?, RecordLists...?)
                         || control.validationData._parent; // Get _parent for the Request Data (e.g. Inside a SubProcess)
                 }
+                // Check if validationData is empty
+                if (
+                    control.validationData === undefined ||
+                    control.validationData === null
+                ) {
+                    return undefined;
+                }
                 return control.validationData[name];
             },
             has(target, name) {
@@ -81,6 +88,13 @@ export default {
                 }
                 if (name === "_parent") {
                     return true;
+                }
+                // Check if validationData is empty
+                if (
+                    control.validationData === undefined ||
+                    control.validationData === null
+                ) {
+                    return false;
                 }
                 return control.validationData[name] !== undefined;
             }
