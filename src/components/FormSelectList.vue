@@ -152,7 +152,8 @@
         this.filter = filter;
         this.optionsFromDataSource();
       },
-      fillSelectListOptions() {
+       async fillSelectListOptions(strictMode) {
+        console.log("fillSelectListOptions", this.name);
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           if (this.options && this.options.optionsList && !isEqual(this.selectListOptions, this.options.optionsList)) {
             this.selectListOptions = this.options.optionsList;
@@ -175,8 +176,9 @@
         }
 
         if (this.options.dataSource && this.options.dataSource === 'dataConnector') {
-          this.doDebounce(this.sourceConfig);
+          await this.doDebounce(this.sourceConfig);
         }
+        this.updateWatcherDependentFieldValue(strictMode);
       },
 
 
@@ -347,7 +349,7 @@
       },
       reactOptions() {
         console.log("reactOptions", this.name);
-        this.fillSelectListOptions();
+        this.fillSelectListOptions(false);
       },
       sourceConfig() {
         return {
@@ -408,12 +410,7 @@
       },
     },
   mounted() {
-    this.fillSelectListOptions();
-  },
-  watch: {
-    selectListOptions(newValue, oldValue) {
-      this.updateWatcherDependentFieldValue(newValue, oldValue);
-    }
+    this.fillSelectListOptions(true);
   }
 }
 </script>
