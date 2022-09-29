@@ -345,7 +345,6 @@
        */
       registerDynamicWatcher() {
         if (this.options.pmqlQuery) {
-          // const pmqlVariables = this.options.pmqlQuery.match(/{{[^}]+}}/g);
           var pmqlVariables = Mustache.parse(this.options.pmqlQuery)
                        .filter(function(v) { return v[0] === 'name' })
                        .map(function(v) { return v[1]; });
@@ -354,7 +353,6 @@
               const localVariable = this.stripMustache(item);
               this.$watch('validationData.' + localVariable,
               (value) => {
-                console.log("validationData was updated: " + value);
                 this.fillSelectListOptions(true);
                 this.previousValidationData = cloneDeep(this.validationData);
               },
