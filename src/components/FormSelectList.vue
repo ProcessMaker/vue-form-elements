@@ -338,6 +338,27 @@
         });
 
         return itemsInOptionsList.length > 0;
+      },
+
+      registerDynamicWatcher() {
+        if (this.options.pmqlQuery) {
+          const pmqlVariables = this.options.pmqlQuery.match(/{{[^}]+}}/g);
+          if (pmqlVariables.length > 0) {
+            pmqlVariables.forEach(item => {
+              const localVariable = this.stripMustache(item);
+              this.$watch('validationData.' + localVariable,
+              (value) => {
+                console.log("validationData was updated: " + value);
+                this.fillSelectListOptions(true);
+                this.previousValidationData = cloneDeep(this.validationData);
+              },
+              {
+                deep: true
+              }
+              );
+            });
+          }
+        }
       }
     },
     computed: {
@@ -411,6 +432,7 @@
     },
   mounted() {
     this.fillSelectListOptions(true);
+    this.registerDynamicWatcher(); 
   }
 }
 </script>
