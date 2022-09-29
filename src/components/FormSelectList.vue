@@ -51,7 +51,6 @@
 </template>
 
 <script>
-  import { mapState } from "vuex";
   import ValidationMixin from './mixins/validation'
   import {createUniqIdsMixin} from 'vue-uniq-ids'
   import MultiSelectView from "./FormSelectList/MultiSelectView";
@@ -341,7 +340,6 @@
       }
     },
     computed: {
-      ...mapState("globalDataModule", {globalData: "dataChanged"}),
       validatorErrors() {
         return this.validator && this.validator.errors.get(this.name) || [];
       },
