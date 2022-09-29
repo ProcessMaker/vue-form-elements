@@ -152,7 +152,6 @@
         this.optionsFromDataSource();
       },
       fillSelectListOptions() {
-        console.log("fillSelectListOptions", this.name);
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           if (this.options && this.options.optionsList && !isEqual(this.selectListOptions, this.options.optionsList)) {
             this.selectListOptions = this.options.optionsList;
@@ -164,7 +163,6 @@
           let requestOptions = []
           try {
             const data = this.makeProxyData();
-            console.log(data, this.options.dataName);
             requestOptions = get(data, this.options.dataName);
           }
           catch(e) {
