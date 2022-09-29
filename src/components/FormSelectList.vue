@@ -339,10 +339,16 @@
 
         return itemsInOptionsList.length > 0;
       },
-
+      /**
+       * Register a watcher dinamically
+       * the watcher will be fired when the data[variable] is updated
+       */
       registerDynamicWatcher() {
         if (this.options.pmqlQuery) {
-          const pmqlVariables = this.options.pmqlQuery.match(/{{[^}]+}}/g);
+          // const pmqlVariables = this.options.pmqlQuery.match(/{{[^}]+}}/g);
+          var pmqlVariables = Mustache.parse(this.options.pmqlQuery)
+                       .filter(function(v) { return v[0] === 'name' })
+                       .map(function(v) { return v[1]; });
           if (pmqlVariables.length > 0) {
             pmqlVariables.forEach(item => {
               const localVariable = this.stripMustache(item);
