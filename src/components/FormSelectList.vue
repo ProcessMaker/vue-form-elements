@@ -91,7 +91,7 @@
         previousValidationDataParent: null,
         //apiClient: window.ProcessMaker.apiClient.create(),
         selectListOptions: [],
-        doDebounce: debounce(options => {
+        doDebounce(options) {
           const selectedEndPoint = options.selectedEndPoint;
           const selectedDataSource = options.selectedDataSource;
           const dataName = options.dataName;
@@ -125,6 +125,7 @@
             ];
           }
 
+          // @todo: Add debounce and/or cache or improve the way to do not re-run the same request
           // Do not re-run the same request
           const request = { selectedDataSource, params };
           if (isEqual(this.lastRequest, request)) {
@@ -143,7 +144,7 @@
               .catch(err => {
                 /* Ignore error */
               });
-        }, 700)
+        }
       }
     },
     methods: {
