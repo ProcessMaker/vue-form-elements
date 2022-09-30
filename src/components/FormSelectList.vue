@@ -153,7 +153,6 @@
         this.optionsFromDataSource();
       },
        async fillSelectListOptions(strictMode) {
-        console.log("fillSelectListOptions", this.name);
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           if (this.options && this.options.optionsList && !isEqual(this.selectListOptions, this.options.optionsList)) {
             this.selectListOptions = this.options.optionsList;
@@ -288,7 +287,7 @@
        * the selected value still exists in the new set of options. If it's gone now, then
        * set this control's value to null.
        */
-      updateWatcherDependentFieldValue() {
+      updateWatcherDependentFieldValue(strictMode) {
         let hasKeyInOptions = true;
 
         if (Array.isArray(this.value)) {
@@ -314,7 +313,7 @@
           });
         }
 
-        if (!hasKeyInOptions) {
+        if (!hasKeyInOptions && strictMode) {
           this.$emit('input', null);
         }
       },
@@ -435,7 +434,7 @@
       },
     },
   mounted() {
-    this.fillSelectListOptions(true);
+    this.fillSelectListOptions(false);
     this.registerDynamicWatcher(); 
   }
 }
