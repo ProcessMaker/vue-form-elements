@@ -152,7 +152,12 @@
         this.filter = filter;
         this.optionsFromDataSource();
       },
-       async fillSelectListOptions(strictMode) {
+       /**
+        * Transform the options to the format expected by the select list.
+        *
+        * @param {Boolean} resetValueIfNotInOptions
+        */
+       async fillSelectListOptions(resetValueIfNotInOptions) {
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           if (this.options && this.options.optionsList && !isEqual(this.selectListOptions, this.options.optionsList)) {
             this.selectListOptions = this.options.optionsList;
@@ -177,7 +182,9 @@
         if (this.options.dataSource && this.options.dataSource === 'dataConnector') {
           await this.doDebounce(this.sourceConfig);
         }
-        this.updateWatcherDependentFieldValue(strictMode);
+        this.$nextTick(() => {
+          this.updateWatcherDependentFieldValue(resetValueIfNotInOptions);
+        });
       },
 
 
@@ -287,7 +294,7 @@
        * the selected value still exists in the new set of options. If it's gone now, then
        * set this control's value to null.
        */
-      updateWatcherDependentFieldValue(strictMode) {
+      updateWatcherDependentFieldValue(resetValueIfNotInOptions) {
         let hasKeyInOptions = true;
 
         if (Array.isArray(this.value)) {
@@ -313,7 +320,7 @@
           });
         }
 
-        if (!hasKeyInOptions && strictMode) {
+        if (!hasKeyInOptions && resetValueIfNotInOptions) {
           this.$emit('input', null);
         }
       },
@@ -372,8 +379,7 @@
         return this.toggle ? 'custom-control custom-radio' : 'form-check';
       },
       reactOptions() {
-        console.log("reactOptions", this.name);
-        this.fillSelectListOptions(false);
+        this.fillSelectListOptions(true);
       },
       sourceConfig() {
         return {
@@ -434,7 +440,11 @@
       },
     },
   mounted() {
-    this.fillSelectListOptions(false);
+    // reset the value to null if the options list does not contain the selected value
+    // Special Case String Value:
+    //   Review test tests/e2e/specs/MultiselectWithStringValue.spec.js in ScreenBuilder
+    const resetValueIfNotInOptions = typeof this.value !== "string";
+    this.fillSelectListOptions(resetValueIfNotInOptions);
     this.registerDynamicWatcher(); 
   }
 }
