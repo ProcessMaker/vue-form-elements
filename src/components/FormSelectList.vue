@@ -175,7 +175,6 @@ export default {
     //   Review test tests/e2e/specs/MultiselectWithStringValue.spec.js in ScreenBuilder
     const resetValueIfNotInOptions = typeof this.value !== "string";
     this.fillSelectListOptions(resetValueIfNotInOptions);
-    this.registerDynamicWatcher();
   },
   methods: {
     async loadOptionsFromDataConnector(options) {
@@ -459,37 +458,6 @@ export default {
       });
 
       return itemsInOptionsList.length > 0;
-    },
-    /**
-     * Register a watcher dinamically
-     * the watcher will be fired when the data[variable] is updated
-     */
-    registerDynamicWatcher() {
-      if (this.options.pmqlQuery) {
-        const pmqlVariables = Mustache.parse(this.options.pmqlQuery)
-          // eslint-disable-next-line func-names
-          .filter(function (v) {
-            return v[0] === "name";
-          })
-          .map(function (v) {
-            return v[1];
-          });
-        if (pmqlVariables.length > 0) {
-          pmqlVariables.forEach((item) => {
-            const localVariable = this.stripMustache(item);
-            this.$watch(
-              `validationData.${localVariable}`,
-              (value) => {
-                this.fillSelectListOptions(true);
-                this.previousValidationData = cloneDeep(this.validationData);
-              },
-              {
-                deep: true
-              }
-            );
-          });
-        }
-      }
     }
   }
 };
