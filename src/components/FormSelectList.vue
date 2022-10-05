@@ -91,7 +91,7 @@
         previousValidationDataParent: null,
         //apiClient: window.ProcessMaker.apiClient.create(),
         selectListOptions: [],
-        doDebounce(options) {
+        async doDebounce(options) {
           const selectedEndPoint = options.selectedEndPoint;
           const selectedDataSource = options.selectedDataSource;
           const dataName = options.dataName;
@@ -132,18 +132,19 @@
             return;
           }
           this.lastRequest = cloneDeep(request);
-          
-          this.$dataProvider.postDataSource(selectedDataSource, null, params)
-              .then(response => {
-                const list = dataName ? eval('response.data.' + dataName) : response.data;
 
-                const transformedList = this.transformOptions(list);
-                this.$root.$emit('selectListOptionsUpdated', transformedList);
-                this.selectListOptions = transformedList;
-              })
-              .catch(err => {
-                /* Ignore error */
-              });
+          try {
+            const response = await this.$dataProvider.postDataSource(selectedDataSource, null, params)
+            const list = dataName ? eval('response.data.' + dataName) : response.data;
+
+            const transformedList = this.transformOptions(list);
+            this.$root.$emit('selectListOptionsUpdated', transformedList);
+            this.selectListOptions = transformedList;
+            return true;
+          } catch(err) {
+            /* Ignore error */
+            console.warn(err);
+          }
         }
       }
     },
@@ -152,17 +153,20 @@
         this.filter = filter;
         this.optionsFromDataSource();
       },
+
        /**
         * Transform the options to the format expected by the select list.
         *
         * @param {Boolean} resetValueIfNotInOptions
         */
        async fillSelectListOptions(resetValueIfNotInOptions) {
+        let wasUpdated = false;
         if (this.options.dataSource && this.options.dataSource === 'provideData') {
           if (this.options && this.options.optionsList && !isEqual(this.selectListOptions, this.options.optionsList)) {
             this.selectListOptions = this.options.optionsList;
           }
           this.selectListOptions = this.selectListOptions || [];
+          wasUpdated = true;
         }
 
         if (this.options.dataSource && this.options.dataSource === 'dataObject') {
@@ -170,21 +174,23 @@
           try {
             const data = this.makeProxyData();
             requestOptions = get(data, this.options.dataName);
-          }
-          catch(e) {
+          } catch (e) {
             requestOptions = [];
           }
 
           let list = requestOptions ? requestOptions : [];
           this.selectListOptions = this.transformOptions(list);
+          wasUpdated = true;
         }
 
         if (this.options.dataSource && this.options.dataSource === 'dataConnector') {
-          await this.doDebounce(this.sourceConfig);
+          wasUpdated = await this.doDebounce(this.sourceConfig);
         }
-        this.$nextTick(() => {
-          this.updateWatcherDependentFieldValue(resetValueIfNotInOptions);
-        });
+        if (wasUpdated) {
+          this.$nextTick(() => {
+            this.updateWatcherDependentFieldValue(resetValueIfNotInOptions);
+          });
+        }
       },
 
 
