@@ -8,7 +8,7 @@
         v-bind="$attrs"
         v-on="$listeners"
       />
-      <div v-else>{{ rendered }}</div>
+      <div v-else v-html="rendered"></div>
     </div>
     <div
       v-if="(validator && validator.errorCount) || error"
