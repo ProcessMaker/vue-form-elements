@@ -80,7 +80,7 @@ export default {
       return classList;
     },
     rendered() {
-      const data = this.makeProxyData();
+      const data = this.makeProxyData(); // Gets the data
       this.overwriteMustacheEscape();
       try {
         if (this.renderVarHtml) {
@@ -99,37 +99,7 @@ export default {
   },
   methods: {
     /**
-     * Create a proxy for an empty object. in order to avoid unespected refresh
-     * @return {object} proxy
-     */
-    makeProxyData() {
-      const control = this;
-      const handler = {
-        get: (target, name) => {
-          if (control.customFunctions[name]) {
-            return control.customFunctions[name];
-          }
-          if (name === "_parent") {
-            return (
-              control.validationData._parent || control.validationData._parent
-            );
-          }
-          return control.validationData[name];
-        },
-        has(target, name) {
-          if (control.customFunctions[name]) {
-            return true;
-          }
-          if (name === "_parent") {
-            return true;
-          }
-          return control.validationData[name] !== undefined;
-        }
-      };
-      return new Proxy({}, handler);
-    },
-    /**
-     * Backup and overwrite the original mustache escape property
+     * Backup and overwrite the original mustache escaped property
      */
     overwriteMustacheEscape() {
       this.originalEscapeFn = Mustache.escape;
