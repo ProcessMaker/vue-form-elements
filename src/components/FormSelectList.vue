@@ -172,11 +172,17 @@ export default {
   mounted() {
     // reset the value to null if the options list does not contain the selected value
     // Special Case String Value:
-    //   Review test tests/e2e/specs/MultiselectWithStringValue.spec.js in ScreenBuilder
+    // Review test tests/e2e/specs/MultiselectWithStringValue.spec.js in ScreenBuilder
     const resetValueIfNotInOptions = typeof this.value !== "string";
     this.fillSelectListOptions(resetValueIfNotInOptions);
   },
   methods: {
+    /**
+     * Load select list options from a data connector
+     * 
+     * @param {object} options 
+     * @returns {boolean}
+     */
     async loadOptionsFromDataConnector(options) {
       const { selectedEndPoint } = options;
       const { selectedDataSource } = options;
@@ -222,9 +228,6 @@ export default {
           { type: "PARAM", key: "pmql", value: pmql }
         ];
       }
-
-      // @todo: Add debounce and/or cache or improve the way to do not re-run the same request
-      // Do not re-run the same request
       const request = { selectedDataSource, params };
       if (isEqual(this.lastRequest, request)) {
         return false;
@@ -410,6 +413,7 @@ export default {
      * If the options list changes due to a dependant field change, we need to check if
      * the selected value still exists in the new set of options. If it's gone now, then
      * set this control's value to null.
+     * @param {boolean} resetValueIfNotInOptions
      */
     updateWatcherDependentFieldValue(resetValueIfNotInOptions) {
       let hasKeyInOptions = true;
@@ -441,6 +445,8 @@ export default {
     },
     /**
      * Returns true if one or more items in list (an array) are in Select List's options
+     * @param {array} list
+     * @returns {boolean}
      */
     areItemsInSelectListOptions(list) {
       if (!Array.isArray(list)) {

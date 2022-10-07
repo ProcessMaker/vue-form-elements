@@ -101,6 +101,10 @@ export default {
             };
             return new Proxy({}, handler);
         },
+        /**
+         * Gets the screen parent or null if don't have
+         * @returns {object|null}
+         */
         getScreenOwner() {
             let parent = this.$parent;
             while (parent) {
