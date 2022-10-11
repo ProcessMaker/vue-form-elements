@@ -225,11 +225,19 @@ export default {
       this.lastRequest = cloneDeep(request);
 
       try {
-        const response = await this.$dataProvider.postDataSource(
-          selectedDataSource,
-          null,
-          params
-        );
+
+        if (window.ProcessMaker.screen && window.ProcessMaker.screen.cacheEnabled){
+          const response = await this.$dataProvider.getCachedDataSource(   
+            selectedDataSource,
+            params
+          )
+        } else {
+          const response = await this.$dataProvider.postDataSource(
+            selectedDataSource,
+            null,
+            params
+          )
+        }
         const list = dataName ? get(response.data, dataName) : response.data;
         const transformedList = this.transformOptions(list);
         this.$root.$emit("selectListOptionsUpdated", transformedList);
