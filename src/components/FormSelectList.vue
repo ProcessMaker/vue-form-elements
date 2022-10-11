@@ -225,22 +225,11 @@ export default {
       this.lastRequest = cloneDeep(request);
 
       try {
-        let response = null;
-        window.ProcessMaker.screen= {
-          cacheEnabled:true
-        }
-        if (window.ProcessMaker.screen && window.ProcessMaker.screen.cacheEnabled){
-          response = await this.$dataProvider.getCachedDataSource(   
-            selectedDataSource,
-            params
-          )
-        } else {
-          response = await this.$dataProvider.postDataSource(
-            selectedDataSource,
-            null,
-            params
-          )
-        }
+        const response = await this.$dataProvider.getDataSource(
+          selectedDataSource,
+          null,
+          params
+        );
         console.log(response);
         const list = dataName ? get(response.data, dataName) : response.data;
         const transformedList = this.transformOptions(list);
