@@ -225,9 +225,8 @@ export default {
       this.lastRequest = cloneDeep(request);
 
       try {
-        const response = await this.$dataProvider.postDataSource(
+        const response = await this.$dataProvider.getDataSource(
           selectedDataSource,
-          null,
           params
         );
         const list = dataName ? get(response.data, dataName) : response.data;
