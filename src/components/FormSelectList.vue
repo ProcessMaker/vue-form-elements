@@ -227,10 +227,8 @@ export default {
       try {
         const response = await this.$dataProvider.getDataSource(
           selectedDataSource,
-          null,
           params
         );
-        console.log(response);
         const list = dataName ? get(response.data, dataName) : response.data;
         const transformedList = this.transformOptions(list);
         this.$root.$emit("selectListOptionsUpdated", transformedList);
