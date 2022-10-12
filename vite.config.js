@@ -1,6 +1,7 @@
-const path = require('path');
 import {defineConfig} from 'vite';
 import {createVuePlugin} from 'vite-plugin-vue2';
+
+const path = require('path');
 
 const libraryName = 'VueFormElements';
 

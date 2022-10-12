@@ -26,7 +26,7 @@ import datePicker from 'vue-bootstrap-datetimepicker';
 import moment from 'moment-timezone';
 import { getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils.js';
 import Mustache from 'mustache';
-import * as Validator from 'validatorjs';
+import Validator from '@chantouchsek/validatorjs';
 import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.min.css';
 
 const uniqIdsMixin = createUniqIdsMixin();
