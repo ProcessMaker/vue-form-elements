@@ -1,7 +1,6 @@
 <template>
   <div class="form-group">
     <div :class="classList">
-      test
       <editor
         v-if="!$attrs.disabled"
         :value="rendered"
