@@ -1,6 +1,7 @@
 <template>
   <div class="form-group">
     <div :class="classList">
+      test
       <editor
         v-if="!$attrs.disabled"
         :value="rendered"
@@ -80,6 +81,10 @@ export default {
       return classList;
     },
     rendered() {
+      // If we have't validationData, we can't evaluate the mustache variables
+      if (!this.validationData) {
+        return this.content;
+      }
       const data = this.makeProxyData(); // Gets the data
       this.overwriteMustacheEscape();
       try {
