@@ -81,6 +81,7 @@ export default {
     },
     rendered() {
       // If we have't validationData, we can't evaluate the mustache variables
+      // Used by ScreenBuilder in Design Mode
       if (!this.validationData) {
         return this.content;
       }
