@@ -1,6 +1,6 @@
 {
   "name": "@processmaker/vue-form-elements",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "description": "Reusable VueJS Based Form Elements styled with Bootstrap 4",
   "scripts": {
     "serve": "NODE_ENV=standalone vue-cli-service serve",
@@ -32,6 +32,7 @@
     "validatorjs": "^3.22.1",
     "vue": "^2.6.12",
     "vue-bootstrap-datetimepicker": "^5.0.1",
+    "vue-uniq-ids": "^1.0.0",
     "weekstart": "^1.0.0"
   },
   "devDependencies": {
@@ -55,8 +56,7 @@
     "mustache": "^3.0.1",
     "prettier": "2.7.1",
     "sass-loader": "^10.2.0",
-    "vue-template-compiler": "^2.6.12",
-    "vue-uniq-ids": "^1.0.0"
+    "vue-template-compiler": "^2.6.12"
   },
   "peerDependencies": {
     "mustache": "^3.0.1"
