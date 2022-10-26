@@ -1,6 +1,6 @@
 {
   "name": "@processmaker/vue-form-elements",
-  "version": "0.29.1",
+  "version": "0.41.1",
   "description": "Reusable VueJS Based Form Elements styled with Bootstrap 4",
   "scripts": {
     "dev": "vite",
@@ -40,6 +40,7 @@
     "v-calendar": "^0.9.7",
     "vue": "^2.6.12",
     "vue-bootstrap-datetimepicker": "^5.0.1",
+    "vue-uniq-ids": "^1.0.0",
     "weekstart": "^1.0.0"
   },
   "devDependencies": {
@@ -53,13 +54,19 @@
     "@vue/test-utils": "1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-vue": "^9.3.0",
     "i18next": "^15.1.1",
     "mustache": "^3.0.1",
+    "prettier": "2.7.1",
     "sass-loader": "^10.2.0",
     "vite": "^3.0.3",
     "vite-plugin-vue2": "^2.0.2",
-    "vue-template-compiler": "^2.6.12",
-    "vue-uniq-ids": "^1.0.0"
+    "vue-template-compiler": "^2.6.12"
   },
   "peerDependencies": {
     "mustache": "^3.0.1"
