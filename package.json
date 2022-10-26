@@ -39,7 +39,7 @@
     "tinymce": "5.10.0",
     "v-calendar": "^0.9.7",
     "vue": "^2.6.12",
-    "vue-bootstrap-datetimepicker": "^5.0.1",
+    "vue-date-pick": "^1.5.1",
     "vue-uniq-ids": "^1.0.0",
     "weekstart": "^1.0.0"
   },
