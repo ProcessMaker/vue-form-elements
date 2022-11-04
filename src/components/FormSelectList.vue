@@ -187,7 +187,11 @@ export default {
       const { selectedEndPoint, selectedDataSource, dataName } = options;
 
       // If no data source has been specified, do not make the api call
-      if (!!selectedDataSource && selectedDataSource.toString().trim().length === 0) {
+      if (
+        selectedDataSource === null ||
+        typeof selectedDataSource === "undefined" ||
+        selectedDataSource.toString().trim().length === 0
+      ) {
         return false;
       }
 
@@ -197,7 +201,11 @@ export default {
       }
 
       // If no endpoint has been specified, do not make the api call
-      if (!!selectedEndPoint && selectedEndPoint.toString().trim().length === 0) {
+      if (
+        selectedEndPoint === null ||
+        typeof selectedEndPoint === "undefined" ||
+        selectedEndPoint.toString().trim().length === 0
+      ) {
         return false;
       }
 
@@ -236,7 +244,7 @@ export default {
         return true;
       } catch (err) {
         /* Ignore error */
-        console.error(err);
+        console.warn(err);
         return false;
       }
     },
