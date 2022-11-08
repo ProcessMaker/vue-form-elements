@@ -1,6 +1,6 @@
 let Validator = require('validatorjs');
 import moment from 'moment-timezone';
-import ProxyData from './ProxyData.js';
+import ProxyData from './ProxyData';
 
 export default {
     mixins: [ProxyData],
