@@ -100,7 +100,8 @@ export default {
       return this.toggle ? "custom-control custom-radio" : "form-check";
     },
     reactOptions() {
-      this.fillSelectListOptions(true);
+      const resetValueIfNotInOptions = typeof this.value !== "string";
+      this.fillSelectListOptions(resetValueIfNotInOptions);
       return undefined;
     },
     sourceConfig() {
@@ -170,13 +171,6 @@ export default {
         [this.controlClass]: !!this.controlClass
       };
     }
-  },
-  mounted() {
-    // reset the value to null if the options list does not contain the selected value
-    // Special Case String Value:
-    // Review test tests/e2e/specs/MultiselectWithStringValue.spec.js in ScreenBuilder
-    const resetValueIfNotInOptions = typeof this.value !== "string";
-    this.fillSelectListOptions(resetValueIfNotInOptions);
   },
   methods: {
     /**
