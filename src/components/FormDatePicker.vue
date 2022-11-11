@@ -1,10 +1,9 @@
 <template>
   <div class="form-group position-relative">
-    <label v-uni-for="name">{{ label }}</label>
+    <label v-uni-for="name" class="mr-2">{{ label }}</label>
     <date-pick
       v-model="date"
-      :config="config"
-      :disabled="disabled"
+      v-bind="config"
       :placeholder="placeholder"
       :data-test="dataTest"
       :aria-label="$attrs['aria-label']"
@@ -12,7 +11,7 @@
       :class="classList"
     />
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
-      <div v-for="(error, index) in errors" :key="index">{{ error }}</div>
+      <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
     </div>
     <small v-if="helper" class="form-text text-muted">{{ helper }}</small>
   </div>
@@ -25,11 +24,7 @@ import moment from "moment-timezone";
 import Mustache from "mustache";
 import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
-import {
-  getLang,
-  getUserDateFormat,
-  getUserDateTimeFormat
-} from "../dateUtils";
+import { getUserDateFormat, getUserDateTimeFormat } from "../dateUtils";
 import "vue-date-pick/dist/vueDatePick.css";
 
 const Validator = require("validatorjs");
@@ -58,11 +53,7 @@ Validator.register(
       return true;
     }
 
-    if (moment(value, checkFormats, true).isValid()) {
-      return true;
-    }
-
-    return false;
+    return moment(value, checkFormats, true).isValid();
   },
   "Must be YYYY-MM-DD, ISO8601, or mustache syntax"
 );
