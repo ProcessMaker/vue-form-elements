@@ -25,6 +25,7 @@
         :option-value="optionsKey"
         :option-content="optionsValue"
         :options="selectListOptions"
+        :react-options="reactOptions"
         :emit-objects="options.valueTypeReturned === 'object'"
         v-bind="$attrs"
       />
@@ -37,6 +38,7 @@
           :option-value="optionsKey"
           :option-content="optionsValue"
           :options="selectListOptions"
+          :react-options="reactOptions"
           :emit-objects="options.valueTypeReturned === 'object'"
           v-bind="$attrs"
       />
