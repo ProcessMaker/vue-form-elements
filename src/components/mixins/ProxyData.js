@@ -2,7 +2,7 @@
  * Gets the screen parent or null if don't have
  * @returns {object|null}
  */
- function findScreenOwner(control) {
+function findScreenOwner(control) {
   let owner = control.$parent;
   while (owner) {
     const isScreen = owner.$options.name === "ScreenContent";
@@ -23,7 +23,7 @@ export default {
      */
     makeProxyData() {
       const control = this;
-      const screen = findScreenOwner();
+      const screen = findScreenOwner(control);
       return screen.getDataReference(control.customFunctions);
     }
   }
