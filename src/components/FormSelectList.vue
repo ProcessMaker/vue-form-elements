@@ -305,6 +305,11 @@ export default {
       const suffix = this.attributeParent(this.options.value);
       const resultList = [];
 
+      if (!Array.isArray(list)) {
+        console.warn('The retrieved data is not an array. Please check the data sources options of the select list `' + this.name + '`')
+        return resultList;
+      }
+
       list.forEach((item) => {
         // if the content has a mustache expression
         const { escape } = Mustache;
