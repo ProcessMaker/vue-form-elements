@@ -4,6 +4,7 @@
     <date-pick
       v-model="date"
       v-bind="config"
+      :format="format"
       :placeholder="placeholder"
       :data-test="dataTest"
       :aria-label="$attrs['aria-label']"
@@ -34,7 +35,7 @@ const checkFormats = ["YYYY-MM-DD", moment.ISO_8601];
 
 Validator.register(
   "date_or_mustache",
-  function (value, requirement, attribute) {
+  function(value, requirement, attribute) {
     let rendered = null;
     try {
       // Clear out any mustache statements
@@ -73,14 +74,26 @@ export default {
     value: [String, Boolean, Date],
     inputClass: { type: [String, Array, Object], default: "form-control" },
     dataTest: String,
-    disabled: null,
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     minDate: { type: [String, Boolean], default: false },
-    maxDate: { type: [String, Boolean], default: false }
+    maxDate: { type: [String, Boolean], default: false },
   },
   data() {
     return {
       validatorErrors: [],
-      date: ""
+      date: "",
+      datepicker: this.dataFormat === "datetime",
+      format: this.datepicker ? getUserDateTimeFormat() : getUserDateFormat(),
+      config: {
+        format: this.format,
+        pickTime: this.datepicker,
+        parseDate: this.parseDate,
+        formatDate: this.formatDate,
+        editable: !this.disabled
+      }
     };
   },
   computed: {
@@ -95,30 +108,6 @@ export default {
         return [...this.validatorErrors, this.error];
       }
       return this.validatorErrors;
-    },
-    config() {
-      return {
-        format:
-          this.dataFormat === "datetime"
-            ? getUserDateTimeFormat()
-            : getUserDateFormat(),
-        locale: getLang(),
-        useCurrent: false,
-        showClose: true,
-        minDate: this.parseDate(this.minDate),
-        maxDate: this.checkValidMaxDate(),
-        icons: {
-          time: "far fa-clock",
-          date: "far fa-calendar",
-          up: "fas fa-arrow-up",
-          down: "fas fa-arrow-down",
-          previous: "fas fa-chevron-left",
-          next: "fas fa-chevron-right",
-          today: "fas fa-calendar-check",
-          clear: "far fa-trash-alt",
-          close: "far fa-times-circle"
-        }
-      };
     }
   },
   watch: {
@@ -130,43 +119,27 @@ export default {
             ? this.validator.errors.get(this.name)
             : [];
       }
-    },
-    date() {
-      if (this.value && !this.date) {
-        this.$emit("input", "");
-      }
-
-      if (this.isDateAndValueTheSame()) {
-        return;
-      }
-
-      const newDate =
-        this.dataFormat === "date"
-          ? moment.utc(this.date, this.config.format)
-          : moment(this.date, this.config.format);
-
-      this.$emit("input", newDate.toISOString());
-    },
-    value() {
-      if (!this.value) {
-        this.date = "";
-        return;
-      }
-
-      const newDate = this.generateDate(this.value);
-
-      if (!this.isDateAndValueTheSame()) {
-        this.date = newDate.format(this.config.format);
-      }
-    },
-    dataFormat: {
-      immediate: true,
-      handler() {
-        this.date = this.value
-          ? this.generateDate().format(this.config.format)
-          : "";
-      }
     }
+    // value() {
+    //   if (!this.value) {
+    //     this.date = "";
+    //     return;
+    //   }
+    //
+    //   const newDate = this.generateDate(this.value);
+    //
+    //   if (!this.isDateAndValueTheSame()) {
+    //     this.date = newDate.format(this.config.format);
+    //   }
+    // },
+    // dataFormat: {
+    //   immediate: true,
+    //   handler() {
+    //     this.date = this.value
+    //       ? this.generateDate().format(this.config.format)
+    //       : "";
+    //   }
+    // }
   },
   created() {
     Validator.register(
@@ -188,21 +161,30 @@ export default {
       return false;
     },
     parseDate(val) {
-      let date = false;
-
-      if (typeof val === "string" && val !== "") {
-        try {
-          date = Mustache.render(val, this.validationData);
-        } catch (error) {
-          date = val;
-        }
-
-        date = moment(date, checkFormats, true);
-        if (!date.isValid()) {
-          date = false;
-        }
-      }
-
+      // let date = false;
+      //
+      // if (typeof val === "string" && val !== "") {
+      //   try {
+      //     date = Mustache.render(val, this.validationData);
+      //   } catch (error) {
+      //     date = val;
+      //   }
+      //
+      //   date = moment(date, checkFormats, true);
+      //   if (!date.isValid()) {
+      //     date = false;
+      //   }
+      // }
+      //
+      // return date;
+      console.log("parseDate", val);
+      const date = moment(val, this.format);
+      console.log("date", date.toString());
+      return date.toDate();
+    },
+    formatDate(val) {
+      const date = moment(val).format(this.format);
+      console.log("formatDate", date);
       return date;
     },
     isDateAndValueTheSame() {
