@@ -91,4 +91,12 @@ To test VueFormElements using Docker, you can build this image locally and test 
 docker build vfe:<tag name> .
 docker run -p 8080:8080 -d vfe:<tag name> 
 ```
+OR
+
+You can use **docker compose** to spin up your container easily by running these commands
+```shell
+docker compose build
+docker compose up
+```
+Once you are done, you can `control + c` to terminate the process 
 * Go to your browser and go to http://localhost:8080
