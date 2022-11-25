@@ -110,6 +110,8 @@ export default {
         selectedEndPoint: this.options.selectedEndPoint,
         selectedDataSource: this.options.selectedDataSource,
         valueTypeReturned: this.options.valueTypeReturned,
+        selectedCollection: this.options.selectedCollection,
+        selectedCollectionValue: this.options.selectedCollectionValue,
         dataName: this.options.dataName,
         value: this.options.value,
         key: this.options.key
@@ -151,6 +153,14 @@ export default {
         return this.optionsValue;
       }
 
+      if (
+        this.options.dataSource &&
+        this.options.dataSource === "collection" &&
+        this.options.valueTypeReturned === "object"
+      ) {
+        return this.optionsValue;
+      }
+
       const fieldName = this.options.key || "value";
 
       return this.stripMustache(fieldName);
@@ -176,7 +186,7 @@ export default {
     /**
      * Load select list options from a data connector
      * 
-     * @param {object} options 
+     * @param {object} options
      * @returns {boolean}
      */
     async loadOptionsFromDataConnector(options) {
@@ -244,6 +254,77 @@ export default {
         return false;
       }
     },
+    /**
+     * Load select list options from a collection
+     * 
+     * @param {object} options
+     * @returns {boolean}
+     */
+     async loadOptionsFromCollection(options) {
+      const { selectedCollectionValue, selectedDataSource, dataName } = options;
+      // If no data source has been specified, do not make the api call
+      if (
+        selectedDataSource === null ||
+        typeof selectedDataSource === "undefined" ||
+        selectedDataSource.toString().trim().length === 0
+      ) {
+        return false;
+      }
+
+      // Do not run in standalone mode
+      if (!this.$dataProvider) {
+        return false;
+      }
+
+      // If no endpoint has been specified, do not make the api call
+      if (
+        selectedCollectionValue === null ||
+        typeof selectedCollectionValue === "undefined" ||
+        selectedCollectionValue.toString().trim().length === 0
+      ) {
+        return false;
+      }
+
+      const params = {
+        config: {
+          value: selectedCollectionValue
+        }
+      };
+
+      if (
+        typeof this.options.pmqlQuery !== "undefined" &&
+        this.options.pmqlQuery !== "" &&
+        this.options.pmqlQuery !== null
+      ) {
+        const data = this.makeProxyData();
+        const pmql = Mustache.render(this.options.pmqlQuery, { data });
+        params.config.outboundConfig = [
+          { type: "PARAM", key: "pmql", value: pmql }
+        ];
+      }
+      const request = { selectedDataSource, params };
+      if (isEqual(this.lastRequest, request)) {
+        return false;
+      }
+      this.lastRequest = cloneDeep(request);
+
+      try {
+        const response = await this.$dataProvider.getDataSourceCollections(
+          selectedDataSource,
+          params
+        );
+        const list = dataName ? get(response.data, dataName) : response.data;
+        this.options.value = this.options.selectedCollectionValue;
+        const transformedList = this.transformOptions(list);
+        this.$root.$emit("selectListOptionsUpdated", transformedList);
+        this.selectListOptions = transformedList;
+        return true;
+      } catch (err) {
+        /* Ignore error */
+        console.warn(err);
+        return false;
+      }
+    },
     searchChange(filter) {
       this.filter = filter;
       this.optionsFromDataSource();
@@ -290,6 +371,12 @@ export default {
         this.options.dataSource === "dataConnector"
       ) {
         wasUpdated = await this.loadOptionsFromDataConnector(this.sourceConfig);
+      }
+      if (
+        this.options.dataSource &&
+        this.options.dataSource === "collection"
+      ) {
+        wasUpdated = await this.loadOptionsFromCollection(this.sourceConfig);
       }
       if (wasUpdated) {
         this.$nextTick(() => {
