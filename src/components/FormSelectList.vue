@@ -313,9 +313,8 @@ export default {
           selectedDataSource,
           params
         );
-        const list = dataName ? get(response.data, dataName) : response.data;
         this.options.value = this.options.selectedCollectionValue;
-        const transformedList = this.transformOptions(list);
+        const transformedList = this.transformOptions(response.data.data);
         this.$root.$emit("selectListOptionsUpdated", transformedList);
         this.selectListOptions = transformedList;
         return true;
