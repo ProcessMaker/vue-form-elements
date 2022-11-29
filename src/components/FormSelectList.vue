@@ -89,7 +89,8 @@ export default {
       previousSourceConfig: null,
       previousValidationData: null,
       previousValidationDataParent: null,
-      selectListOptions: []
+      selectListOptions: [],
+      resetValue: false
     };
   },
   computed: {
@@ -100,8 +101,8 @@ export default {
       return this.toggle ? "custom-control custom-radio" : "form-check";
     },
     reactOptions() {
-      const resetValueIfNotInOptions = typeof this.value !== "string";
-      this.fillSelectListOptions(resetValueIfNotInOptions);
+      this.fillSelectListOptions(this.resetValue);
+      this.resetValue = true;
       return undefined;
     },
     sourceConfig() {
@@ -248,7 +249,6 @@ export default {
       this.filter = filter;
       this.optionsFromDataSource();
     },
-
     /**
      * Transform the options to the format expected by the select list.
      *
