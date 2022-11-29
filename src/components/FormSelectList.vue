@@ -104,7 +104,7 @@ export default {
       const isString = typeof this.value === "string";
       let resetValueIfNotInOptions = true;
 
-      // If is the first time is loaded and the type of the value is int, 
+      // If is the first time is loaded and the type of the value is string, 
       // should not reset the dependent select ..
       if (!this.loaded && isString) {
         resetValueIfNotInOptions = false;
