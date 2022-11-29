@@ -102,6 +102,7 @@ export default {
     },
     reactOptions() {
       this.fillSelectListOptions(this.resetValue);
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.resetValue = true;
       return undefined;
     },
