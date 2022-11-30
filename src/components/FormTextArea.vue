@@ -25,7 +25,7 @@
       :class="classList"
       :name="name"
       :value="value"
-      @input="$emit('input', $event.target.value)"
+      @input="debouncedHandler"
     />
     <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator"/>
     <small v-if='helper' class='form-text text-muted'>{{helper}}</small>
@@ -34,6 +34,7 @@
 
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
+import debounce from "lodash.debounce";
 import ValidationMixin from './mixins/validation'
 import DataFormatMixin from './mixins/DataFormat';
 import DisplayErrors from './common/DisplayErrors';
@@ -91,14 +92,20 @@ export default {
     this.rebootEditor = throttle(() => {
       this.editorActive = false;
       this.$nextTick(() => {
-        this.editorActive = true
+        this.editorActive = true;
       });
     }, 500);
+    this.debouncedHandler = debounce(event => {
+      this.$emit("input", event.target.value);
+    }, 210);
   },
   mounted() {
     window.ProcessMaker.EventBus.$on('modal-shown', () => {
       this.rebootEditor();
     });
+  },
+  beforeUnmount() {
+    this.debouncedHandler.cancel();
   },
   methods: {
     setHeight() {
@@ -161,4 +168,3 @@ export default {
   }
 }
 </style>
-
