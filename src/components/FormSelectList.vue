@@ -313,8 +313,9 @@ export default {
           selectedDataSource,
           params
         );
-        this.options.value = this.options.selectedCollectionValue;
-        const transformedList = this.transformOptions(response.data.data);
+        const list = dataName ? get(response.data, "data") : response.data;
+        this.options.value = this.options.selectedCollectionLabel;
+        const transformedList = this.transformOptions(list, true);
         this.$root.$emit("selectListOptionsUpdated", transformedList);
         this.selectListOptions = transformedList;
         return true;
@@ -387,7 +388,7 @@ export default {
     /**
      * @param {*|*[]} list, array of objects
      */
-    transformOptions(list) {
+    transformOptions(list, coll = false) {
       const suffix = this.attributeParent(this.options.value);
       const resultList = [];
 
@@ -400,22 +401,29 @@ export default {
         // if the content has a mustache expression
         const { escape } = Mustache;
         Mustache.escape = (t) => t; // Do not escape mustache content
-
+        
         let parsedOption = {};
         if (this.options.key) {
           const itemValue =
-            this.options.key.indexOf("{{") >= 0
-              ? Mustache.render(this.options.key, item)
-              : Mustache.render(`{{${this.options.key || "value"}}}`, item);
+          this.options.key.indexOf("{{") >= 0
+          ? Mustache.render(this.options.key, item)
+          : Mustache.render(`{{${this.options.key || "value"}}}`, item);
           parsedOption[this.optionsKey] = itemValue;
+          if (coll) {
+            let itemVal = item;
+            const splitedVal = this.options.selectedCollectionValue.split(".");
+            splitedVal.forEach((nivel) => {
+              itemVal = itemVal[nivel];
+            });
+            parsedOption[this.optionsKey] = itemVal;
+          }
         }
         const itemContent =
-          this.options.value.indexOf("{{") >= 0
-            ? Mustache.render(this.options.value, item)
-            : Mustache.render(`{{${this.options.value || "content"}}}`, item);
-
+        this.options.value.indexOf("{{") >= 0
+        ? Mustache.render(this.options.value, item)
+        : Mustache.render(`{{${this.options.value || "content"}}}`, item);
+        
         Mustache.escape = escape; // Reset mustache to original escape function
-
         parsedOption[this.optionsValue] = itemContent;
         if (this.options.valueTypeReturned === "object") {
           parsedOption = suffix.length > 0 ? get(item, suffix) : item;
