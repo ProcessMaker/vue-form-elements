@@ -14,7 +14,9 @@
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{ helper }}</small>
+    <small v-if="helper" v-once class="form-text text-muted">{{
+      helper
+    }}</small>
   </div>
 </template>
 
