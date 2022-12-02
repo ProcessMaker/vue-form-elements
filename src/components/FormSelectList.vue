@@ -89,7 +89,8 @@ export default {
       previousSourceConfig: null,
       previousValidationData: null,
       previousValidationDataParent: null,
-      selectListOptions: []
+      selectListOptions: [],
+      loaded: false
     };
   },
   computed: {
@@ -100,8 +101,19 @@ export default {
       return this.toggle ? "custom-control custom-radio" : "form-check";
     },
     reactOptions() {
-      const resetValueIfNotInOptions = typeof this.value !== "string";
+      const isString = typeof this.value === "string";
+      let resetValueIfNotInOptions = true;
+
+      // If is the first time is loaded and the type of the value is string, 
+      // should not reset the dependent select ..
+      if (!this.loaded && isString) {
+        resetValueIfNotInOptions = false;
+      }
+
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.loaded = true;
       this.fillSelectListOptions(resetValueIfNotInOptions);
+
       return undefined;
     },
     sourceConfig() {
@@ -248,7 +260,6 @@ export default {
       this.filter = filter;
       this.optionsFromDataSource();
     },
-
     /**
      * Transform the options to the format expected by the select list.
      *
