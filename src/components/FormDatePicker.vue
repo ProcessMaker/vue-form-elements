@@ -7,9 +7,10 @@
       :format="format"
       :placeholder="placeholder"
       :data-test="dataTest"
-      :aria-label="$attrs['aria-label']"
-      :tabindex="$attrs['tabindex']"
+      :aria-label="ariaLabel"
+      :tabindex="tabIndex"
       :class="classList"
+      :input-attributes="inputAttributes"
     />
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
@@ -37,7 +38,7 @@ const checkFormats = ["YYYY-MM-DD", moment.ISO_8601];
 
 Validator.register(
   "date_or_mustache",
-  function(value, requirement, attribute) {
+  function (value, requirement, attribute) {
     let rendered = null;
     try {
       // Clear out any mustache statements
@@ -74,14 +75,19 @@ export default {
     helper: String,
     dataFormat: String,
     value: [String, Boolean, Date],
+    ariaLabel: String,
+    tabIndex: Number,
     inputClass: { type: [String, Array, Object], default: "form-control" },
-    dataTest: String,
+    dataTest: {
+      type: String,
+      default: "date-picker"
+    },
     disabled: {
       type: Boolean,
       default: false
     },
     minDate: { type: [String, Boolean], default: false },
-    maxDate: { type: [String, Boolean], default: false },
+    maxDate: { type: [String, Boolean], default: false }
   },
   data() {
     return {
@@ -89,16 +95,21 @@ export default {
       date: "",
       datepicker: this.dataFormat === "datetime",
       format: this.datepicker ? getUserDateTimeFormat() : getUserDateFormat(),
-      config: {
+      inputAttributes: {
+        class: `${this.inputClass}`
+      }
+    };
+  },
+  computed: {
+    config() {
+      return {
         format: this.format,
         pickTime: this.datepicker,
         parseDate: this.parseDate,
         formatDate: this.formatDate,
         editable: !this.disabled
-      }
-    };
-  },
-  computed: {
+      };
+    },
     classList() {
       return {
         "is-invalid":
