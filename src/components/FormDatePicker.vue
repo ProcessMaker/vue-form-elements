@@ -5,10 +5,7 @@
       v-model="date"
       v-bind="config"
       :format="format"
-      :placeholder="placeholder"
       :data-test="dataTest"
-      :aria-label="ariaLabel"
-      :tabindex="tabIndex"
       :class="classList"
       :input-attributes="inputAttributes"
     />
@@ -93,10 +90,12 @@ export default {
     return {
       validatorErrors: [],
       date: "",
-      datepicker: this.dataFormat === "datetime",
-      format: this.datepicker ? getUserDateTimeFormat() : getUserDateFormat(),
       inputAttributes: {
-        class: `${this.inputClass}`
+        class: `${this.inputClass}`,
+        placeholder: this.placeholder,
+        name: this.name,
+        ariaLabel: this.ariaLabel,
+        tabIndex: this.tabIndex
       }
     };
   },
@@ -107,8 +106,15 @@ export default {
         pickTime: this.datepicker,
         parseDate: this.parseDate,
         formatDate: this.formatDate,
-        editable: !this.disabled
+        editable: !this.disabled,
+        use12HourClock: this.datepicker
       };
+    },
+    datepicker() {
+      return this.dataFormat === "datetime";
+    },
+    format() {
+      return this.datepicker ? getUserDateTimeFormat() : getUserDateFormat();
     },
     classList() {
       return {
@@ -191,7 +197,8 @@ export default {
       //
       // return date;
       console.log("parseDate", val);
-      const date = moment(val, this.format);
+      const date = moment(val, this.format, true);
+      if (!date.isValid()) return false;
       console.log("date", date.toString());
       return date.toDate();
     },
