@@ -8,6 +8,7 @@
       :data-test="dataTest"
       :class="classList"
       :input-attributes="inputAttributes"
+      @input="submitDate"
     />
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
@@ -94,8 +95,8 @@ export default {
         class: `${this.inputClass}`,
         placeholder: this.placeholder,
         name: this.name,
-        ariaLabel: this.ariaLabel,
-        tabIndex: this.tabIndex
+        "aria-label": this.ariaLabel,
+        "tab-index": this.tabIndex
       }
     };
   },
@@ -226,6 +227,17 @@ export default {
       }
 
       return date;
+    },
+    submitDate() {
+      if (this.value && !this.date) {
+        this.$emit("input", "");
+      }
+      if (this.isDateAndValueTheSame()) return;
+      const newDate =
+        this.dataFormat === "date"
+          ? moment.utc(this.date, this.config.format)
+          : moment(this.date, this.config.format);
+      this.$emit("input", newDate.toISOString());
     }
   }
 };
