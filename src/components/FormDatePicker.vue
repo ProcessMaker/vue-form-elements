@@ -108,7 +108,9 @@ export default {
         parseDate: this.parseDate,
         formatDate: this.formatDate,
         editable: !this.disabled,
-        use12HourClock: this.datepicker
+        use12HourClock: this.datepicker,
+        startPeriod: this.parseMinDate(this.minDate),
+        isDateDisabled: this.isFutureDate
       };
     },
     datepicker() {
@@ -138,6 +140,7 @@ export default {
           this.validator && this.validator.errors.get(this.name)
             ? this.validator.errors.get(this.name)
             : [];
+        console.log("validatorErrors", this.validatorErrors);
       }
     }
     // value() {
@@ -207,6 +210,25 @@ export default {
       const date = moment(val).format(this.format);
       console.log("formatDate", date);
       return date;
+    },
+    startPeriod() {
+      return this.parseMinDate(this.minDate);
+    },
+    // For some reason, is being executed 35 times on date change
+    parseMinDate(value) {
+      if (value === "")
+        return {
+          month: new Date().getMonth(),
+          year: new Date().getFullYear()
+        };
+      const month = new Date(value).getMonth();
+      const year = new Date(value).getFullYear();
+      return { month, year };
+    },
+    isFutureDate(date) {
+      console.log("date isFutureDate", date);
+      const currentDate = new Date();
+      return date > currentDate;
     },
     isDateAndValueTheSame() {
       if (!this.date && !this.value) {
