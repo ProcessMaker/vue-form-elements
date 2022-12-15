@@ -24,7 +24,7 @@ export default {
     makeProxyData() {
       const control = this;
       const screen = findScreenOwner(control);
-      return screen.getDataReference(control.customFunctions);
+      return screen ? screen.getDataReference(control.customFunctions) : null;
     }
   }
 };

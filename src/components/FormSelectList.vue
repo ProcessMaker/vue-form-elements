@@ -302,12 +302,24 @@ export default {
           { type: "PARAM", key: "pmql", value: pmql }
         ];
       }
+      // if (
+      //   typeof this.options.pmqlQueryDepend !== "undefined" &&
+      //   this.options.pmqlQueryDepend !== "" &&
+      //   this.options.pmqlQueryDepend !== null &&
+      //   this.options.collectionDependant
+      // ) {
+      //   const data = this.makeProxyData();
+      //   const pmqlDepend = Mustache.render(this.options.pmqlQueryDepend, { data });
+      //   params.config.outboundConfig = [
+      //     { type: "PARAM", key: "pmql-depend", value: pmqlDepend }
+      //   ];
+      // }
       const request = { selectedDataSource, params };
       if (isEqual(this.lastRequest, request)) {
         return false;
       }
       this.lastRequest = cloneDeep(request);
-
+      
       try {
         const response = await this.$dataProvider.getDataSourceCollections(
           selectedDataSource,
