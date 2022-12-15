@@ -101,6 +101,9 @@ export default {
     };
   },
   computed: {
+    startPeriod() {
+      return this.parseMinDate(this.minDate);
+    },
     config() {
       return {
         format: this.format,
@@ -108,7 +111,9 @@ export default {
         parseDate: this.parseDate,
         formatDate: this.formatDate,
         editable: !this.disabled,
-        use12HourClock: this.datepicker
+        use12HourClock: this.datepicker,
+        // startPeriod: this.startPeriod,
+        isDateDisabled: this.checkValidMaxDate
       };
     },
     datepicker() {
@@ -134,6 +139,7 @@ export default {
     validator: {
       deep: true,
       handler() {
+        console.log("validator errors", this.validator);
         this.validatorErrors =
           this.validator && this.validator.errors.get(this.name)
             ? this.validator.errors.get(this.name)
@@ -181,32 +187,46 @@ export default {
       return false;
     },
     parseDate(val) {
-      // let date = false;
+      // let date;
+      // console.log("parseDate", val);
       //
       // if (typeof val === "string" && val !== "") {
+      //   console.log("typeof if");
       //   try {
       //     date = Mustache.render(val, this.validationData);
       //   } catch (error) {
       //     date = val;
       //   }
       //
-      //   date = moment(date, checkFormats, true);
+      //   date = moment(date, this.format, true);
+      //   console.log("date moment", date);
       //   if (!date.isValid()) {
-      //     date = false;
+      //     date = this.value;
+      //     return date;
       //   }
       // }
       //
-      // return date;
-      console.log("parseDate", val);
+      // return date.toDate();
       const date = moment(val, this.format, true);
       if (!date.isValid()) return false;
-      console.log("date", date.toString());
       return date.toDate();
     },
     formatDate(val) {
       const date = moment(val).format(this.format);
       console.log("formatDate", date);
       return date;
+    },
+    parseMinDate(value) {
+      console.log("value parseMinDate", value);
+      const month = new Date(value).getMonth();
+      const year = new Date(value).getFullYear();
+      console.log({ month, year });
+      return { month, year };
+    },
+    isFutureDate(date) {
+      console.log("date isFutureDate", date);
+      const currentDate = new Date();
+      return date > currentDate;
     },
     isDateAndValueTheSame() {
       if (!this.date && !this.value) {
