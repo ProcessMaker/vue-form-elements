@@ -101,9 +101,6 @@ export default {
     };
   },
   computed: {
-    startPeriod() {
-      return this.parseMinDate(this.minDate);
-    },
     config() {
       return {
         format: this.format,
@@ -112,8 +109,8 @@ export default {
         formatDate: this.formatDate,
         editable: !this.disabled,
         use12HourClock: this.datepicker,
-        // startPeriod: this.startPeriod,
-        isDateDisabled: this.checkValidMaxDate
+        startPeriod: this.parseMinDate(this.minDate),
+        isDateDisabled: this.isFutureDate
       };
     },
     datepicker() {
@@ -144,6 +141,7 @@ export default {
           this.validator && this.validator.errors.get(this.name)
             ? this.validator.errors.get(this.name)
             : [];
+        console.log("validatorErrors", this.validatorErrors);
       }
     }
     // value() {
@@ -216,11 +214,18 @@ export default {
       console.log("formatDate", date);
       return date;
     },
+    startPeriod() {
+      return this.parseMinDate(this.minDate);
+    },
+    // For some reason, is being executed 35 times on date change
     parseMinDate(value) {
-      console.log("value parseMinDate", value);
+      if (value === "")
+        return {
+          month: new Date().getMonth(),
+          year: new Date().getFullYear()
+        };
       const month = new Date(value).getMonth();
       const year = new Date(value).getFullYear();
-      console.log({ month, year });
       return { month, year };
     },
     isFutureDate(date) {
