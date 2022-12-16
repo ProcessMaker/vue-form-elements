@@ -447,9 +447,9 @@ export default {
           return get(option, this.optionsKey) === this.value;
         });
       }
-
+      
       if (!hasKeyInOptions && resetValueIfNotInOptions) {
-        this.$emit("input", null);
+        this.$emit("reset", this.name);
       }
     },
     /**
