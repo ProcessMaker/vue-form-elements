@@ -325,6 +325,10 @@ export default {
           selectedDataSource,
           params
         );
+        
+        if (typeof response === "undefined") {
+          return false;
+        }
         const list = dataName ? get(response.data, "data") : response.data;
         this.options.value = this.options.selectedCollectionLabel;
         const transformedList = this.transformOptions(list, true);
