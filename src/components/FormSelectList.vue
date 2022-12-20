@@ -13,10 +13,14 @@
       :react-options="reactOptions"
       :class="classList"
       :emit-objects="options.valueTypeReturned === 'object'"
+      :clear-on-select="!options.suggestSelect"
       :emit-array="options.allowMultiSelect"
+      :internal-search="!options.suggestSelect"
+      @search-change="suggestChange"
       v-bind="$attrs"
     >
-    </multi-select-view>
+
+  </multi-select-view>
 
     <div v-if="options.renderAs === 'checkbox' && options.allowMultiSelect">
       <checkbox-view
@@ -60,6 +64,7 @@ import ValidationMixin from "./mixins/validation";
 import MultiSelectView from "./FormSelectList/MultiSelectView";
 import CheckboxView from "./FormSelectList/CheckboxView";
 import OptionboxView from "./FormSelectList/OptionboxView";
+import { clone } from "@babel/types";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -128,6 +133,9 @@ export default {
             newValue.forEach((item) => {
               this.addObjectContentProp(item);
             });
+          }
+          if (this.options.suggestChange) {
+            return this.value;
           }
           return this.areItemsInSelectListOptions(newValue) ? this.value : [];
         }
@@ -302,18 +310,7 @@ export default {
           { type: "PARAM", key: "pmql", value: pmql }
         ];
       }
-      // if (
-      //   typeof this.options.pmqlQueryDepend !== "undefined" &&
-      //   this.options.pmqlQueryDepend !== "" &&
-      //   this.options.pmqlQueryDepend !== null &&
-      //   this.options.collectionDependant
-      // ) {
-      //   const data = this.makeProxyData();
-      //   const pmqlDepend = Mustache.render(this.options.pmqlQueryDepend, { data });
-      //   params.config.outboundConfig = [
-      //     { type: "PARAM", key: "pmql-depend", value: pmqlDepend }
-      //   ];
-      // }
+
       const request = { selectedDataSource, params };
       if (isEqual(this.lastRequest, request)) {
         return false;
@@ -326,7 +323,7 @@ export default {
           params
         );
         
-        if (typeof response === "undefined") {
+        if (typeof response === "undefined" || response === false) {
           return false;
         }
         const list = dataName ? get(response.data, "data") : response.data;
@@ -390,9 +387,13 @@ export default {
       }
       if (
         this.options.dataSource &&
-        this.options.dataSource === "collection"
+        this.options.dataSource === "collection" &&
+        !this.options.suggestSelect
       ) {
         wasUpdated = await this.loadOptionsFromCollection(this.sourceConfig);
+      }
+      if (this.options.suggestSelect && this.selectListOptions.length > 0) {
+        wasUpdated = true;
       }
       if (wasUpdated) {
         this.$nextTick(() => {
@@ -526,6 +527,10 @@ export default {
     updateWatcherDependentFieldValue(resetValueIfNotInOptions) {
       let hasKeyInOptions = true;
 
+      if (this.options.suggestSelect && this.value !== null) {
+        return true;
+      }
+
       if (Array.isArray(this.value)) {
         hasKeyInOptions = true;
         this.value.forEach((item) => {
@@ -572,6 +577,28 @@ export default {
       });
 
       return itemsInOptionsList.length > 0;
+    },
+    suggestChange(query) {
+      // Asks if has the option suggestSelect
+      if (this.options.suggestSelect) {
+        // Cleaning options if query is empty
+        if (query === "" || query === null || typeof query === "undefined") {
+          this.selectListOptions = [];
+        } else {
+          // Getting the original pmql
+          const pmql = this.options.pmqlQuery;
+          // Setting new PQML
+          let newPmql = `${this.options.selectedCollectionLabel} like "%${query}%"`;
+          if (pmql) {
+            newPmql = `${pmql} AND ${newPmql}`;
+          }
+          this.options.pmqlQuery = newPmql;
+          // Realoding options
+          this.loadOptionsFromCollection(this.sourceConfig);
+          // Restoring PQML
+          this.options.pmqlQuery = pmql;
+        }
+      }
     }
   }
 };

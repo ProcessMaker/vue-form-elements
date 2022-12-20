@@ -12,6 +12,8 @@
         :placeholder="placeholder ? placeholder : $t('type here to search')"
         v-bind="$attrs"
         :disabled="isReadOnly"
+        :preserveSearch="true"
+        @search-change="changeSearch"
     >
       <template slot="noResult">
         {{ $t('No elements found. Consider changing the search query.') }}
@@ -105,6 +107,9 @@ export default {
         return founds.length > 0 ? founds[0] : [];
       }
     },
+    changeSearch(query) {
+      this.$emit("search-change", query);
+    }
   }
 }
 </script>
