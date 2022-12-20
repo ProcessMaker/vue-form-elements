@@ -305,7 +305,10 @@ export default {
         this.options.pmqlQuery !== null
       ) {
         const data = this.makeProxyData();
-        const pmql = Mustache.render(this.options.pmqlQuery, { data });
+        let pmql = this.options.pmqlQuery;
+        if (!this.options.collectionDependant) {
+          pmql = Mustache.render(this.options.pmqlQuery, { data });
+        }
         params.config.outboundConfig = [
           { type: "PARAM", key: "pmql", value: pmql }
         ];
@@ -316,7 +319,7 @@ export default {
         return false;
       }
       this.lastRequest = cloneDeep(request);
-      
+
       try {
         const response = await this.$dataProvider.getDataSourceCollections(
           selectedDataSource,
