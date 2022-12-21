@@ -591,7 +591,7 @@ export default {
           // Getting the original pmql
           const pmql = this.options.pmqlQuery;
           // Setting new PQML
-          let newPmql = `${this.options.selectedCollectionLabel} like "%${query}%"`;
+          let newPmql = `lower(${this.options.selectedCollectionLabel}) like "%${query.toLowerCase()}%"`;
           if (pmql) {
             newPmql = `${pmql} AND ${newPmql}`;
           }
