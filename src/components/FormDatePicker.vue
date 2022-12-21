@@ -109,7 +109,6 @@ export default {
         formatDate: this.formatDate,
         editable: !this.disabled,
         use12HourClock: this.datepicker,
-        startPeriod: this.parseMinDate(this.minDate),
         isDateDisabled: this.isFutureDate
       };
     },
@@ -229,9 +228,16 @@ export default {
       return { month, year };
     },
     isFutureDate(date) {
-      console.log("date isFutureDate", date);
-      const currentDate = new Date();
-      return date > currentDate;
+      const minDate = !!this.minDate ? new Date(this.minDate) : "";
+      const maxDate = !!this.maxDate ? new Date(this.maxDate) : "";
+      if (minDate.length === 0 && maxDate.length === 0) return;
+      if (!!minDate && !!maxDate) {
+        return !(date >= minDate && date <= maxDate);
+      }
+      console.log(`minDate is ${minDate}`);
+      console.log(`maxDate is ${maxDate}`);
+      if (!!minDate && maxDate.length === 0) return date < minDate;
+      if (minDate.length === 0 && !!maxDate) return date > maxDate;
     },
     isDateAndValueTheSame() {
       if (!this.date && !this.value) {
