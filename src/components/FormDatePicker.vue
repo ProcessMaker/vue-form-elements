@@ -109,7 +109,7 @@ export default {
         formatDate: this.formatDate,
         editable: !this.disabled,
         use12HourClock: this.datepicker,
-        isDateDisabled: this.isFutureDate
+        isDateDisabled: this.checkMinMaxDate
       };
     },
     datepicker() {
@@ -174,15 +174,6 @@ export default {
     );
   },
   methods: {
-    checkValidMaxDate() {
-      if (this.minDate === "") {
-        return this.parseDate(this.maxDate);
-      }
-      if (this.parseDate(this.maxDate) >= this.parseDate(this.minDate)) {
-        return this.parseDate(this.maxDate);
-      }
-      return false;
-    },
     parseDate(val) {
       // let date;
       // console.log("parseDate", val);
@@ -213,21 +204,7 @@ export default {
       console.log("formatDate", date);
       return date;
     },
-    startPeriod() {
-      return this.parseMinDate(this.minDate);
-    },
-    // For some reason, is being executed 35 times on date change
-    parseMinDate(value) {
-      if (value === "")
-        return {
-          month: new Date().getMonth(),
-          year: new Date().getFullYear()
-        };
-      const month = new Date(value).getMonth();
-      const year = new Date(value).getFullYear();
-      return { month, year };
-    },
-    isFutureDate(date) {
+    checkMinMaxDate(date) {
       const minDate = !!this.minDate ? new Date(this.minDate) : "";
       const maxDate = !!this.maxDate ? new Date(this.maxDate) : "";
       if (minDate.length === 0 && maxDate.length === 0) return;
