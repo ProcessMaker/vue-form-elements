@@ -104,12 +104,12 @@ export default {
     config() {
       return {
         format: this.format,
+        displayFormat: this.format,
         pickTime: this.datepicker,
-        parseDate: this.parseDate,
-        formatDate: this.formatDate,
+        parseDate: this.parsingInputDate,
         editable: !this.disabled,
         use12HourClock: this.datepicker,
-        isDateDisabled: this.checkMinMaxDate
+        isDateDisabled: this.checkMinMaxDateDisabled
       };
     },
     datepicker() {
@@ -175,45 +175,69 @@ export default {
   },
   methods: {
     parseDate(val) {
-      // let date;
-      // console.log("parseDate", val);
-      //
-      // if (typeof val === "string" && val !== "") {
-      //   console.log("typeof if");
-      //   try {
-      //     date = Mustache.render(val, this.validationData);
-      //   } catch (error) {
-      //     date = val;
-      //   }
-      //
-      //   date = moment(date, this.format, true);
-      //   console.log("date moment", date);
-      //   if (!date.isValid()) {
-      //     date = this.value;
-      //     return date;
-      //   }
-      // }
-      //
-      // return date.toDate();
-      const date = moment(val, this.format, true);
-      if (!date.isValid()) return false;
-      return date.toDate();
-    },
-    formatDate(val) {
-      const date = moment(val).format(this.format);
-      console.log("formatDate", date);
+      let date = false;
+
+      if (typeof val === "string" && val !== "") {
+        try {
+          date = Mustache.render(val, this.validationData);
+        } catch (error) {
+          date = val;
+        }
+
+        date = moment(date, checkFormats, true);
+        if (!date.isValid()) {
+          date = false;
+        }
+      }
+
       return date;
     },
-    checkMinMaxDate(date) {
-      const minDate = !!this.minDate ? new Date(this.minDate) : "";
-      const maxDate = !!this.maxDate ? new Date(this.maxDate) : "";
+    parseDateToDate(val) {
+      let date = "";
+
+      if (typeof val === "string" && val !== "") {
+        try {
+          date = Mustache.render(val, this.validationData);
+        } catch (error) {
+          date = val;
+        }
+
+        date = moment(date, checkFormats, true);
+        if (!date.isValid()) {
+          date = "";
+        } else {
+          date = date.toDate();
+        }
+      }
+
+      return date;
+    },
+    parsingInputDate(val) {
+      const date = moment(val, this.format, true);
+      // Check if user is typing, if the date is not valid, let the user continue
+      if (!date.isValid()) return "";
+      return date.toDate();
+    },
+    /*
+    Function to be used for the DatePicker, to see if minDate and maxDate are
+    1. Valid
+    2. Within the range
+    In the datepicker itself, this goes through a for loop to check if the dates that the user is seeing, are valid and
+    acceptable
+    @param {string, Date} date
+    @returns {boolean}
+     */
+    checkMinMaxDateDisabled(date) {
+      const minDate = !!this.minDate ? this.parseDateToDate(this.minDate) : "";
+      const maxDate = !!this.maxDate ? this.parseDateToDate(this.maxDate) : "";
+      // If minDate and maxDate are not defined, return. This would be the default case
       if (minDate.length === 0 && maxDate.length === 0) return;
       if (!!minDate && !!maxDate) {
         return !(date >= minDate && date <= maxDate);
       }
-      console.log(`minDate is ${minDate}`);
-      console.log(`maxDate is ${maxDate}`);
+      // If minDate is defined but maxDate not defined, block the dates before minDate is defined
       if (!!minDate && maxDate.length === 0) return date < minDate;
+      // If maxDate is defined but minDate not defined, block the dates after maxDate is defined
       if (minDate.length === 0 && !!maxDate) return date > maxDate;
     },
     isDateAndValueTheSame() {
@@ -227,15 +251,6 @@ export default {
 
       return currentDate.isSame(currentValue, comparatorString);
     },
-    generateDate(value = this.value) {
-      let date = moment(value);
-
-      if (!date.isValid()) {
-        date = moment();
-      }
-
-      return date;
-    },
     submitDate() {
       if (this.value && !this.date) {
         this.$emit("input", "");
@@ -245,6 +260,10 @@ export default {
         this.dataFormat === "date"
           ? moment.utc(this.date, this.config.format)
           : moment(this.date, this.config.format);
+      // Check if the date that the user inputted, is valid against the minDate set
+      if (newDate < this.parseDateToDate(this.minDate)) return null;
+      // Check if the date that the user inputted, is valid against the maxDate set
+      if (this.parseDateToDate(this.maxDate) > newDate) return null;
       this.$emit("input", newDate.toISOString());
     }
   }
