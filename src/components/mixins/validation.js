@@ -1,7 +1,9 @@
 let Validator = require('validatorjs');
 import moment from 'moment-timezone';
+import ProxyData from './ProxyData';
 
 export default {
+    mixins: [ProxyData],
     props: [
         'validation',
         'validationData',
@@ -53,68 +55,6 @@ export default {
         }
     },
     methods: {
-        /**
-         * Create a proxy for an empty object. in order to avoid unespected refresh
-         * @return {object} proxy
-         */
-        makeProxyData() {
-            const control = this;
-            const handler = {
-            get: (target, name) => {
-                // customFunctions is used by RichText controls
-                // to add custom Mustache functions
-                if (control.customFunctions && control.customFunctions[name]) {
-                    return control.customFunctions[name];
-                }
-                if (name === "_parent") {
-                    const screenOwner = control.getScreenOwner();
-                    return (screenOwner && screenOwner._parent) // Get _parent for the current screen (e.g. Inside Loops, Inside Tabs?, RecordLists...?)
-                        || control.validationData._parent; // Get _parent for the Request Data (e.g. Inside a SubProcess)
-                }
-                // Check if validationData is empty
-                if (
-                    control.validationData === undefined ||
-                    control.validationData === null
-                ) {
-                    return undefined;
-                }
-                return control.validationData[name];
-            },
-            has(target, name) {
-                // customFunctions is used by RichText controls
-                // to add custom Mustache functions
-                if (control.customFunctions && control.customFunctions[name]) {
-                    return true;
-                }
-                if (name === "_parent") {
-                    return true;
-                }
-                // Check if validationData is empty
-                if (
-                    control.validationData === undefined ||
-                    control.validationData === null
-                ) {
-                    return false;
-                }
-                return control.validationData[name] !== undefined;
-            }
-            };
-            return new Proxy({}, handler);
-        },
-        /**
-         * Gets the screen parent or null if don't have
-         * @returns {object|null}
-         */
-        getScreenOwner() {
-            let parent = this.$parent;
-            while (parent) {
-                if (parent.$options.name === "ScreenContent") {
-                    return parent;
-                }
-                parent = parent.$parent;
-            }
-            return null;
-        },
         observeElementMutations() {
             new MutationObserver(this.handleMutations).observe(this.$el, {
                 attributes: true,

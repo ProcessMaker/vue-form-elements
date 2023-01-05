@@ -25,6 +25,7 @@
         :option-value="optionsKey"
         :option-content="optionsValue"
         :options="selectListOptions"
+        :react-options="reactOptions"
         :emit-objects="options.valueTypeReturned === 'object'"
         v-bind="$attrs"
       />
@@ -37,6 +38,7 @@
           :option-value="optionsKey"
           :option-content="optionsValue"
           :options="selectListOptions"
+          :react-options="reactOptions"
           :emit-objects="options.valueTypeReturned === 'object'"
           v-bind="$attrs"
       />
@@ -87,7 +89,8 @@ export default {
       previousSourceConfig: null,
       previousValidationData: null,
       previousValidationDataParent: null,
-      selectListOptions: []
+      selectListOptions: [],
+      loaded: false
     };
   },
   computed: {
@@ -98,7 +101,19 @@ export default {
       return this.toggle ? "custom-control custom-radio" : "form-check";
     },
     reactOptions() {
-      this.fillSelectListOptions(true);
+      const isString = typeof this.value === "string";
+      let resetValueIfNotInOptions = true;
+
+      // If is the first time is loaded and the type of the value is string, 
+      // should not reset the dependent select ..
+      if (!this.loaded && isString) {
+        resetValueIfNotInOptions = false;
+      }
+
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.loaded = true;
+      this.fillSelectListOptions(resetValueIfNotInOptions);
+
       return undefined;
     },
     sourceConfig() {
@@ -169,13 +184,6 @@ export default {
       };
     }
   },
-  mounted() {
-    // reset the value to null if the options list does not contain the selected value
-    // Special Case String Value:
-    // Review test tests/e2e/specs/MultiselectWithStringValue.spec.js in ScreenBuilder
-    const resetValueIfNotInOptions = typeof this.value !== "string";
-    this.fillSelectListOptions(resetValueIfNotInOptions);
-  },
   methods: {
     /**
      * Load select list options from a data connector
@@ -187,7 +195,11 @@ export default {
       const { selectedEndPoint, selectedDataSource, dataName } = options;
 
       // If no data source has been specified, do not make the api call
-      if (!!selectedDataSource && selectedDataSource.toString().trim().length === 0) {
+      if (
+        selectedDataSource === null ||
+        typeof selectedDataSource === "undefined" ||
+        selectedDataSource.toString().trim().length === 0
+      ) {
         return false;
       }
 
@@ -197,7 +209,11 @@ export default {
       }
 
       // If no endpoint has been specified, do not make the api call
-      if (!!selectedEndPoint && selectedEndPoint.toString().trim().length === 0) {
+      if (
+        selectedEndPoint === null ||
+        typeof selectedEndPoint === "undefined" ||
+        selectedEndPoint.toString().trim().length === 0
+      ) {
         return false;
       }
 
@@ -236,7 +252,7 @@ export default {
         return true;
       } catch (err) {
         /* Ignore error */
-        console.error(err);
+        console.warn(err);
         return false;
       }
     },
@@ -244,7 +260,6 @@ export default {
       this.filter = filter;
       this.optionsFromDataSource();
     },
-
     /**
      * Transform the options to the format expected by the select list.
      *
@@ -300,6 +315,11 @@ export default {
     transformOptions(list) {
       const suffix = this.attributeParent(this.options.value);
       const resultList = [];
+
+      if (!Array.isArray(list)) {
+        console.warn('The retrieved data is not an array. Please check the data sources options of the select list `' + this.name + '`')
+        return resultList;
+      }
 
       list.forEach((item) => {
         // if the content has a mustache expression
@@ -427,9 +447,9 @@ export default {
           return get(option, this.optionsKey) === this.value;
         });
       }
-
+      
       if (!hasKeyInOptions && resetValueIfNotInOptions) {
-        this.$emit("input", null);
+        this.$emit("reset", this.name);
       }
     },
     /**
