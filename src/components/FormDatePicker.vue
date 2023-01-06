@@ -36,7 +36,7 @@ const checkFormats = ["YYYY-MM-DD", moment.ISO_8601];
 
 Validator.register(
   "date_or_mustache",
-  function (value, requirement, attribute) {
+  function(value, requirement, attribute) {
     let rendered = null;
     try {
       // Clear out any mustache statements
@@ -135,34 +135,12 @@ export default {
     validator: {
       deep: true,
       handler() {
-        console.log("validator errors", this.validator);
         this.validatorErrors =
           this.validator && this.validator.errors.get(this.name)
             ? this.validator.errors.get(this.name)
             : [];
-        console.log("validatorErrors", this.validatorErrors);
       }
     }
-    // value() {
-    //   if (!this.value) {
-    //     this.date = "";
-    //     return;
-    //   }
-    //
-    //   const newDate = this.generateDate(this.value);
-    //
-    //   if (!this.isDateAndValueTheSame()) {
-    //     this.date = newDate.format(this.config.format);
-    //   }
-    // },
-    // dataFormat: {
-    //   immediate: true,
-    //   handler() {
-    //     this.date = this.value
-    //       ? this.generateDate().format(this.config.format)
-    //       : "";
-    //   }
-    // }
   },
   created() {
     Validator.register(
