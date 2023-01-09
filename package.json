@@ -22,7 +22,7 @@
     "@tinymce/tinymce-vue": "2.0.0",
     "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
-    "luxon": "^1.11.3",
+    "luxon": "^2.5.2",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.26",
     "popper.js": "^1.14.4",
