@@ -21,9 +21,9 @@
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
-import DatePick from "vue-date-pick";
 import moment from "moment-timezone";
 import Mustache from "mustache";
+import DatePicker from "./DatePicker.vue";
 import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
 import { getUserDateFormat, getUserDateTimeFormat } from "../dateUtils";
@@ -62,7 +62,7 @@ Validator.register(
 
 export default {
   components: {
-    DatePick
+    "date-pick": DatePicker
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: {
@@ -90,7 +90,10 @@ export default {
   data() {
     return {
       validatorErrors: [],
-      date: "",
+      date:
+        !!this.value && this.value.length > 0
+          ? this.parsingInputDate(this.value)
+          : "",
       inputAttributes: {
         class: `${this.inputClass}`,
         placeholder: this.placeholder,
