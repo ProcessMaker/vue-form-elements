@@ -89,7 +89,7 @@ export default {
         return true;
       }
 
-      this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
+      this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]});
       return this.dataTypeValidator.passes();
     },
     formatFloatValue() {
