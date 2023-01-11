@@ -1,7 +1,6 @@
 <template>
   <div class="form-group">
     <label v-uni-for="label">{{ label }} </label>
-    <!-- {{ $attrs }} -->
     <div v-if="richtext" :class="classList" v-uni-id="label">
       <div v-if="readonly" v-html="value"></div>
       <div v-else>
