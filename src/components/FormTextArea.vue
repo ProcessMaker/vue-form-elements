@@ -72,7 +72,8 @@ export default {
         icon: this.$attrs.icon,
         placeholder: this.$attrs.placeholder,
         "aria-label": this.$attrs["aria-label"],
-        "data-cy": this.$attrs["data-cy"]
+        "data-cy": this.$attrs["data-cy"],
+        tabindex: this.$attrs.tabindex
       },
       editorSettings: {
         inline: false,
@@ -152,7 +153,6 @@ export default {
       if (!this.editorInstance) {
         return;
       }
-
       if (!this.rows) {
         return;
       }
