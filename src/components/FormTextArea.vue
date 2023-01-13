@@ -68,7 +68,6 @@ export default {
   data() {
     return {
       objectOfAttrs: {
-        icon: this.$attrs.icon,
         placeholder: this.$attrs.placeholder,
         "aria-label": this.$attrs["aria-label"],
         "data-cy": this.$attrs["data-cy"],
