@@ -11,7 +11,7 @@
       :class="classList"
       v-on:blur="formatFloatValue()"
     >
-    <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator"/>
+    <display-errors v-if="error || (validator?.errorCount)" :name="name" :error="error" :validator="validator"/>
     <small v-if="helper" class="form-text text-muted" v-html="helper"/>
   </div>
 </template>
@@ -25,6 +25,7 @@ import DisplayErrors from './common/DisplayErrors.vue';
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
+  name: 'FormInput',
   inheritAttrs: false,
   components: {
     DisplayErrors,
@@ -44,11 +45,6 @@ export default {
         'is-invalid': (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass
       }
-    }
-  },
-  data() {
-    return {
-      validator: null
     }
   },
 }

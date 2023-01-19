@@ -23,6 +23,7 @@ Validator.register('custom-datetime', function(date, requirement, attribute) {
 }, 'The :attribute must be a valid date and time.');
 
 export default {
+  name: 'DataFormatMixin',
   props: {
     dataFormat: {
       type: String,

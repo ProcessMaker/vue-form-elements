@@ -3,6 +3,7 @@ import moment from "moment";
 import { has } from "lodash";
 
 export default {
+  name: 'ValidationMixin',
   props: [
     "validation",
     "validationData",
@@ -21,17 +22,17 @@ export default {
       } else {
         return false;
       }
-    }
-  },
-  data() {
-    return {
-      validator: null
-    };
+    },
   },
   mounted() {
     this.setValidatorLanguage();
     this.updateValidation();
     this.observeElementMutations();
+  },
+  data() {
+    return {
+      validator: {}
+    };
   },
   watch: {
     // Triggered whenever the v-model is updated
@@ -152,7 +153,7 @@ export default {
 
       globalObject.validatorLanguageSet = true;
     },
-    updateValidation() {
+    updateValidation: async function() {
       if (this.validation && !this.isReadOnly) {
         let fieldName = this.validationField ? this.validationField : this.name;
         let data = this.validationData
@@ -191,6 +192,7 @@ export default {
       } else {
         this.validator = null;
       }
+      await this.$nextTick();
     },
     registerCustomRules(data) {
       Validator.register(

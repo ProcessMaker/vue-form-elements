@@ -29,6 +29,7 @@ import DataFormatMixin from './mixins/DataFormat.js';
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
+  name: "FormCheckbox",
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   model: {

@@ -43,6 +43,7 @@ import {throttle} from 'lodash';
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
+  name: "FormTextArea",
   inheritAttrs: false,
   components: {
     DisplayErrors,
