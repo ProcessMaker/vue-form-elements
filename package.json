@@ -12,6 +12,7 @@
     "build-bundle": "vue-cli-service build --target lib --name vue-form-elements ./src/components/index.js",
     "build-watch": "vue-cli-service build --target lib --name vue-form-elements --watch ./src/components/index.js"
   },
+  "type": "module",
   "main": "./dist/vue-form-elements.umd.js",
   "module": "./dist/vue-form-elements.es.js",
   "exports": {
@@ -20,7 +21,8 @@
         "import": "./dist/vue-form-elements.es.js",
         "require": "./dist/vue-form-elements.umd.js"
       }
-    }
+    },
+    "./dist/style.css": "./dist/style.css"
   },
   "files": [
     "dist"
