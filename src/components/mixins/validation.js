@@ -153,7 +153,7 @@ export default {
 
       globalObject.validatorLanguageSet = true;
     },
-    updateValidation: async function() {
+    updateValidation() {
       if (this.validation && !this.isReadOnly) {
         let fieldName = this.validationField ? this.validationField : this.name;
         let data = this.validationData
@@ -192,7 +192,6 @@ export default {
       } else {
         this.validator = null;
       }
-      await this.$nextTick();
     },
     registerCustomRules(data) {
       Validator.register(
