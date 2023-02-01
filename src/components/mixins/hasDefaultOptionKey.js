@@ -1,4 +1,5 @@
 export default {
+  name: 'hasDefaultOptionKeyMixin',
   computed: {
     valueOrDefault() {
       return this.value || this.options.defaultOptionKey;

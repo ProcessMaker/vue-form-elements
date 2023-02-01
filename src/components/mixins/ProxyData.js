@@ -15,6 +15,7 @@ function findScreenOwner(control) {
 }
 
 export default {
+  name: 'ProxyDataMixin',
   methods: {
     /**
      * Create a proxy for an empty object in order to avoid unexpected refresh
