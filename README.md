@@ -83,3 +83,20 @@ rules.
 * validation: string representation of the validation rules
 * validationData: a reference to a data model to validate against. Useful if you are using rules that reference other properties
 * validationMessages: A custom map of validation messages to use if defaults are not wanted (ex: translations). See validatorjs repository for the formatting of this parameter.
+
+
+## Running with Docker (Development)
+To test VueFormElements using Docker, you can build this image locally and test it out. By running these commands from your terminal.
+```shell
+docker build vfe:<tag name> .
+docker run -p 8080:8080 -d vfe:<tag name> 
+```
+OR
+
+You can use **docker compose** to spin up your container easily by running these commands
+```shell
+docker compose build
+docker compose up
+```
+Once you are done, you can `control + c` to terminate the process 
+* Go to your browser and go to http://localhost:8080
