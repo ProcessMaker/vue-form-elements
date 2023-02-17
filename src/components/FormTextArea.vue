@@ -1,13 +1,13 @@
 <template>
   <div class="form-group">
-  <label v-uni-for="label">{{label}}</label>
+    <label v-uni-for="label">{{ label }} </label>
     <div v-if="richtext" :class="classList" v-uni-id="label">
       <div v-if="readonly" v-html="value"></div>
       <div v-else>
         <editor
-          class="editor"
           v-if="!readonly && editorActive"
-          v-bind="$attrs"
+          class="editor"
+          v-bind="objectOfAttrs"
           :value="value"
           :init="editorSettings"
           :name="name"
@@ -17,112 +17,71 @@
     </div>
     <textarea
       v-else
-      v-bind="$attrs"
+      v-uni-id="label"
+      v-bind="objectOfAttrs"
+      class="form-control"
       :rows="rows"
       :readonly="readonly"
-      v-uni-id="label"
-      class="form-control"
       :class="classList"
       :name="name"
       :value="value"
       @input="$emit('input', $event.target.value)"
     />
-    <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator"/>
-    <small v-if='helper' class='form-text text-muted'>{{helper}}</small>
+    <display-errors
+      v-if="error || (validator && validator.errorCount)"
+      :name="name"
+      :error="error"
+      :validator="validator"
+    />
+    <small v-if="helper" class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
 
 <script>
-import { createUniqIdsMixin } from 'vue-uniq-ids'
-import ValidationMixin from './mixins/validation'
-import DataFormatMixin from './mixins/DataFormat';
-import DisplayErrors from './common/DisplayErrors';
-import Editor from './Editor'
-import throttle from 'lodash/throttle';
+import { createUniqIdsMixin } from "vue-uniq-ids";
+import throttle from "lodash/throttle";
+import ValidationMixin from "./mixins/validation";
+import DataFormatMixin from "./mixins/DataFormat";
+import DisplayErrors from "./common/DisplayErrors";
+import Editor from "./Editor";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  inheritAttrs: false,
   components: {
     DisplayErrors,
     Editor
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
-
+  inheritAttrs: false,
   props: [
-    'label',
-    'error',
-    'name',
-    'value',
-    'helper',
-    'controlClass',
-    'richtext',
-    'readonly',
-    'rows'
+    "label",
+    "error",
+    "name",
+    "value",
+    "helper",
+    "controlClass",
+    "richtext",
+    "readonly",
+    "rows"
   ],
-  computed: {
-    classList() {
-      return {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
-        [this.controlClass]: !!this.controlClass,
-        'richtext': this.richtext && !this.readonly,
-      };
-    },
-    height() {
-      if (!this.rows) {
-        return false;
-      }
-      return String(parseInt(this.rows) * 55) + 'px';
-    }
-  },
-  watch: {
-    rows: {
-      handler() {
-        this.setHeight();
-      },
-      immediate: true,
-    },
-    name() {
-      this.rebootEditor();
-    },
-  },
-  created() {
-    this.rebootEditor = throttle(() => {
-      this.editorActive = false;
-      this.$nextTick(() => {
-        this.editorActive = true
-      });
-    }, 500);
-  },
-  mounted() {
-    window.ProcessMaker.EventBus.$on('modal-shown', () => {
-      this.rebootEditor();
-    });
-  },
-  methods: {
-    setHeight() {
-      if (!this.editorInstance) {
-        return;
-      }
-
-      if (!this.rows) {
-        return;
-      }
-      if (this.editorInstance.getContainer() && this.editorInstance.getContainer().style) {
-          this.editorInstance.getContainer().style.height = this.height;
-      }
-    }
-  },
   data() {
     return {
+      objectOfAttrs: {
+        placeholder: this.$attrs.placeholder,
+        "aria-label": this.$attrs["aria-label"],
+        "data-cy": this.$attrs["data-cy"],
+        tabindex: this.$attrs.tabindex
+      },
       editorSettings: {
         inline: false,
         statusbar: false,
-        content_style: 'body { font-family: Arial; } .pagebreak { border: 1px solid #ccc; }',
+        content_style:
+          "body { font-family: Arial; } .pagebreak { border: 1px solid #ccc; }",
         menubar: false,
-        plugins: [ 'link', 'lists', 'image'],
-        toolbar: 'undo redo | link image pagebreak | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+        plugins: ["link", "lists", "image"],
+        toolbar: `undo redo | link image pagebreak | styleselect | bold italic forecolor |
+           alignleft aligncenter alignright alignjustify | bullist numlist outdent indent`,
         skin: false,
         content_css: false,
         relative_urls: false,
@@ -132,20 +91,78 @@ export default {
           this.setHeight();
         },
         setup: (editor) => {
-          editor.ui.registry.addButton('pagebreak', {
-            tooltip: this.$t('Insert Page Break For PDF'),
-            icon: 'page-break',
+          editor.ui.registry.addButton("pagebreak", {
+            tooltip: this.$t("Insert Page Break For PDF"),
+            icon: "page-break",
             onAction: function (_) {
-              editor.insertContent("<hr class='pagebreak' style='page-break-after: always;' />");
+              editor.insertContent(
+                "<hr class='pagebreak' style='page-break-after: always;' />"
+              );
             }
           });
-        },
+        }
       },
       editorInstance: null,
-      editorActive: true,
+      editorActive: true
+    };
+  },
+  computed: {
+    classList() {
+      return {
+        "is-invalid":
+          (this.validator && this.validator.errorCount) || this.error,
+        [this.controlClass]: !!this.controlClass,
+        richtext: this.richtext && !this.readonly
+      };
+    },
+    height() {
+      if (!this.rows) {
+        return false;
+      }
+      return String(parseInt(this.rows) * 55) + "px";
+    }
+  },
+  watch: {
+    rows: {
+      handler() {
+        this.setHeight();
+      },
+      immediate: true
+    },
+    name() {
+      this.rebootEditor();
+    }
+  },
+  created() {
+    this.rebootEditor = throttle(() => {
+      this.editorActive = false;
+      this.$nextTick(() => {
+        this.editorActive = true;
+      });
+    }, 500);
+  },
+  mounted() {
+    window.ProcessMaker.EventBus.$on("modal-shown", () => {
+      this.rebootEditor();
+    });
+  },
+  methods: {
+    setHeight() {
+      if (!this.editorInstance) {
+        return;
+      }
+      if (!this.rows) {
+        return;
+      }
+      if (
+        this.editorInstance.getContainer() &&
+        this.editorInstance.getContainer().style
+      ) {
+        this.editorInstance.getContainer().style.height = this.height;
+      }
     }
   }
-}
+};
 </script>
 
 <style lang="scss">
