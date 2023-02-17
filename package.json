@@ -26,7 +26,7 @@
     "moment-timezone": "^0.5.26",
     "popper.js": "^1.14.4",
     "sass": "^1.51.0",
-    "tinymce": "5.10.0",
+    "tinymce": "5.10.7",
     "v-calendar": "^0.9.7",
     "validatorjs": "^3.22.1",
     "vue": "^2.6.12",
