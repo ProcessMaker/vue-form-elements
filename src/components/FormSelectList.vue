@@ -15,6 +15,8 @@
       :emit-objects="options.valueTypeReturned === 'object'"
       :emit-array="options.allowMultiSelect"
       v-bind="$attrs"
+      @search-change="searchChange"
+      :loading="loading"
     >
     </multi-select-view>
 
@@ -90,6 +92,7 @@ export default {
       previousValidationData: null,
       previousValidationDataParent: null,
       selectListOptions: [],
+      loading: false,
       loaded: false
     };
   },
@@ -119,6 +122,7 @@ export default {
     sourceConfig() {
       return {
         dataSource: this.options.dataSource,
+        collectionOptions: this.options.collectionOptions,
         selectedEndPoint: this.options.selectedEndPoint,
         selectedDataSource: this.options.selectedDataSource,
         valueTypeReturned: this.options.valueTypeReturned,
@@ -170,7 +174,10 @@ export default {
     optionsValue() {
       if (
         this.options.dataSource &&
-        this.options.dataSource === "provideData"
+        (
+          this.options.dataSource === "provideData" ||
+          this.options.dataSource === "collection"
+        )
       ) {
         return "content";
       }
@@ -256,10 +263,48 @@ export default {
         return false;
       }
     },
-    searchChange(filter) {
-      this.filter = filter;
-      this.optionsFromDataSource();
+    async loadOptionsFromCollection(collectionOptions, pmql = null) {
+      console.log("loadOptionsFromCollection", JSON.stringify(collectionOptions));
+      if (!collectionOptions.collectionId) {
+        return false;
+      }
+
+      const options = {
+        params: { per_page: 100, pmql }
+      };
+
+      const response = await this.$dataProvider.getCollectionRecords(
+        collectionOptions.collectionId,
+        options
+      );
+
+      this.selectListOptions = response.data.data.map((record) => {
+        return {
+          value: get(record, collectionOptions.valueField),
+          content: get(record, collectionOptions.labelField),
+        };
+      });
+
+      return true;
     },
+    searchChange: _.debounce(function(value) {
+      // Future implementation
+      return;
+
+      if (this.options.dataSource === 'collection') {
+        const collectionOptions = this.options.collectionOptions;
+
+        let pmql = null;
+        if (value.trim() !== '') {
+          pmql = `${collectionOptions.labelField} like "%${value}%"`;
+        }
+
+        this.loading = true;
+        this.loadOptionsFromCollection(this.options.collectionOptions, pmql).finally(() => {
+          this.loading = false;
+        });
+      }
+    }, 300),
     /**
      * Transform the options to the format expected by the select list.
      *
@@ -302,6 +347,14 @@ export default {
       ) {
         wasUpdated = await this.loadOptionsFromDataConnector(this.sourceConfig);
       }
+      
+      if (
+        this.options.dataSource &&
+        this.options.dataSource === "collection"
+      ) {
+        wasUpdated = await this.loadOptionsFromCollection(this.sourceConfig.collectionOptions);
+      }
+
       if (wasUpdated) {
         this.$nextTick(() => {
           this.updateWatcherDependentFieldValue(resetValueIfNotInOptions);

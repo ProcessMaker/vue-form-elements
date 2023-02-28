@@ -12,6 +12,8 @@
         :placeholder="placeholder ? placeholder : $t('type here to search')"
         v-bind="$attrs"
         :disabled="isReadOnly"
+        @search-change="$emit('search-change', $event)"
+        :loading="loading"
     >
       <template slot="noResult">
         {{ $t('No elements found. Consider changing the search query.') }}
@@ -50,6 +52,7 @@ export default {
     'placeholder',
     'emitObjects',
     'emitArray',
+    'loading',
   ],
   computed: {
     valueProxy: {
