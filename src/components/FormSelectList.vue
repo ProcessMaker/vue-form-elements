@@ -264,21 +264,25 @@ export default {
       }
     },
     async loadOptionsFromCollection(collectionOptions, pmql = null) {
-      console.log("loadOptionsFromCollection", JSON.stringify(collectionOptions));
-      if (!collectionOptions.collectionId) {
+      if (
+        !collectionOptions ||
+        !collectionOptions.collectionId ||
+        !collectionOptions.labelField ||
+        !collectionOptions.valueField
+      ) {
         return false;
       }
-
+      
       const options = {
         params: { per_page: 100, pmql }
       };
 
-      const response = await this.$dataProvider.getCollectionRecords(
+      const data = await this.$dataProvider.getCollectionRecords(
         collectionOptions.collectionId,
         options
       );
 
-      this.selectListOptions = response.data.data.map((record) => {
+      this.selectListOptions = data.data.map((record) => {
         return {
           value: get(record, collectionOptions.valueField),
           content: get(record, collectionOptions.labelField),
