@@ -9,7 +9,23 @@
       :class="classList"
       :input-attributes="inputAttributes"
       @input="submitDate"
-    />
+    >
+      <template v-slot:default="{ open, inputValue, inputAttributes }">
+        <input
+          type="text"
+          v-bind="inputAttributes"
+          :value="inputValue"
+          class="form-control"
+          @focus="open()"
+          @click="open()"
+          @change="onChangeHandler($event.target.value)"
+        />
+        <button
+          v-if="date"
+          type="button" @click="clear" class="vdpClearInput">
+        </button>
+      </template>
+    </date-pick>
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
     </div>
@@ -36,7 +52,7 @@ const checkFormats = ["YYYY-MM-DD", moment.ISO_8601];
 
 Validator.register(
   "date_or_mustache",
-  function(value, requirement, attribute) {
+  function (value, requirement, attribute) {
     let rendered = null;
     try {
       // Clear out any mustache statements
@@ -149,13 +165,16 @@ export default {
     Validator.register(
       "after_min_date",
       (value, requirement, attribute) => {
-        return this.parseDate(value) >= this.parseDate(this.minDate);
+        return (
+          this.parseDate(value, checkFormats) >=
+          this.parseDate(this.minDate, checkFormats)
+        );
       },
       "Must be after or equal Minimum Date"
     );
   },
   methods: {
-    parseDate(val) {
+    parseDate(val, format) {
       let date = false;
 
       if (typeof val === "string" && val !== "") {
@@ -165,7 +184,7 @@ export default {
           date = val;
         }
 
-        date = moment(date, checkFormats, true);
+        date = moment(date, format, true);
         if (!date.isValid()) {
           date = false;
         }
@@ -246,6 +265,17 @@ export default {
       // Check if the date that the user inputted, is valid against the maxDate set
       if (this.parseDateToDate(this.maxDate) > newDate) return null;
       this.$emit("input", newDate.toISOString());
+    },
+    clear() {
+      this.date = "";
+    },
+    onChangeHandler(userText) {
+      if (userText) {
+        const userDate = this.parseDate(userText, this.config.format);
+        if (userDate) {
+          this.date = userDate;
+        }
+      }
     }
   }
 };
