@@ -16,8 +16,8 @@
           v-bind="inputAttributes"
           :value="inputValue"
           class="form-control"
-          @focus="open()"
-          @click="open()"
+          @focus="onOpen(open)"
+          @click="onOpen(open)"
           @change="onChangeHandler($event.target.value)"
         />
         <button
@@ -48,7 +48,7 @@ import "vue-date-pick/dist/vueDatePick.css";
 const Validator = require("validatorjs");
 
 const uniqIdsMixin = createUniqIdsMixin();
-const checkFormats = ["YYYY-MM-DD", moment.ISO_8601];
+const checkFormats = ["YYYY-MM-DD", "MM/DD/YYYY", moment.ISO_8601];
 
 Validator.register(
   "date_or_mustache",
@@ -116,7 +116,8 @@ export default {
         name: this.name,
         "aria-label": this.ariaLabel,
         "tab-index": this.tabIndex
-      }
+      },
+      onChangeDate: ""
     };
   },
   computed: {
@@ -125,7 +126,7 @@ export default {
         format: this.format,
         displayFormat: this.format,
         pickTime: this.datepicker,
-        parseDate: this.parsingInputDate,
+
         editable: !this.disabled,
         use12HourClock: this.datepicker,
         isDateDisabled: this.checkMinMaxDateDisabled
@@ -213,6 +214,7 @@ export default {
       return date;
     },
     parsingInputDate(val) {
+      debugger;
       const date = moment(val, this.format, true);
       // Check if user is typing, if the date is not valid, let the user continue
       if (!date.isValid()) return "";
@@ -252,9 +254,14 @@ export default {
       return currentDate.isSame(currentValue, comparatorString);
     },
     submitDate() {
+      debugger;
+      if(this.onChangeDate !== "") {
+        this.date = this.onChangeDate;
+      }
       if (this.value && !this.date) {
         this.$emit("input", "");
       }
+      
       if (this.isDateAndValueTheSame()) return;
       const newDate =
         this.dataFormat === "date"
@@ -266,14 +273,18 @@ export default {
       if (this.parseDateToDate(this.maxDate) > newDate) return null;
       this.$emit("input", newDate.toISOString());
     },
+    onOpen(open){
+      this.changeDate = "";
+      open();
+    },
     clear() {
       this.date = "";
     },
     onChangeHandler(userText) {
+      debugger;
       if (userText) {
-        const userDate = this.parseDate(userText, this.config.format);
-        if (userDate) {
-          this.date = userDate;
+        if (moment(userText, checkFormats , true).isValid()) {
+          this.onChangeDate = userText;
         }
       }
     }
