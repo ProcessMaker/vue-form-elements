@@ -128,7 +128,7 @@ export default {
         format: this.format,
         displayFormat: this.format,
         pickTime: this.datepicker,
-
+        parseDate: this.parsingInputDate,
         editable: !this.disabled,
         use12HourClock: this.datepicker,
         isDateDisabled: this.checkMinMaxDateDisabled
@@ -169,15 +169,15 @@ export default {
       "after_min_date",
       (value, requirement, attribute) => {
         return (
-          this.parseDate(value, checkFormats) >=
-          this.parseDate(this.minDate, checkFormats)
+          this.parseDate(value) >=
+          this.parseDate(this.minDate)
         );
       },
       "Must be after or equal Minimum Date"
     );
   },
   methods: {
-    parseDate(val, format) {
+    parseDate(val) {
       let date = false;
 
       if (typeof val === "string" && val !== "") {
@@ -187,7 +187,7 @@ export default {
           date = val;
         }
 
-        date = moment(date, format, true);
+        date = moment(date, checkFormats, true);
         if (!date.isValid()) {
           date = false;
         }
