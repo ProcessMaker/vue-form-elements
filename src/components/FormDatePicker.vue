@@ -216,7 +216,6 @@ export default {
       return date;
     },
     parsingInputDate(val) {
-      debugger;
       const date = moment(val, this.format, true);
       // Check if user is typing, if the date is not valid, let the user continue
       if (!date.isValid()) return "";
