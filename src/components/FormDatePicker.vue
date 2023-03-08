@@ -22,8 +22,10 @@
         />
         <button
           v-if="date"
-          type="button" @click="clear" class="vdpClearInput">
-        </button>
+          type="button"
+          @click="clear"
+          class="vdpClearInput"
+        ></button>
       </template>
     </date-pick>
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
@@ -254,14 +256,13 @@ export default {
       return currentDate.isSame(currentValue, comparatorString);
     },
     submitDate() {
-      debugger;
-      if(this.onChangeDate !== "") {
+      if (this.onChangeDate !== "") {
         this.date = this.onChangeDate;
       }
       if (this.value && !this.date) {
         this.$emit("input", "");
       }
-      
+
       if (this.isDateAndValueTheSame()) return;
       const newDate =
         this.dataFormat === "date"
@@ -273,18 +274,21 @@ export default {
       if (this.parseDateToDate(this.maxDate) > newDate) return null;
       this.$emit("input", newDate.toISOString());
     },
-    onOpen(open){
-      this.changeDate = "";
-      open();
+    onOpen(open) {
+      this.onChangeDate = "";
+      if (typeof open === "function") {
+        open();
+      }
     },
     clear() {
       this.date = "";
     },
     onChangeHandler(userText) {
-      debugger;
       if (userText) {
-        if (moment(userText, checkFormats , true).isValid()) {
-          this.onChangeDate = userText;
+        const userDate = moment(userText, [...checkFormats, this.format], true);
+        if (userDate.isValid()) {
+          this.onChangeDate = userDate.format(this.format);
+          this.submitDate();
         }
       }
     }
