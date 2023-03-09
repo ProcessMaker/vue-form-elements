@@ -6,7 +6,7 @@
       v-bind="config"
       :format="format"
       :data-test="dataTest"
-      :class="classList"
+      :class="[classList, 'datePicker']"
       :input-attributes="inputAttributes"
       @input="submitDate"
     />
@@ -254,5 +254,8 @@ export default {
 <style>
 .vdpHeadCell {
   padding: 0.3em 0.4em 1.8em;
+}
+.datePicker {
+  display: block !important;
 }
 </style>
