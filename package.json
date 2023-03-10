@@ -1,6 +1,6 @@
 {
   "name": "@processmaker/vue-form-elements",
-  "version": "0.42.0",
+  "version": "0.43.1",
   "description": "Reusable VueJS Based Form Elements styled with Bootstrap 4",
   "scripts": {
     "dev": "vite",
@@ -38,7 +38,7 @@
     "sass": "^1.51.0",
     "tinymce": "5.10.0",
     "vue": "^2.6.12",
-    "vue-bootstrap-datetimepicker": "^5.0.1",
+    "vue-date-pick": "^1.5.1",
     "vue-uniq-ids": "^1.0.0",
     "weekstart": "^1.0.0"
   },

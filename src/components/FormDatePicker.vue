@@ -1,69 +1,70 @@
 <template>
   <div class="form-group position-relative">
-    <label v-uni-for="name">{{label}}</label>
-    <date-picker
+    <label v-uni-for="name" class="mr-2">{{ label }}</label>
+    <date-pick
       v-model="date"
-      :config="config"
-      :disabled="disabled"
-      :placeholder="placeholder"
+      v-bind="config"
+      :format="format"
       :data-test="dataTest"
-      :aria-label="$attrs['aria-label']"
-      :tabindex="$attrs['tabindex']"
-      :class="classList"
+      :class="[classList, 'datePicker']"
+      :input-attributes="inputAttributes"
+      @input="submitDate"
     />
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
-      <div v-for="(error, index) in errors" :key="index">{{error}}</div>
+      <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+    <small v-if="helper" v-once class="form-text text-muted">{{
+      helper
+    }}</small>
   </div>
 </template>
 
 <script>
-import { createUniqIdsMixin } from 'vue-uniq-ids';
-import ValidationMixin from './mixins/validation.js';
-import DataFormatMixin from "./mixins/DataFormat.js";
-import datePicker from 'vue-bootstrap-datetimepicker';
-import moment from 'moment-timezone';
-import { getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils.js';
-import Mustache from 'mustache';
-import Validator from '@chantouchsek/validatorjs';
-import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.min.css';
+import { createUniqIdsMixin } from "vue-uniq-ids";
+import moment from "moment-timezone";
+import Mustache from "mustache";
+import DatePicker from "./DatePicker.vue";
+import ValidationMixin from "./mixins/validation";
+import DataFormatMixin from "./mixins/DataFormat";
+import { getUserDateFormat, getUserDateTimeFormat } from "../dateUtils";
+import "vue-date-pick/dist/vueDatePick.css";
+
+const Validator = require("validatorjs");
 
 const uniqIdsMixin = createUniqIdsMixin();
-const checkFormats = ['YYYY-MM-DD', moment.ISO_8601];
+const checkFormats = ["YYYY-MM-DD", moment.ISO_8601];
 
-Validator.register('date_or_mustache', function(value, requirement, attribute) {
-  let rendered = null;
-  try {
-    // Clear out any mustache statements
-    rendered = Mustache.render(value, {});
-  } catch (e) {
-    rendered = value;
-  }
+Validator.register(
+  "date_or_mustache",
+  function(value, requirement, attribute) {
+    let rendered = null;
+    try {
+      // Clear out any mustache statements
+      rendered = Mustache.render(value, {});
+    } catch (e) {
+      rendered = value;
+    }
 
-  if (value !== rendered) {
-    // contains mustache, so just give them the benefit of the doubt here
-    return true;
-  }
+    if (value !== rendered) {
+      // contains mustache, so just give them the benefit of the doubt here
+      return true;
+    }
 
-  if (value === '') {
-    // Empty is ok, it just disables min/max
-    return true;
-  }
+    if (value === "") {
+      // Empty is ok, it just disables min/max
+      return true;
+    }
 
-  if (moment(value, checkFormats, true).isValid()) {
-    return true;
-  }
-
-  return false;
-
-}, 'Must be YYYY-MM-DD, ISO8601, or mustache syntax');
+    return moment(value, checkFormats, true).isValid();
+  },
+  "Must be YYYY-MM-DD, ISO8601, or mustache syntax"
+);
 
 export default {
-  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   components: {
-    datePicker
+    "date-pick": DatePicker
   },
+  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: {
     name: String,
     placeholder: String,
@@ -72,119 +73,92 @@ export default {
     helper: String,
     dataFormat: String,
     value: [String, Boolean, Date],
-    inputClass: {type: [String, Array, Object], default: 'form-control'},
-    dataTest: String,
-    disabled: null,
+    ariaLabel: String,
+    tabIndex: Number,
+    inputClass: { type: [String, Array, Object], default: "form-control" },
+    dataTest: {
+      type: String,
+      default: "date-picker"
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     minDate: { type: [String, Boolean], default: false },
-    maxDate: { type: [String, Boolean], default: false },
+    maxDate: { type: [String, Boolean], default: false }
   },
   data() {
     return {
       validatorErrors: [],
-      date: null,
-    }
-  },
-  created() {
-    Validator.register('after_min_date', (value, requirement, attribute) => {
-      if (this.parseDate(value) < this.parseDate(this.minDate)) {
-        return false;
+      date:
+        !!this.value && this.value.length > 0
+          ? this.parsingInputDate(this.value)
+          : "",
+      inputAttributes: {
+        class: `${this.inputClass}`,
+        placeholder: this.placeholder,
+        name: this.name,
+        "aria-label": this.ariaLabel,
+        "tab-index": this.tabIndex
       }
-      return true;
-    }, 'Must be after or equal Minimum Date');
+    };
   },
   computed: {
+    config() {
+      return {
+        format: this.format,
+        displayFormat: this.format,
+        pickTime: this.datepicker,
+        parseDate: this.parsingInputDate,
+        editable: !this.disabled,
+        use12HourClock: this.datepicker,
+        isDateDisabled: this.checkMinMaxDateDisabled
+      };
+    },
+    datepicker() {
+      return this.dataFormat === "datetime";
+    },
+    format() {
+      return this.datepicker ? getUserDateTimeFormat() : getUserDateFormat();
+    },
     classList() {
       return {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
-      }
+        "is-invalid":
+          (this.validator && this.validator.errorCount) || this.error
+      };
     },
     errors() {
       if (this.error) {
         return [...this.validatorErrors, this.error];
       }
       return this.validatorErrors;
-    },
-    config() {
-      return {
-        format: this.dataFormat === 'datetime' ? getUserDateTimeFormat() : getUserDateFormat(),
-        locale: getLang(),
-        useCurrent: false,
-        showClose: true,
-        minDate: this.parseDate(this.minDate),
-        maxDate: this.checkValidMaxDate(),
-        icons: {
-          time: 'far fa-clock',
-          date: 'far fa-calendar',
-          up: 'fas fa-arrow-up',
-          down: 'fas fa-arrow-down',
-          previous: 'fas fa-chevron-left',
-          next: 'fas fa-chevron-right',
-          today: 'fas fa-calendar-check',
-          clear: 'far fa-trash-alt',
-          close: 'far fa-times-circle'
-        }
-      };
-    },
+    }
   },
   watch: {
     validator: {
       deep: true,
       handler() {
-        this.validatorErrors = this.validator && this.validator.errors.get(this.name)
-          ? this.validator.errors.get(this.name)
-          : [];
-
+        this.validatorErrors =
+          this.validator && this.validator.errors.get(this.name)
+            ? this.validator.errors.get(this.name)
+            : [];
+      }
+    }
+  },
+  created() {
+    Validator.register(
+      "after_min_date",
+      (value, requirement, attribute) => {
+        return this.parseDate(value) >= this.parseDate(this.minDate);
       },
-    },
-    date() {
-      if (this.value && !this.date) {
-        this.$emit('input', '');
-      }
-
-      if (this.isDateAndValueTheSame()) {
-        return;
-      }
-
-      const newDate = this.dataFormat === 'date' ? moment.utc(this.date, this.config.format) : moment(this.date, this.config.format);
-
-      this.$emit('input', newDate.toISOString());
-    },
-    value() {
-      if (!this.value) {
-        this.date = '';
-        return;
-      }
-
-      const newDate = this.generateDate(this.value);
-
-      if (!this.isDateAndValueTheSame()) {
-        this.date = newDate.format(this.config.format);
-      }
-    },
-    dataFormat: {
-      immediate: true,
-      handler() {
-        this.date = this.value
-          ? this.generateDate().format(this.config.format)
-          : '';
-      }
-    },
+      "Must be after or equal Minimum Date"
+    );
   },
   methods: {
-    checkValidMaxDate() {
-      if (this.minDate == '') {
-        return this.parseDate(this.maxDate);
-      }
-      if (this.parseDate(this.maxDate) >= this.parseDate(this.minDate)) {
-        return this.parseDate(this.maxDate);
-      }
-      return false;
-    },
     parseDate(val) {
       let date = false;
 
-      if (typeof val === 'string' && val !== '') {
-
+      if (typeof val === "string" && val !== "") {
         try {
           date = Mustache.render(val, this.validationData);
         } catch (error) {
@@ -199,6 +173,54 @@ export default {
 
       return date;
     },
+    parseDateToDate(val) {
+      let date = "";
+
+      if (typeof val === "string" && val !== "") {
+        try {
+          date = Mustache.render(val, this.validationData);
+        } catch (error) {
+          date = val;
+        }
+
+        date = moment(date, checkFormats, true);
+        if (!date.isValid()) {
+          date = "";
+        } else {
+          date = date.toDate();
+        }
+      }
+
+      return date;
+    },
+    parsingInputDate(val) {
+      const date = moment(val, this.format, true);
+      // Check if user is typing, if the date is not valid, let the user continue
+      if (!date.isValid()) return "";
+      return date.toDate();
+    },
+    /*
+    Function to be used for the DatePicker, to see if minDate and maxDate are
+    1. Valid
+    2. Within the range
+    In the datepicker itself, this goes through a for loop to check if the dates that the user is seeing, are valid and
+    acceptable
+    @param {string, Date} date
+    @returns {boolean}
+     */
+    checkMinMaxDateDisabled(date) {
+      const minDate = !!this.minDate ? this.parseDateToDate(this.minDate) : "";
+      const maxDate = !!this.maxDate ? this.parseDateToDate(this.maxDate) : "";
+      // If minDate and maxDate are not defined, return. This would be the default case
+      if (minDate.length === 0 && maxDate.length === 0) return;
+      if (!!minDate && !!maxDate) {
+        return !(date >= minDate && date <= maxDate);
+      }
+      // If minDate is defined but maxDate not defined, block the dates before minDate is defined
+      if (!!minDate && maxDate.length === 0) return date < minDate;
+      // If maxDate is defined but minDate not defined, block the dates after maxDate is defined
+      if (minDate.length === 0 && !!maxDate) return date > maxDate;
+    },
     isDateAndValueTheSame() {
       if (!this.date && !this.value) {
         return true;
@@ -206,25 +228,34 @@ export default {
 
       const currentDate = moment(this.date, this.config.format);
       const currentValue = this.value ? moment(this.value) : null;
-      const comparatorString = this.dataFormat !== 'datetime' ? 'day' : null;
+      const comparatorString = this.dataFormat !== "datetime" ? "day" : null;
 
       return currentDate.isSame(currentValue, comparatorString);
     },
-    generateDate(value = this.value) {
-      let date = moment(value);
-
-      if (!date.isValid()) {
-        date = moment();
+    submitDate() {
+      if (this.value && !this.date) {
+        this.$emit("input", "");
       }
-
-      return date;
-    },
-  },
+      if (this.isDateAndValueTheSame()) return;
+      const newDate =
+        this.dataFormat === "date"
+          ? moment.utc(this.date, this.config.format)
+          : moment(this.date, this.config.format);
+      // Check if the date that the user inputted, is valid against the minDate set
+      if (newDate < this.parseDateToDate(this.minDate)) return null;
+      // Check if the date that the user inputted, is valid against the maxDate set
+      if (this.parseDateToDate(this.maxDate) > newDate) return null;
+      this.$emit("input", newDate.toISOString());
+    }
+  }
 };
 </script>
 
-<style lang="scss">
-  .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
-    font-size: 11px;
-  }
+<style>
+.vdpHeadCell {
+  padding: 0.3em 0.4em 1.8em;
+}
+.datePicker {
+  display: block;
+}
 </style>
