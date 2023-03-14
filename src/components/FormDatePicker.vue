@@ -9,7 +9,25 @@
       :class="[classList, 'datePicker']"
       :input-attributes="inputAttributes"
       @input="submitDate"
-    />
+    >
+      <template v-slot:default="{ open, inputValue, inputAttributes }">
+        <input
+          type="text"
+          v-bind="inputAttributes"
+          :value="inputValue"
+          class="form-control"
+          @focus="onOpen(open)"
+          @click="onOpen(open)"
+          @change="onChangeHandler($event.target.value)"
+        />
+        <button
+          v-if="date"
+          type="button"
+          @click="clear"
+          class="vdpClearInput"
+        ></button>
+      </template>
+    </date-pick>
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
     </div>
@@ -32,11 +50,11 @@ import "vue-date-pick/dist/vueDatePick.css";
 const Validator = require("validatorjs");
 
 const uniqIdsMixin = createUniqIdsMixin();
-const checkFormats = ["YYYY-MM-DD", moment.ISO_8601];
+const checkFormats = ["YYYY-MM-DD", "MM/DD/YYYY", moment.ISO_8601];
 
 Validator.register(
   "date_or_mustache",
-  function(value, requirement, attribute) {
+  function (value, requirement, attribute) {
     let rendered = null;
     try {
       // Clear out any mustache statements
@@ -100,7 +118,8 @@ export default {
         name: this.name,
         "aria-label": this.ariaLabel,
         "tab-index": this.tabIndex
-      }
+      },
+      onChangeDate: ""
     };
   },
   computed: {
@@ -149,7 +168,10 @@ export default {
     Validator.register(
       "after_min_date",
       (value, requirement, attribute) => {
-        return this.parseDate(value) >= this.parseDate(this.minDate);
+        return (
+          this.parseDate(value) >=
+          this.parseDate(this.minDate)
+        );
       },
       "Must be after or equal Minimum Date"
     );
@@ -233,9 +255,13 @@ export default {
       return currentDate.isSame(currentValue, comparatorString);
     },
     submitDate() {
+      if (this.onChangeDate !== "") {
+        this.date = this.onChangeDate;
+      }
       if (this.value && !this.date) {
         this.$emit("input", "");
       }
+
       if (this.isDateAndValueTheSame()) return;
       const newDate =
         this.dataFormat === "date"
@@ -246,6 +272,24 @@ export default {
       // Check if the date that the user inputted, is valid against the maxDate set
       if (this.parseDateToDate(this.maxDate) > newDate) return null;
       this.$emit("input", newDate.toISOString());
+    },
+    onOpen(open) {
+      this.onChangeDate = "";
+      if (typeof open === "function") {
+        open();
+      }
+    },
+    clear() {
+      this.date = "";
+    },
+    onChangeHandler(userText) {
+      if (userText) {
+        const userDate = moment(userText, [...checkFormats, this.format], true);
+        if (userDate.isValid()) {
+          this.onChangeDate = userDate.format(this.format);
+          this.submitDate();
+        }
+      }
     }
   }
 };
