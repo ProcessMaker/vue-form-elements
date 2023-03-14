@@ -300,6 +300,6 @@ export default {
   padding: 0.3em 0.4em 1.8em;
 }
 .datePicker {
-  display: block;
+  display: block !important;
 }
 </style>
