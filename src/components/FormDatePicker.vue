@@ -108,10 +108,7 @@ export default {
   data() {
     return {
       validatorErrors: [],
-      date:
-        !!this.value && this.value.length > 0
-          ? this.parsingInputDate(this.value)
-          : "",
+      date: "",
       inputAttributes: {
         class: `${this.inputClass}`,
         placeholder: this.placeholder,
@@ -161,6 +158,12 @@ export default {
           this.validator && this.validator.errors.get(this.name)
             ? this.validator.errors.get(this.name)
             : [];
+      }
+    },
+    value(valuee) {
+      if (!!valuee && valuee.length > 0) {
+        const date = moment(valuee, checkFormats, true);
+        this.date = date.format(this.format);
       }
     }
   },
