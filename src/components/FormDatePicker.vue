@@ -163,6 +163,7 @@ export default {
     value(valuee) {
       if (!!valuee && valuee.length > 0) {
         const date = moment(valuee, checkFormats, true);
+        if (!date.isValid()) return "";
         this.date = date.format(this.format);
       }
     }
