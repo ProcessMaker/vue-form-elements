@@ -169,12 +169,8 @@ export default {
             : [];
       }
     },
-    value(valuee) {
-      if (!!valuee && valuee.length > 0) {
-        const date = moment.tz(valuee, checkFormats, true, getTimezone());
-        if (!date.isValid()) return "";
-        this.date = date.format(this.format);
-      }
+    value(newValue) {
+      this.updateValue(newValue);
     }
   },
   created() {
@@ -188,8 +184,16 @@ export default {
       },
       "Must be after or equal Minimum Date"
     );
+    this.updateValue(this.value);
   },
   methods: {
+    updateValue(newValue) {
+      if (!!newValue && newValue.length > 0) {
+        const date = moment.tz(newValue, checkFormats, true, getTimezone());
+        if (!date.isValid()) return "";
+        this.date = date.format(this.format);
+      }
+    },
     parseDate(val) {
       let date = false;
 
