@@ -10,7 +10,7 @@
       :input-attributes="inputAttributes"
       @input="submitDate"
     >
-      <template v-slot:default="{ open, inputValue, inputAttributes }">
+      <template v-slot:default="{ open, inputValue }">
         <input
           type="text"
           v-bind="inputAttributes"
@@ -102,6 +102,10 @@ export default {
       type: Boolean,
       default: false
     },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
     minDate: { type: [String, Boolean], default: false },
     maxDate: { type: [String, Boolean], default: false }
   },
@@ -114,7 +118,9 @@ export default {
         placeholder: this.placeholder,
         name: this.name,
         "aria-label": this.ariaLabel,
-        "tab-index": this.tabIndex
+        "tab-index": this.tabIndex,
+        disabled: this.disabled,
+        readonly: this.readonly
       },
       onChangeDate: ""
     };
