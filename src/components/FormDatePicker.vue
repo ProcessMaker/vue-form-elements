@@ -44,7 +44,7 @@ import Mustache from "mustache";
 import DatePicker from "./DatePicker.vue";
 import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
-import { getUserDateFormat, getUserDateTimeFormat } from "../dateUtils";
+import { getUserDateFormat, getUserDateTimeFormat, getTimezone } from "../dateUtils";
 import "vue-date-pick/dist/vueDatePick.css";
 
 const Validator = require("validatorjs");
@@ -110,6 +110,9 @@ export default {
     maxDate: { type: [String, Boolean], default: false }
   },
   data() {
+    // set to the browser's timezone because the vue-date-pick always works
+    // with the browser's timezone
+    moment.tz.setDefault(moment.tz.guess());
     return {
       validatorErrors: [],
       date: "",
@@ -168,7 +171,7 @@ export default {
     },
     value(valuee) {
       if (!!valuee && valuee.length > 0) {
-        const date = moment(valuee, checkFormats, true);
+        const date = moment.tz(valuee, checkFormats, true, getTimezone());
         if (!date.isValid()) return "";
         this.date = date.format(this.format);
       }
@@ -281,7 +284,16 @@ export default {
       if (newDate < this.parseDateToDate(this.minDate)) return null;
       // Check if the date that the user inputted, is valid against the maxDate set
       if (this.parseDateToDate(this.maxDate) > newDate) return null;
-      this.$emit("input", newDate.toISOString());
+      if (this.dataFormat === "datetime") {
+        // we must change the date timezone to the user timezone, then convert it to ISOString
+        // e.g. browser at UTC-4, newDate is 2023-03-17 12:16:00, we must convert it to 2023-03-17 12:16:00 UTC-7
+        // then convert it to ISOString
+        const dateTime = newDate.format("YYYY-MM-DD HH:mm"); // browser tz
+        const fixedDate = moment.tz(dateTime, getTimezone()); // user tz
+        this.$emit("input", fixedDate.toISOString());
+      } else {
+        this.$emit("input", newDate.toISOString());
+      }
     },
     onOpen(open) {
       this.onChangeDate = "";
