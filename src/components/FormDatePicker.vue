@@ -285,9 +285,9 @@ export default {
           ? moment.utc(this.date, this.config.format)
           : moment(this.date, this.config.format);
       // Check if the date that the user inputted, is valid against the minDate set
-      if (newDate.isSameOrBefore(this.parseDateToDate(this.minDate))) return null;
+      if (newDate.isBefore(this.parseDateToDate(this.minDate))) return null;
       // Check if the date that the user inputted, is valid against the maxDate set
-      if (newDate.isSameOrAfter(moment(this.parseDateToDate(this.maxDate)))) return null;
+      if (newDate.isAfter(moment(this.parseDateToDate(this.maxDate)))) return null;
       if (this.dataFormat === "datetime") {
         // we must change the date timezone to the user timezone, then convert it to ISOString
         // e.g. browser at UTC-4, newDate is 2023-03-17 12:16:00, we must convert it to 2023-03-17 12:16:00 UTC-7
