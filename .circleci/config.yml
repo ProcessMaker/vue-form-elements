@@ -1,0 +1,17 @@
+version: '2'
+
+jobs:
+  build:
+    docker:
+      - image: cimg/base:current
+
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: "Build docker image"
+          command: env DOCKER_BUILDKIT=1 docker build -t processmaker/vue-form-elements:$CIRCLE_BRANCH .
+      - run:
+          name: "Deploy to Docker Hub"
+          command: docker push processmaker/vue-form-elements:$CIRCLE_BRANCH
