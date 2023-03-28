@@ -192,6 +192,14 @@ export default {
     }
   },
   methods: {
+    renderPmql(pmql) {
+      if (typeof pmql !== "undefined" && pmql !== "" && pmql !== null) {
+        const data = this.makeProxyData();
+        console.log('makeProxyData', JSON.stringify(data));
+        return Mustache.render(pmql, { data });
+      }
+      return null;
+    },
     /**
      * Load select list options from a data connector
      * 
@@ -230,13 +238,8 @@ export default {
         }
       };
 
-      if (
-        typeof this.options.pmqlQuery !== "undefined" &&
-        this.options.pmqlQuery !== "" &&
-        this.options.pmqlQuery !== null
-      ) {
-        const data = this.makeProxyData();
-        const pmql = Mustache.render(this.options.pmqlQuery, { data });
+      const pmql = this.renderPmql(this.options.pmqlQuery);
+      if (pmql) {
         params.config.outboundConfig = [
           { type: "PARAM", key: "pmql", value: pmql }
         ];
@@ -263,7 +266,7 @@ export default {
         return false;
       }
     },
-    async loadOptionsFromCollection(collectionOptions, pmql = null) {
+    async loadOptionsFromCollection(collectionOptions) {
       if (
         !collectionOptions ||
         !collectionOptions.collectionId ||
@@ -274,8 +277,12 @@ export default {
       }
       
       const options = {
-        params: { per_page: 100, pmql }
+        params: { per_page: 100 }
       };
+      const pmql = this.renderPmql(collectionOptions.pmql);
+      if (pmql) {
+        options.params.pmql = pmql;
+      }
 
       const data = await this.$dataProvider.getCollectionRecords(
         collectionOptions.collectionId,
