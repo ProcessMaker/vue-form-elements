@@ -1,6 +1,6 @@
 <template>
   <div class="form-group">
-    <label v-uni-for="name">{{label}}</label>
+    <label v-uni-for="name">{{ label }}</label>
     <multi-select-view
       v-if="options.renderAs === 'dropdown'"
       :option-value="optionsKey"
@@ -9,7 +9,7 @@
       v-model="valueProxy"
       :placeholder="placeholder ? placeholder : $t('Select...')"
       :show-labels="false"
-      :options="selectListOptions"
+      :options="selectListOptionsWithSelected"
       :react-options="reactOptions"
       :class="classList"
       :emit-objects="options.valueTypeReturned === 'object'"
@@ -26,7 +26,7 @@
         :name="name"
         :option-value="optionsKey"
         :option-content="optionsValue"
-        :options="selectListOptions"
+        :options="selectListOptionsWithSelected"
         :react-options="reactOptions"
         :emit-objects="options.valueTypeReturned === 'object'"
         v-bind="$attrs"
@@ -35,35 +35,42 @@
 
     <div v-if="options.renderAs === 'checkbox' && !options.allowMultiSelect">
       <optionbox-view
-          v-model="valueProxy"
-          :name="name"
-          :option-value="optionsKey"
-          :option-content="optionsValue"
-          :options="selectListOptions"
-          :react-options="reactOptions"
-          :emit-objects="options.valueTypeReturned === 'object'"
-          v-bind="$attrs"
+        v-model="valueProxy"
+        :name="name"
+        :option-value="optionsKey"
+        :option-content="optionsValue"
+        :options="selectListOptionsWithSelected"
+        :react-options="reactOptions"
+        :emit-objects="options.valueTypeReturned === 'object'"
+        v-bind="$attrs"
       />
     </div>
 
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
-      <div v-for="(error, index) in validatorErrors" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
+    <div
+      v-if="(validator && validator.errorCount) || error"
+      class="invalid-feedback d-block"
+    >
+      <div v-for="(error, index) in validatorErrors" :key="index">
+        {{ error }}
+      </div>
+      <div v-if="error">{{ error }}</div>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+    <small v-if="helper" class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import Mustache from "mustache";
-import { isEqual, cloneDeep, get, set } from "lodash";
+import { isEqual, cloneDeep, get, set, debounce } from "lodash";
 import ValidationMixin from "./mixins/validation";
 import MultiSelectView from "./FormSelectList/MultiSelectView";
 import CheckboxView from "./FormSelectList/CheckboxView";
 import OptionboxView from "./FormSelectList/OptionboxView";
 
 const uniqIdsMixin = createUniqIdsMixin();
+
+const MAX_COLLECTION_RECORDS = 100;
 
 export default {
   components: {
@@ -92,11 +99,26 @@ export default {
       previousValidationData: null,
       previousValidationDataParent: null,
       selectListOptions: [],
+      selectedOption: null,
       loading: false,
-      loaded: false
+      loaded: false,
+      previousDependentValue: null,
+      filter: ""
     };
   },
   computed: {
+    selectListOptionsWithSelected() {
+      if (this.selectedOption && !this.selectListOptions.some(o => o.value === this.selectedOption.value)) {
+        return [this.selectedOption, ...this.selectListOptions];
+      }
+      return this.selectListOptions;
+    },
+    collectionOptions() {
+      return get(this.options, 'collectionOptions');
+    },
+    mode() {
+      return this.$root.$children[0].mode;
+    },
     validatorErrors() {
       return (this.validator && this.validator.errors.get(this.name)) || [];
     },
@@ -107,7 +129,7 @@ export default {
       const isString = typeof this.value === "string";
       let resetValueIfNotInOptions = true;
 
-      // If is the first time is loaded and the type of the value is string, 
+      // If is the first time is loaded and the type of the value is string,
       // should not reset the dependent select ..
       if (!this.loaded && isString) {
         resetValueIfNotInOptions = false;
@@ -148,6 +170,7 @@ export default {
         return this.value;
       },
       set(val) {
+        this.selectedOption = val ? this.selectListOptions.find(o => o.value === val) : null;
         return this.$emit("input", val);
       }
     },
@@ -174,10 +197,8 @@ export default {
     optionsValue() {
       if (
         this.options.dataSource &&
-        (
-          this.options.dataSource === "provideData" ||
-          this.options.dataSource === "collection"
-        )
+        (this.options.dataSource === "provideData" ||
+          this.options.dataSource === "collection")
       ) {
         return "content";
       }
@@ -195,15 +216,15 @@ export default {
     renderPmql(pmql) {
       if (typeof pmql !== "undefined" && pmql !== "" && pmql !== null) {
         const data = this.makeProxyData();
-        console.log('makeProxyData', JSON.stringify(data));
-        return Mustache.render(pmql, { data });
+        // console.log("DATA.dep in select list", data, get(data, "dep"));
+        return Mustache.render(pmql, data);
       }
-      return null;
+      return "";
     },
     /**
      * Load select list options from a data connector
-     * 
-     * @param {object} options 
+     *
+     * @param {object} options
      * @returns {boolean}
      */
     async loadOptionsFromDataConnector(options) {
@@ -266,56 +287,134 @@ export default {
         return false;
       }
     },
-    async loadOptionsFromCollection(collectionOptions) {
+    async loadOptionsFromCollection() {
+      if (this.mode === "editor") {
+        return;
+      }
+
       if (
-        !collectionOptions ||
-        !collectionOptions.collectionId ||
-        !collectionOptions.labelField ||
-        !collectionOptions.valueField
+        !this.collectionOptions ||
+        !this.collectionOptions.collectionId ||
+        !this.collectionOptions.labelField ||
+        !this.collectionOptions.valueField
       ) {
-        return false;
+        return;
       }
       
+      console.log("loadOptionsFromCollection. Filter: ", this.filter);
+
       const options = {
-        params: { per_page: 100 }
+        params: { per_page: MAX_COLLECTION_RECORDS }
       };
-      const pmql = this.renderPmql(collectionOptions.pmql);
+
+      // If dependent is set, only reload the options if the the dependent changes
+      if (this.collectionOptions.isDependent && this.collectionOptions.dependentField) {
+        const data = this.makeProxyData();
+        const dependentValue = get(data,this.collectionOptions.dependentField);
+        if (isEqual(dependentValue + this.filter, this.previousDependentValue)) {
+          // Same, so do not reload records
+          return;
+        }
+        this.previousDependentValue = dependentValue + this.filter;
+
+        this.selectedOption = null;
+
+        if (!dependentValue) {
+          this.selectListOptions = [];
+          return;
+        }
+      }
+
+      let pmql = this.renderPmql(this.collectionOptions.pmql);
+
+
+      if (this.filter) {
+        const filterPmql = `${this.collectionOptions.labelField} like "%${this.filter}%"`;
+        if (pmql) {
+          pmql = `(${pmql}) AND ${filterPmql}`;
+        } else {
+          pmql = filterPmql;
+        }
+      }
+
       if (pmql) {
         options.params.pmql = pmql;
       }
 
-      const data = await this.$dataProvider.getCollectionRecords(
-        collectionOptions.collectionId,
-        options
-      );
+      console.log("final pmql", options.params.pmql);
 
-      this.selectListOptions = data.data.map((record) => {
-        return {
-          value: get(record, collectionOptions.valueField),
-          content: get(record, collectionOptions.labelField),
-        };
-      });
-
-      return true;
+      this.getCollectionRecords(options);
     },
-    searchChange: _.debounce(function(value) {
-      // Future implementation
-      return;
-
-      if (this.options.dataSource === 'collection') {
-        const collectionOptions = this.options.collectionOptions;
-
-        let pmql = null;
-        if (value.trim() !== '') {
-          pmql = `${collectionOptions.labelField} like "%${value}%"`;
+    formatCollectionRecordResults(record) {
+      return {
+        value: get(record, this.collectionOptions.valueField),
+        content: get(record, this.collectionOptions.labelField)
+      };
+    },
+    /**
+     * Sometimes the selected item is not in the select list options
+     * due to pagination or filtering. In this case, we need to grab
+     * it from the backend.
+     */
+    async loadSelectedCollectionRecord() {
+      if (this.collectionOptions.valueField && this.value) {
+        // First, check if it already exists in our selectListOptions
+        if (this.selectListOptions.some(o => o.value === this.value)) {
+          // It's there, we don't need to do anything
+          return;
         }
 
+        // If it's not there, check if we saved it in this.selectedOption
+        if (this.selectedOption && this.selectedOption.value === this.value) {
+          // It's there, we don't need to do anything
+          return;
+        }
+
+        // Load it from the backend and saved it in this.selectedOption
+        const selectedItemPmql = `${this.collectionOptions.valueField} = "${this.value}"`;
+        
+        const data = await this.$dataProvider.getCollectionRecords(
+          this.collectionOptions.collectionId,
+          { params: { pmql: selectedItemPmql } }
+        );
+
+        if (data.data.length > 0) {
+          this.selectedOption = this.formatCollectionRecordResults(data.data[0]);
+        }
+      }
+    },
+    getCollectionRecords: debounce(async function(options) {
+      let data = { data : [] };
+      console.log("Running getCollectionRecords", this.collectionOptions.collectionId, options);
+      data = await this.$dataProvider.getCollectionRecords(
+        this.collectionOptions.collectionId,
+        options
+      );
+      
+      this.selectListOptions = data.data.map(this.formatCollectionRecordResults);
+
+      this.loadSelectedCollectionRecord();
+
+    }, 300),
+    searchChange(value) {
+      if (this.options.dataSource === "collection") {
+        if (this.selectListOptions.length < MAX_COLLECTION_RECORDS) {
+          // no need for a backend search, all the results are in options already
+          return;
+        }
+        console.log(`searchChange. Setting filter to '${value}'`);
+        if (!value) {
+          this.filter = "";
+          console.log("RETURNING");
+          return;
+        }
+        this.filter = value;
         this.loading = true;
-        this.loadOptionsFromCollection(this.options.collectionOptions, pmql).finally(() => {
+        this.loadOptionsFromCollection().finally(() => {
           this.loading = false;
         });
       }
-    }, 300),
+    },
     /**
      * Transform the options to the format expected by the select list.
      *
@@ -358,12 +457,9 @@ export default {
       ) {
         wasUpdated = await this.loadOptionsFromDataConnector(this.sourceConfig);
       }
-      
-      if (
-        this.options.dataSource &&
-        this.options.dataSource === "collection"
-      ) {
-        wasUpdated = await this.loadOptionsFromCollection(this.sourceConfig.collectionOptions);
+
+      if (this.options.dataSource && this.options.dataSource === "collection") {
+        wasUpdated = await this.loadOptionsFromCollection();
       }
 
       if (wasUpdated) {
@@ -511,7 +607,7 @@ export default {
           return get(option, this.optionsKey) === this.value;
         });
       }
-      
+
       if (!hasKeyInOptions && resetValueIfNotInOptions) {
         this.$emit("reset", this.name);
       }
