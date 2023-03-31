@@ -103,7 +103,9 @@ export default {
       loading: false,
       loaded: false,
       previousDependentValue: null,
-      filter: ""
+      filter: "",
+      orderBy: "",
+      countWithoutFilter: null,
     };
   },
   computed: {
@@ -115,6 +117,9 @@ export default {
     },
     collectionOptions() {
       return get(this.options, 'collectionOptions');
+    },
+    isCollection() {
+      return get(this.options, 'dataSource') === "collection"
     },
     mode() {
       return this.$root.$children[0].mode;
@@ -198,7 +203,7 @@ export default {
       if (
         this.options.dataSource &&
         (this.options.dataSource === "provideData" ||
-          this.options.dataSource === "collection")
+          this.isCollection)
       ) {
         return "content";
       }
@@ -212,11 +217,27 @@ export default {
       };
     }
   },
+  watch: {
+    selectListOptions: {
+      handler() {
+        if (this.isCollection) {
+          if (this.value && !this.selectListOptions.some(o => o.value === this.value)) {
+            this.loadIndividualRecord();
+          }
+        }
+      }
+    },
+  },
+  created() {
+    this.debounceLoadOptionsFromCollection = debounce(
+      this.loadOptionsFromCollection,
+      300
+    );
+  },
   methods: {
     renderPmql(pmql) {
       if (typeof pmql !== "undefined" && pmql !== "" && pmql !== null) {
         const data = this.makeProxyData();
-        // console.log("DATA.dep in select list", data, get(data, "dep"));
         return Mustache.render(pmql, data);
       }
       return "";
@@ -301,47 +322,34 @@ export default {
         return;
       }
       
-      console.log("loadOptionsFromCollection. Filter: ", this.filter);
-
       const options = {
         params: { per_page: MAX_COLLECTION_RECORDS }
       };
 
       // If dependent is set, only reload the options if the the dependent changes
-      if (this.collectionOptions.isDependent && this.collectionOptions.dependentField) {
+      if (this.collectionOptions.isDependent && this.collectionOptions.dependentField && !this.filter) {
         const data = this.makeProxyData();
-        const dependentValue = get(data,this.collectionOptions.dependentField);
-        if (isEqual(dependentValue + this.filter, this.previousDependentValue)) {
+        const dependentValue = get(data, this.collectionOptions.dependentField);
+        if (isEqual(dependentValue, this.previousDependentValue)) {
           // Same, so do not reload records
           return;
         }
-        this.previousDependentValue = dependentValue + this.filter;
-
+        this.previousDependentValue = dependentValue;
         this.selectedOption = null;
-
-        if (!dependentValue) {
-          this.selectListOptions = [];
-          return;
-        }
       }
 
       let pmql = this.renderPmql(this.collectionOptions.pmql);
 
-
-      if (this.filter) {
-        const filterPmql = `${this.collectionOptions.labelField} like "%${this.filter}%"`;
-        if (pmql) {
-          pmql = `(${pmql}) AND ${filterPmql}`;
-        } else {
-          pmql = filterPmql;
-        }
-      }
+      pmql = this.includeFilterInPmql(pmql);
 
       if (pmql) {
         options.params.pmql = pmql;
       }
 
-      console.log("final pmql", options.params.pmql);
+      if (this.orderBy) {
+        options.params.order_by = this.orderBy;
+        options.params.order_direction = 'DESC';
+      }
 
       this.getCollectionRecords(options);
     },
@@ -351,68 +359,58 @@ export default {
         content: get(record, this.collectionOptions.labelField)
       };
     },
-    /**
-     * Sometimes the selected item is not in the select list options
-     * due to pagination or filtering. In this case, we need to grab
-     * it from the backend.
-     */
-    async loadSelectedCollectionRecord() {
-      if (this.collectionOptions.valueField && this.value) {
-        // First, check if it already exists in our selectListOptions
-        if (this.selectListOptions.some(o => o.value === this.value)) {
-          // It's there, we don't need to do anything
-          return;
-        }
-
-        // If it's not there, check if we saved it in this.selectedOption
-        if (this.selectedOption && this.selectedOption.value === this.value) {
-          // It's there, we don't need to do anything
-          return;
-        }
-
-        // Load it from the backend and saved it in this.selectedOption
-        const selectedItemPmql = `${this.collectionOptions.valueField} = "${this.value}"`;
-        
-        const data = await this.$dataProvider.getCollectionRecords(
-          this.collectionOptions.collectionId,
-          { params: { pmql: selectedItemPmql } }
-        );
-
-        if (data.data.length > 0) {
-          this.selectedOption = this.formatCollectionRecordResults(data.data[0]);
+    includeFilterInPmql(pmql) {
+      if (this.filter) {
+        const filterPmql = `${this.collectionOptions.labelField} like "%${this.filter}%"`;
+        if (pmql) {
+          pmql = `(${pmql}) AND ${filterPmql}`;
+        } else {
+          pmql = filterPmql;
         }
       }
+      return pmql;
     },
-    getCollectionRecords: debounce(async function(options) {
+    async loadIndividualRecord() {
+      let pmql = this.renderPmql(this.collectionOptions.pmql);
+      const recordPmql = `${this.collectionOptions.valueField} = "${this.value}"`;
+      if (pmql) {
+        pmql += ` AND ${recordPmql}`;
+      } else {
+        pmql = recordPmql;
+      }
+      const data = await this.$dataProvider.getCollectionRecords(
+        this.collectionOptions.collectionId,
+        { params: { pmql } }
+      );
+      if (!this.filter) {
+        this.countWithoutFilter = data.data ? data.data.length : null;
+      }
+      if (data.data && data.data.length > 0) {
+        this.selectedOption = this.formatCollectionRecordResults(data.data[0]);
+      } else {
+        this.selectedOption = null;
+        this.valueProxy = '';
+      }
+    },
+    // getCollectionRecords: throttle(async function(options) {
+    async getCollectionRecords(options) {
       let data = { data : [] };
-      console.log("Running getCollectionRecords", this.collectionOptions.collectionId, options);
       data = await this.$dataProvider.getCollectionRecords(
         this.collectionOptions.collectionId,
         options
       );
       
       this.selectListOptions = data.data.map(this.formatCollectionRecordResults);
-
-      this.loadSelectedCollectionRecord();
-
-    }, 300),
+    // }, 300),
+    },
     searchChange(value) {
-      if (this.options.dataSource === "collection") {
-        if (this.selectListOptions.length < MAX_COLLECTION_RECORDS) {
-          // no need for a backend search, all the results are in options already
-          return;
-        }
-        console.log(`searchChange. Setting filter to '${value}'`);
-        if (!value) {
-          this.filter = "";
-          console.log("RETURNING");
-          return;
-        }
+      if (this.isCollection) {
         this.filter = value;
-        this.loading = true;
-        this.loadOptionsFromCollection().finally(() => {
-          this.loading = false;
-        });
+        if (this.countWithoutFilter && this.countWithoutFilter < MAX_COLLECTION_RECORDS) {
+          // No need to backend filter since all items were returned
+          return;
+        }
+        this.debounceLoadOptionsFromCollection();
       }
     },
     /**
@@ -458,7 +456,7 @@ export default {
         wasUpdated = await this.loadOptionsFromDataConnector(this.sourceConfig);
       }
 
-      if (this.options.dataSource && this.options.dataSource === "collection") {
+      if (this.isCollection) {
         wasUpdated = await this.loadOptionsFromCollection();
       }
 
@@ -477,7 +475,6 @@ export default {
       const resultList = [];
 
       if (!Array.isArray(list)) {
-        console.warn('The retrieved data is not an array. Please check the data sources options of the select list `' + this.name + '`')
         return resultList;
       }
 
