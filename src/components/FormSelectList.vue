@@ -228,12 +228,6 @@ export default {
       }
     },
   },
-  created() {
-    this.debounceLoadOptionsFromCollection = debounce(
-      this.loadOptionsFromCollection,
-      300
-    );
-  },
   methods: {
     renderPmql(pmql) {
       if (typeof pmql !== "undefined" && pmql !== "" && pmql !== null) {
@@ -310,7 +304,7 @@ export default {
     },
     async loadOptionsFromCollection() {
       if (this.mode === "editor") {
-        return;
+        return false;
       }
 
       if (
@@ -319,7 +313,7 @@ export default {
         !this.collectionOptions.labelField ||
         !this.collectionOptions.valueField
       ) {
-        return;
+        return false;
       }
       
       const options = {
@@ -332,7 +326,7 @@ export default {
         const dependentValue = get(data, this.collectionOptions.dependentField);
         if (isEqual(dependentValue, this.previousDependentValue)) {
           // Same, so do not reload records
-          return;
+          return false;
         }
         this.previousDependentValue = dependentValue;
         this.selectedOption = null;
@@ -351,7 +345,9 @@ export default {
         options.params.order_direction = 'DESC';
       }
 
-      this.getCollectionRecords(options);
+      await this.getCollectionRecords(options);
+
+      return true;
     },
     formatCollectionRecordResults(record) {
       return {
@@ -378,39 +374,48 @@ export default {
       } else {
         pmql = recordPmql;
       }
+      
+      this.loading = true;
       const data = await this.$dataProvider.getCollectionRecords(
         this.collectionOptions.collectionId,
         { params: { pmql } }
       );
-      if (!this.filter) {
-        this.countWithoutFilter = data.data ? data.data.length : null;
-      }
+      this.loading = false;
+
       if (data.data && data.data.length > 0) {
         this.selectedOption = this.formatCollectionRecordResults(data.data[0]);
       } else {
         this.selectedOption = null;
-        this.valueProxy = '';
+        this.updateWatcherDependentFieldValue(true);
       }
     },
-    // getCollectionRecords: throttle(async function(options) {
     async getCollectionRecords(options) {
       let data = { data : [] };
+      
+      this.loading = true;
       data = await this.$dataProvider.getCollectionRecords(
         this.collectionOptions.collectionId,
         options
       );
+      this.loading = false;
+      
+      if (!this.filter) {
+        this.countWithoutFilter = data.meta ? data.meta.total : null;
+      }
       
       this.selectListOptions = data.data.map(this.formatCollectionRecordResults);
-    // }, 300),
     },
+    debouncedSetFilter: debounce(function(value) {
+      this.filter = value;
+    }, 300),
     searchChange(value) {
       if (this.isCollection) {
-        this.filter = value;
         if (this.countWithoutFilter && this.countWithoutFilter < MAX_COLLECTION_RECORDS) {
           // No need to backend filter since all items were returned
           return;
         }
-        this.debounceLoadOptionsFromCollection();
+        this.loading = true;
+        this.debouncedSetFilter(value);
       }
     },
     /**
@@ -587,7 +592,7 @@ export default {
       if (Array.isArray(this.value)) {
         hasKeyInOptions = true;
         this.value.forEach((item) => {
-          const hasItemInOption = this.selectListOptions.find((option) => {
+          const hasItemInOption = this.selectListOptionsWithSelected.find((option) => {
             if (this.options.valueTypeReturned === "object") {
               return isEqual(option, item);
             }
@@ -597,7 +602,7 @@ export default {
           hasKeyInOptions = hasKeyInOptions && hasItemInOption;
         });
       } else {
-        hasKeyInOptions = this.selectListOptions.find((option) => {
+        hasKeyInOptions = this.selectListOptionsWithSelected.find((option) => {
           if (this.options.valueTypeReturned === "object") {
             return isEqual(option, this.value);
           }
