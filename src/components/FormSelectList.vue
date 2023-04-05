@@ -462,7 +462,8 @@ export default {
       }
 
       if (this.isCollection) {
-        wasUpdated = await this.loadOptionsFromCollection();
+        await this.loadOptionsFromCollection();
+        wasUpdated = false; // we call updateWatcherDependentFieldValue later
       }
 
       if (wasUpdated) {
