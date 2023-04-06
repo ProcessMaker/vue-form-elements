@@ -376,7 +376,7 @@ export default {
       }
       
       this.loading = true;
-      const data = await this.$dataProvider.getCollectionRecords(
+      const [data] = await this.$dataProvider.getCollectionRecords(
         this.collectionOptions.collectionId,
         { params: { pmql } }
       );
@@ -391,13 +391,23 @@ export default {
     },
     async getCollectionRecords(options) {
       let data = { data : [] };
-      
+      let resolvedNonce = null;
+            
+      // Nonce ensures we only use results from the latest request
+      this.nonce = Math.random();
+
       this.loading = true;
-      data = await this.$dataProvider.getCollectionRecords(
+      [data, resolvedNonce] = await this.$dataProvider.getCollectionRecords(
         this.collectionOptions.collectionId,
-        options
+        options,
+        this.nonce
       );
       this.loading = false;
+
+      if (resolvedNonce !== this.nonce) {
+        this.nonce = null;
+        return;
+      }
       
       if (!this.filter) {
         this.countWithoutFilter = data.meta ? data.meta.total : null;
@@ -481,6 +491,7 @@ export default {
       const resultList = [];
 
       if (!Array.isArray(list)) {
+        console.warn('The retrieved data is not an array. Please check the data sources options of the select list `' + this.name + '`')
         return resultList;
       }
 
