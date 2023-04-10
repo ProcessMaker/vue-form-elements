@@ -320,18 +320,6 @@ export default {
         params: { per_page: MAX_COLLECTION_RECORDS }
       };
 
-      // If dependent is set, only reload the options if the the dependent changes
-      if (this.collectionOptions.isDependent && this.collectionOptions.dependentField && !this.filter) {
-        const data = this.makeProxyData();
-        const dependentValue = get(data, this.collectionOptions.dependentField);
-        if (isEqual(dependentValue, this.previousDependentValue)) {
-          // Same, so do not reload records
-          return false;
-        }
-        this.previousDependentValue = dependentValue;
-        this.selectedOption = null;
-      }
-
       let pmql = this.renderPmql(this.collectionOptions.pmql);
 
       pmql = this.includeFilterInPmql(pmql);
@@ -405,9 +393,10 @@ export default {
       this.loading = false;
 
       if (resolvedNonce !== this.nonce) {
-        this.nonce = null;
         return;
       }
+
+      this.nonce = null;
       
       if (!this.filter) {
         this.countWithoutFilter = data.meta ? data.meta.total : null;
