@@ -6,14 +6,32 @@
       v-bind="config"
       :format="format"
       :data-test="dataTest"
-      :class="classList"
+      :class="[classList, 'datePicker']"
       :input-attributes="inputAttributes"
       @input="submitDate"
-    />
+    >
+      <template v-slot:default="{ open, inputValue }">
+        <input
+          type="text"
+          v-bind="inputAttributes"
+          :value="inputValue"
+          class="form-control"
+          @focus="onOpen(open)"
+          @click="onOpen(open)"
+          @change="onChangeHandler($event.target.value)"
+        />
+        <button
+          v-if="date"
+          type="button"
+          @click="clear"
+          class="vdpClearInput"
+        ></button>
+      </template>
+    </date-pick>
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
     </div>
-    <small v-if="helper" v-once class="form-text text-muted">{{
+    <small v-if="helper" class="form-text text-muted">{{
       helper
     }}</small>
   </div>
@@ -26,17 +44,17 @@ import Mustache from "mustache";
 import DatePicker from "./DatePicker.vue";
 import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
-import { getUserDateFormat, getUserDateTimeFormat } from "../dateUtils";
+import { getUserDateFormat, getUserDateTimeFormat, getTimezone } from "../dateUtils";
 import "vue-date-pick/dist/vueDatePick.css";
 
 const Validator = require("validatorjs");
 
 const uniqIdsMixin = createUniqIdsMixin();
-const checkFormats = ["YYYY-MM-DD", moment.ISO_8601];
+const checkFormats = ["YYYY-MM-DD", "MM/DD/YYYY", moment.ISO_8601];
 
 Validator.register(
   "date_or_mustache",
-  function(value, requirement, attribute) {
+  function (value, requirement, attribute) {
     let rendered = null;
     try {
       // Clear out any mustache statements
@@ -84,23 +102,30 @@ export default {
       type: Boolean,
       default: false
     },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
     minDate: { type: [String, Boolean], default: false },
     maxDate: { type: [String, Boolean], default: false }
   },
   data() {
+    // set to the browser's timezone because the vue-date-pick always works
+    // with the browser's timezone
+    moment.tz.setDefault(moment.tz.guess());
     return {
       validatorErrors: [],
-      date:
-        !!this.value && this.value.length > 0
-          ? this.parsingInputDate(this.value)
-          : "",
+      date: "",
       inputAttributes: {
         class: `${this.inputClass}`,
         placeholder: this.placeholder,
         name: this.name,
         "aria-label": this.ariaLabel,
-        "tab-index": this.tabIndex
-      }
+        "tab-index": this.tabIndex,
+        disabled: this.disabled,
+        readonly: this.readonly
+      },
+      onChangeDate: ""
     };
   },
   computed: {
@@ -143,18 +168,32 @@ export default {
             ? this.validator.errors.get(this.name)
             : [];
       }
+    },
+    value(newValue) {
+      this.updateValue(newValue);
     }
   },
   created() {
     Validator.register(
       "after_min_date",
       (value, requirement, attribute) => {
-        return this.parseDate(value) >= this.parseDate(this.minDate);
+        return (
+          this.parseDate(value) >=
+          this.parseDate(this.minDate)
+        );
       },
       "Must be after or equal Minimum Date"
     );
+    this.updateValue(this.value);
   },
   methods: {
+    updateValue(newValue) {
+      if (!!newValue && newValue.length > 0) {
+        const date = moment.tz(newValue, checkFormats, true, getTimezone());
+        if (!date.isValid()) return "";
+        this.date = date.format(this.format);
+      }
+    },
     parseDate(val) {
       let date = false;
 
@@ -233,19 +272,50 @@ export default {
       return currentDate.isSame(currentValue, comparatorString);
     },
     submitDate() {
+      if (this.onChangeDate !== "") {
+        this.date = this.onChangeDate;
+      }
       if (this.value && !this.date) {
         this.$emit("input", "");
       }
+
       if (this.isDateAndValueTheSame()) return;
       const newDate =
         this.dataFormat === "date"
           ? moment.utc(this.date, this.config.format)
           : moment(this.date, this.config.format);
       // Check if the date that the user inputted, is valid against the minDate set
-      if (newDate < this.parseDateToDate(this.minDate)) return null;
+      if (newDate.isBefore(this.parseDateToDate(this.minDate))) return null;
       // Check if the date that the user inputted, is valid against the maxDate set
-      if (this.parseDateToDate(this.maxDate) > newDate) return null;
-      this.$emit("input", newDate.toISOString());
+      if (newDate.isAfter(moment(this.parseDateToDate(this.maxDate)))) return null;
+      if (this.dataFormat === "datetime") {
+        // we must change the date timezone to the user timezone, then convert it to ISOString
+        // e.g. browser at UTC-4, newDate is 2023-03-17 12:16:00, we must convert it to 2023-03-17 12:16:00 UTC-7
+        // then convert it to ISOString
+        const dateTime = newDate.format("YYYY-MM-DD HH:mm"); // browser tz
+        const fixedDate = moment.tz(dateTime, getTimezone()); // user tz
+        this.$emit("input", fixedDate.toISOString());
+      } else {
+        this.$emit("input", newDate.toISOString());
+      }
+    },
+    onOpen(open) {
+      this.onChangeDate = "";
+      if (typeof open === "function") {
+        open();
+      }
+    },
+    clear() {
+      this.date = "";
+    },
+    onChangeHandler(userText) {
+      if (userText) {
+        const userDate = moment(userText, [...checkFormats, this.format], true);
+        if (userDate.isValid()) {
+          this.onChangeDate = userDate.format(this.format);
+          this.submitDate();
+        }
+      }
     }
   }
 };
@@ -254,5 +324,8 @@ export default {
 <style>
 .vdpHeadCell {
   padding: 0.3em 0.4em 1.8em;
+}
+.datePicker {
+  display: block !important;
 }
 </style>
