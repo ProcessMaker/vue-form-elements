@@ -104,7 +104,6 @@ export default {
       loaded: false,
       previousDependentValue: null,
       filter: "",
-      orderBy: "",
       countWithoutFilter: null,
     };
   },
@@ -328,9 +327,8 @@ export default {
         options.params.pmql = pmql;
       }
 
-      if (this.orderBy) {
-        options.params.order_by = this.orderBy;
-        options.params.order_direction = 'DESC';
+      if (this.collectionOptions.unique) {
+        options.params.groupBy = this.collectionOptions.valueField;
       }
 
       await this.getCollectionRecords(options);
