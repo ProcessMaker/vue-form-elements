@@ -336,9 +336,20 @@ export default {
       return true;
     },
     formatCollectionRecordResults(record) {
+      let content = get(record, this.collectionOptions.labelField);
+      let value = get(record, this.collectionOptions.valueField);
+
+      // Special handler for file uploads
+      if (typeof content === 'object' && ('name' in content)) {
+        content = content.name;
+      }
+      if (typeof value === 'object' && ('id' in value)) {
+        value = value.id;
+      }
+
       return {
-        value: get(record, this.collectionOptions.valueField),
-        content: String(get(record, this.collectionOptions.labelField))
+        value,
+        content: String(content)
       };
     },
     includeFilterInPmql(pmql) {
