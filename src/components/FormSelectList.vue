@@ -338,7 +338,7 @@ export default {
     formatCollectionRecordResults(record) {
       return {
         value: get(record, this.collectionOptions.valueField),
-        content: get(record, this.collectionOptions.labelField)
+        content: String(get(record, this.collectionOptions.labelField))
       };
     },
     includeFilterInPmql(pmql) {
