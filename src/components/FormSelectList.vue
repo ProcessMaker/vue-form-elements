@@ -273,8 +273,13 @@ export default {
         }
       };
 
-      const pmql = this.renderPmql(this.options.pmqlQuery);
-      if (pmql) {
+      if (
+        typeof this.options.pmqlQuery !== "undefined" &&
+        this.options.pmqlQuery !== "" &&
+        this.options.pmqlQuery !== null
+      ) {
+        const data = this.makeProxyData();
+        const pmql = Mustache.render(this.options.pmqlQuery, { data });
         params.config.outboundConfig = [
           { type: "PARAM", key: "pmql", value: pmql }
         ];
