@@ -328,7 +328,7 @@ export default {
       }
 
       if (this.collectionOptions.unique) {
-        options.params.groupBy = this.collectionOptions.valueField;
+        options.params.groupBy = this.collectionOptions.labelField;
       }
 
       await this.getCollectionRecords(options);
