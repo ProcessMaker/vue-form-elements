@@ -353,7 +353,7 @@ export default {
       }
 
       return {
-        value,
+        value: String(value),
         content: String(content)
       };
     },
