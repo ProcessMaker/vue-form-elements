@@ -102,7 +102,7 @@ export default {
       if (!isArray && isObject) {return value;}
       if (!isArray && !isObject) {
         const founds = options.filter(option => {
-          const normalizedOption = option[keyField] ? option[keyField] : null;
+          const normalizedOption = keyField in option ? option[keyField] : null;
           return value == normalizedOption && normalizedOption !== null;
         });
         return founds.length > 0 ? founds[0] : [];
