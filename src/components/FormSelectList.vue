@@ -104,7 +104,6 @@ export default {
       loaded: false,
       previousDependentValue: null,
       filter: "",
-      orderBy: "",
       countWithoutFilter: null,
     };
   },
@@ -274,8 +273,13 @@ export default {
         }
       };
 
-      const pmql = this.renderPmql(this.options.pmqlQuery);
-      if (pmql) {
+      if (
+        typeof this.options.pmqlQuery !== "undefined" &&
+        this.options.pmqlQuery !== "" &&
+        this.options.pmqlQuery !== null
+      ) {
+        const data = this.makeProxyData();
+        const pmql = Mustache.render(this.options.pmqlQuery, { data });
         params.config.outboundConfig = [
           { type: "PARAM", key: "pmql", value: pmql }
         ];
@@ -328,9 +332,8 @@ export default {
         options.params.pmql = pmql;
       }
 
-      if (this.orderBy) {
-        options.params.order_by = this.orderBy;
-        options.params.order_direction = 'DESC';
+      if (this.collectionOptions.unique) {
+        options.params.groupBy = this.collectionOptions.labelField;
       }
 
       await this.getCollectionRecords(options);
@@ -338,9 +341,20 @@ export default {
       return true;
     },
     formatCollectionRecordResults(record) {
+      let content = get(record, this.collectionOptions.labelField);
+      let value = get(record, this.collectionOptions.valueField);
+
+      // Special handler for file uploads
+      if (typeof content === 'object' && ('name' in content)) {
+        content = content.name;
+      }
+      if (typeof value === 'object' && ('id' in value)) {
+        value = value.id;
+      }
+
       return {
-        value: get(record, this.collectionOptions.valueField),
-        content: get(record, this.collectionOptions.labelField)
+        value: String(value),
+        content: String(content)
       };
     },
     includeFilterInPmql(pmql) {
