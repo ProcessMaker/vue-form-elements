@@ -1,6 +1,6 @@
 <template>
   <div class="form-group">
-    <label v-uni-for="name">{{label}}</label>
+    <label v-uni-for="name">{{ label }}</label>
     <multi-select-view
       v-if="options.renderAs === 'dropdown'"
       :option-value="optionsKey"
@@ -9,12 +9,14 @@
       v-model="valueProxy"
       :placeholder="placeholder ? placeholder : $t('Select...')"
       :show-labels="false"
-      :options="selectListOptions"
+      :options="selectListOptionsWithSelected"
       :react-options="reactOptions"
       :class="classList"
       :emit-objects="options.valueTypeReturned === 'object'"
       :emit-array="options.allowMultiSelect"
       v-bind="$attrs"
+      @search-change="searchChange"
+      :loading="loading"
     >
     </multi-select-view>
 
@@ -24,7 +26,7 @@
         :name="name"
         :option-value="optionsKey"
         :option-content="optionsValue"
-        :options="selectListOptions"
+        :options="selectListOptionsWithSelected"
         :react-options="reactOptions"
         :emit-objects="options.valueTypeReturned === 'object'"
         v-bind="$attrs"
@@ -33,35 +35,42 @@
 
     <div v-if="options.renderAs === 'checkbox' && !options.allowMultiSelect">
       <optionbox-view
-          v-model="valueProxy"
-          :name="name"
-          :option-value="optionsKey"
-          :option-content="optionsValue"
-          :options="selectListOptions"
-          :react-options="reactOptions"
-          :emit-objects="options.valueTypeReturned === 'object'"
-          v-bind="$attrs"
+        v-model="valueProxy"
+        :name="name"
+        :option-value="optionsKey"
+        :option-content="optionsValue"
+        :options="selectListOptionsWithSelected"
+        :react-options="reactOptions"
+        :emit-objects="options.valueTypeReturned === 'object'"
+        v-bind="$attrs"
       />
     </div>
 
-    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
-      <div v-for="(error, index) in validatorErrors" :key="index">{{error}}</div>
-      <div v-if="error">{{error}}</div>
+    <div
+      v-if="(validator && validator.errorCount) || error"
+      class="invalid-feedback d-block"
+    >
+      <div v-for="(error, index) in validatorErrors" :key="index">
+        {{ error }}
+      </div>
+      <div v-if="error">{{ error }}</div>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+    <small v-if="helper" class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import Mustache from "mustache";
-import { isEqual, cloneDeep, get, set } from "lodash";
+import { isEqual, cloneDeep, get, set, debounce } from "lodash";
 import ValidationMixin from "./mixins/validation";
 import MultiSelectView from "./FormSelectList/MultiSelectView";
 import CheckboxView from "./FormSelectList/CheckboxView";
 import OptionboxView from "./FormSelectList/OptionboxView";
 
 const uniqIdsMixin = createUniqIdsMixin();
+
+const MAX_COLLECTION_RECORDS = 100;
 
 export default {
   components: {
@@ -90,10 +99,30 @@ export default {
       previousValidationData: null,
       previousValidationDataParent: null,
       selectListOptions: [],
-      loaded: false
+      selectedOption: null,
+      loading: false,
+      loaded: false,
+      previousDependentValue: null,
+      filter: "",
+      countWithoutFilter: null,
     };
   },
   computed: {
+    selectListOptionsWithSelected() {
+      if (this.selectedOption && !this.selectListOptions.some(o => o.value === this.selectedOption.value)) {
+        return [this.selectedOption, ...this.selectListOptions];
+      }
+      return this.selectListOptions;
+    },
+    collectionOptions() {
+      return get(this.options, 'collectionOptions');
+    },
+    isCollection() {
+      return get(this.options, 'dataSource') === "collection"
+    },
+    mode() {
+      return this.$root.$children[0].mode;
+    },
     validatorErrors() {
       return (this.validator && this.validator.errors.get(this.name)) || [];
     },
@@ -104,7 +133,7 @@ export default {
       const isString = typeof this.value === "string";
       let resetValueIfNotInOptions = true;
 
-      // If is the first time is loaded and the type of the value is string, 
+      // If is the first time is loaded and the type of the value is string,
       // should not reset the dependent select ..
       if (!this.loaded && isString) {
         resetValueIfNotInOptions = false;
@@ -119,6 +148,7 @@ export default {
     sourceConfig() {
       return {
         dataSource: this.options.dataSource,
+        collectionOptions: this.options.collectionOptions,
         selectedEndPoint: this.options.selectedEndPoint,
         selectedDataSource: this.options.selectedDataSource,
         valueTypeReturned: this.options.valueTypeReturned,
@@ -144,6 +174,7 @@ export default {
         return this.value;
       },
       set(val) {
+        this.selectedOption = val ? this.selectListOptions.find(o => o.value === val) : null;
         return this.$emit("input", val);
       }
     },
@@ -170,7 +201,8 @@ export default {
     optionsValue() {
       if (
         this.options.dataSource &&
-        this.options.dataSource === "provideData"
+        (this.options.dataSource === "provideData" ||
+          this.isCollection)
       ) {
         return "content";
       }
@@ -184,7 +216,25 @@ export default {
       };
     }
   },
+  watch: {
+    selectListOptions: {
+      handler() {
+        if (this.isCollection) {
+          if (this.value && !this.selectListOptions.some(o => o.value === this.value)) {
+            this.loadIndividualRecord();
+          }
+        }
+      }
+    },
+  },
   methods: {
+    renderPmql(pmql) {
+      if (typeof pmql !== "undefined" && pmql !== "" && pmql !== null) {
+        const data = this.makeProxyData();
+        return Mustache.render(pmql, data);
+      }
+      return "";
+    },
     /**
      * Load select list options from a data connector
      *
@@ -258,9 +308,130 @@ export default {
         return false;
       }
     },
-    searchChange(filter) {
-      this.filter = filter;
-      this.optionsFromDataSource();
+    async loadOptionsFromCollection() {
+      if (this.mode === "editor") {
+        return false;
+      }
+
+      if (
+        !this.collectionOptions ||
+        !this.collectionOptions.collectionId ||
+        !this.collectionOptions.labelField ||
+        !this.collectionOptions.valueField
+      ) {
+        return false;
+      }
+      
+      const options = {
+        params: { per_page: MAX_COLLECTION_RECORDS }
+      };
+
+      let pmql = this.renderPmql(this.collectionOptions.pmql);
+
+      pmql = this.includeFilterInPmql(pmql);
+
+      if (pmql) {
+        options.params.pmql = pmql;
+      }
+
+      if (this.collectionOptions.unique) {
+        options.params.groupBy = this.collectionOptions.labelField;
+      }
+
+      await this.getCollectionRecords(options);
+
+      return true;
+    },
+    formatCollectionRecordResults(record) {
+      let content = get(record, this.collectionOptions.labelField);
+      let value = get(record, this.collectionOptions.valueField);
+
+      // Special handler for file uploads
+      if (typeof content === 'object' && ('name' in content)) {
+        content = content.name;
+      }
+      if (typeof value === 'object' && ('id' in value)) {
+        value = value.id;
+      }
+
+      return {
+        value: String(value),
+        content: String(content)
+      };
+    },
+    includeFilterInPmql(pmql) {
+      if (this.filter) {
+        const filterPmql = `${this.collectionOptions.labelField} like "%${this.filter}%"`;
+        if (pmql) {
+          pmql = `(${pmql}) AND ${filterPmql}`;
+        } else {
+          pmql = filterPmql;
+        }
+      }
+      return pmql;
+    },
+    async loadIndividualRecord() {
+      let pmql = this.renderPmql(this.collectionOptions.pmql);
+      const recordPmql = `${this.collectionOptions.valueField} = "${this.value}"`;
+      if (pmql) {
+        pmql += ` AND ${recordPmql}`;
+      } else {
+        pmql = recordPmql;
+      }
+      
+      this.loading = true;
+      const [data] = await this.$dataProvider.getCollectionRecords(
+        this.collectionOptions.collectionId,
+        { params: { pmql } }
+      );
+      this.loading = false;
+
+      if (data.data && data.data.length > 0) {
+        this.selectedOption = this.formatCollectionRecordResults(data.data[0]);
+      } else {
+        this.selectedOption = null;
+        this.updateWatcherDependentFieldValue(true);
+      }
+    },
+    async getCollectionRecords(options) {
+      let data = { data : [] };
+      let resolvedNonce = null;
+            
+      // Nonce ensures we only use results from the latest request
+      this.nonce = Math.random();
+
+      this.loading = true;
+      [data, resolvedNonce] = await this.$dataProvider.getCollectionRecords(
+        this.collectionOptions.collectionId,
+        options,
+        this.nonce
+      );
+      this.loading = false;
+
+      if (resolvedNonce !== this.nonce) {
+        return;
+      }
+
+      this.nonce = null;
+      
+      if (!this.filter) {
+        this.countWithoutFilter = data.meta ? data.meta.total : null;
+      }
+      
+      this.selectListOptions = data.data.map(this.formatCollectionRecordResults);
+    },
+    debouncedSetFilter: debounce(function(value) {
+      this.filter = value;
+    }, 300),
+    searchChange(value) {
+      if (this.isCollection) {
+        if (this.countWithoutFilter && this.countWithoutFilter < MAX_COLLECTION_RECORDS) {
+          // No need to backend filter since all items were returned
+          return;
+        }
+        this.loading = true;
+        this.debouncedSetFilter(value);
+      }
     },
     /**
      * Transform the options to the format expected by the select list.
@@ -304,6 +475,12 @@ export default {
       ) {
         wasUpdated = await this.loadOptionsFromDataConnector(this.sourceConfig);
       }
+
+      if (this.isCollection) {
+        await this.loadOptionsFromCollection();
+        wasUpdated = false; // we call updateWatcherDependentFieldValue later
+      }
+
       if (wasUpdated) {
         this.$nextTick(() => {
           this.updateWatcherDependentFieldValue(resetValueIfNotInOptions);
@@ -432,7 +609,7 @@ export default {
       if (Array.isArray(this.value)) {
         hasKeyInOptions = true;
         this.value.forEach((item) => {
-          const hasItemInOption = this.selectListOptions.find((option) => {
+          const hasItemInOption = this.selectListOptionsWithSelected.find((option) => {
             if (this.options.valueTypeReturned === "object") {
               return isEqual(option, item);
             }
@@ -442,14 +619,14 @@ export default {
           hasKeyInOptions = hasKeyInOptions && hasItemInOption;
         });
       } else {
-        hasKeyInOptions = this.selectListOptions.find((option) => {
+        hasKeyInOptions = this.selectListOptionsWithSelected.find((option) => {
           if (this.options.valueTypeReturned === "object") {
             return isEqual(option, this.value);
           }
           return get(option, this.optionsKey) === this.value;
         });
       }
-      
+
       if (!hasKeyInOptions && resetValueIfNotInOptions) {
         this.$emit("reset", this.name);
       }
