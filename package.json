@@ -7,6 +7,7 @@
     "serve": "NODE_ENV=standalone vue-cli-service serve",
     "build": "vite build",
     "preview": "vite preview",
+    "bundle-analyzer": "vite-bundle-visualizer",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "build-bundle": "vue-cli-service build --target lib --name vue-form-elements ./src/components/index.js",
@@ -20,8 +21,7 @@
         "import": "./dist/vue-form-elements.es.js",
         "require": "./dist/vue-form-elements.umd.js"
       }
-    },
-    "./dist/style.css": "./dist/style.css"
+    }
   },
   "files": [
     "dist"
@@ -31,11 +31,10 @@
     "@tinymce/tinymce-vue": "2.0.0",
     "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.26",
     "popper.js": "^1.14.4",
-    "sass": "^1.51.0",
     "tinymce": "5.10.0",
     "vue": "^2.6.12",
     "vue-date-pick": "^1.5.1",
@@ -43,13 +42,11 @@
     "weekstart": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
     "@panter/vue-i18next": "^0.15.0",
     "@processmaker/vue-multiselect": "2.2.0",
     "@types/jest": "^24.0.18",
-    "@vue/cli-plugin-babel": "^3.12.1",
-    "@vue/cli-plugin-eslint": "^3.0.0-beta.15",
-    "@vue/cli-plugin-unit-jest": "^4.1.2",
-    "@vue/cli-service": "^3.0.0-beta.15",
     "@vue/test-utils": "1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
@@ -62,8 +59,9 @@
     "i18next": "^15.1.1",
     "mustache": "^3.0.1",
     "prettier": "2.7.1",
-    "sass-loader": "^10.2.0",
+    "sass": "^1.62.0",
     "vite": "^3.0.3",
+    "vite-bundle-visualizer": "^0.6.0",
     "vite-plugin-css-injected-by-js": "^2.4.0",
     "vite-plugin-vue2": "^2.0.2",
     "vue-template-compiler": "^2.6.12"
@@ -85,15 +83,9 @@
       "parser": "babel-eslint"
     }
   },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
   "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
+    "defaults",
+    "> 0.2% and not dead"
   ],
   "bugs": {
     "url": "https://github.com/processmaker/vue-form-elements/issues"

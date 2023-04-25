@@ -17,7 +17,7 @@
         if (this.error) {
           errors.push(this.error);
         }
-        if (this.name && this.validator &&  this.validator.errors.errors[this.name]) {
+        if (this.name && this.validator && this.validator.errors.errors[this.name]) {
           this.validator.errors.errors[this.name].forEach(error => {
             errors.push(error);
           });

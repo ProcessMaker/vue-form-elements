@@ -10,7 +10,7 @@
       :input-attributes="inputAttributes"
       @input="submitDate"
     >
-      <template v-slot:default="{ open, inputValue }">
+      <template #default="{ open, inputValue }">
         <input
           type="text"
           v-bind="inputAttributes"
@@ -23,17 +23,15 @@
         <button
           v-if="date"
           type="button"
-          @click="clear"
           class="vdpClearInput"
+          @click="clear"
         ></button>
       </template>
     </date-pick>
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{
-      helper
-    }}</small>
+    <small v-if="helper" class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
 
@@ -44,10 +42,14 @@ import Mustache from "mustache";
 import DatePicker from "./DatePicker.vue";
 import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
-import { getUserDateFormat, getUserDateTimeFormat, getTimezone } from "../dateUtils";
+import {
+  getUserDateFormat,
+  getUserDateTimeFormat,
+  getTimezone
+} from "../dateUtils";
 import "vue-date-pick/dist/vueDatePick.css";
 
-const Validator = require("validatorjs");
+import Validator from "@chantouchsek/validatorjs";
 
 const uniqIdsMixin = createUniqIdsMixin();
 const checkFormats = ["YYYY-MM-DD", "MM/DD/YYYY", moment.ISO_8601];
@@ -177,10 +179,7 @@ export default {
     Validator.register(
       "after_min_date",
       (value, requirement, attribute) => {
-        return (
-          this.parseDate(value) >=
-          this.parseDate(this.minDate)
-        );
+        return this.parseDate(value) >= this.parseDate(this.minDate);
       },
       "Must be after or equal Minimum Date"
     );
@@ -248,8 +247,8 @@ export default {
     @returns {boolean}
      */
     checkMinMaxDateDisabled(date) {
-      const minDate = !!this.minDate ? this.parseDateToDate(this.minDate) : "";
-      const maxDate = !!this.maxDate ? this.parseDateToDate(this.maxDate) : "";
+      const minDate = this.minDate ? this.parseDateToDate(this.minDate) : "";
+      const maxDate = this.maxDate ? this.parseDateToDate(this.maxDate) : "";
       // If minDate and maxDate are not defined, return. This would be the default case
       if (minDate.length === 0 && maxDate.length === 0) return;
       if (!!minDate && !!maxDate) {
@@ -287,7 +286,8 @@ export default {
       // Check if the date that the user inputted, is valid against the minDate set
       if (newDate.isBefore(this.parseDateToDate(this.minDate))) return null;
       // Check if the date that the user inputted, is valid against the maxDate set
-      if (newDate.isAfter(moment(this.parseDateToDate(this.maxDate)))) return null;
+      if (newDate.isAfter(moment(this.parseDateToDate(this.maxDate))))
+        return null;
       if (this.dataFormat === "datetime") {
         // we must change the date timezone to the user timezone, then convert it to ISOString
         // e.g. browser at UTC-4, newDate is 2023-03-17 12:16:00, we must convert it to 2023-03-17 12:16:00 UTC-7

@@ -43,7 +43,7 @@ import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
 import DisplayErrors from "./common/DisplayErrors";
 import Editor from "./Editor";
-import {throttle} from 'lodash';
+import {throttle} from 'lodash-es';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
