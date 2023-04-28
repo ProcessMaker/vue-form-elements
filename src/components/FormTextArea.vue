@@ -91,6 +91,9 @@ export default {
           this.setHeight();
         },
         setup: (editor) => {
+          editor.on("blur", () => {
+            this.$emit("blur");
+          });
           editor.ui.registry.addButton("pagebreak", {
             tooltip: this.$t("Insert Page Break For PDF"),
             icon: "page-break",
