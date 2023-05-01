@@ -60,7 +60,7 @@
     "mustache": "^3.0.1",
     "prettier": "2.7.1",
     "sass": "^1.62.0",
-    "vite": "^3.0.3",
+    "vite": "^4.3.3",
     "vite-bundle-visualizer": "^0.6.0",
     "vite-plugin-css-injected-by-js": "^2.4.0",
     "vite-plugin-vue2": "^2.0.2",
