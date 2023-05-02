@@ -51,8 +51,8 @@ export default {
     },
     isChecked() {
       // if control's value is not set, use the initiallyChecked configuration
-      let initCheck = (new Boolean(this.initiallyChecked)) == true;
-      if (typeof(this.checked) == 'undefined' || this.checked == null) {
+      let initCheck = (Boolean(this.initiallyChecked)) === true;
+      if (typeof(this.checked) === 'undefined' || this.checked === null) {
         this.$emit('change', initCheck);
         return initCheck;
       }
