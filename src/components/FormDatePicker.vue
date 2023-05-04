@@ -328,4 +328,7 @@ export default {
 .datePicker {
   display: block !important;
 }
+.vdpOuterWrap.vdpFloating {
+  z-index: 5;
+}
 </style>
