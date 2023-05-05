@@ -6,8 +6,8 @@
       v-bind="config"
       :format="format"
       :data-test="dataTest"
-      :class="[classList, 'datePicker']"
       :input-attributes="inputAttributes"
+      class="datePicker"
       @input="submitDate"
     >
       <template v-slot:default="{ open, inputValue }">
@@ -15,7 +15,7 @@
           type="text"
           v-bind="inputAttributes"
           :value="inputValue"
-          class="form-control"
+          :class="[classList, 'form-control']"
           @focus="onOpen(open)"
           @click="onOpen(open)"
           @change="onChangeHandler($event.target.value)"
@@ -307,6 +307,7 @@ export default {
     },
     clear() {
       this.date = "";
+      this.$emit("input", "");
     },
     onChangeHandler(userText) {
       if (userText) {
