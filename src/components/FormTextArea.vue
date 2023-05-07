@@ -145,9 +145,11 @@ export default {
     }, 500);
   },
   mounted() {
-    window.ProcessMaker.EventBus.$on("modal-shown", () => {
-      this.rebootEditor();
-    });
+    if('ProcessMaker' in window && 'EventBus' in window.ProcessMaker) {
+      window.ProcessMaker.EventBus.$on("modal-shown", () => {
+        this.rebootEditor();
+      });
+    }
   },
   methods: {
     setHeight() {

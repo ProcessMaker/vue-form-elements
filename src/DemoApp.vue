@@ -1,5 +1,8 @@
 <template>
   <div class="container">
+    <b-form-collapse></b-form-collapse>
+    <b-form-dropdown></b-form-dropdown>
+    <b-form-modal></b-form-modal>
     <h1>vue-form-elements playground</h1>
     <form-select-list
       v-model="data.sampleSelect"
