@@ -14,6 +14,12 @@ import FormMultiSelect from './FormMultiSelect';
 import FormPlainMultiSelect from './FormPlainMultiSelect';
 import * as dateUtils from '../dateUtils';
 
+import BFormCollapse from './FormBootstrapVueComponents/BFormCollapse'
+import BFormDropdown from './FormBootstrapVueComponents/BFormDropdown'
+import BFormModal from './FormBootstrapVueComponents/BFormModal'
+import BFormComponent from './FormBootstrapVueComponents/BFormComponent'
+import BWrapperComponent from './FormBootstrapVueComponents/BWrapperComponent'
+
 // Export our components
 let components = {
     FormInput,
@@ -29,6 +35,11 @@ let components = {
     FormDelayTimeControl,
     FormMultiSelect,
     FormPlainMultiSelect,
+    BFormCollapse,
+    BFormDropdown,
+    BFormModal,
+    BFormComponent,
+    BWrapperComponent,
 }
 
 // Export our named exports
@@ -47,6 +58,10 @@ export {
     FormMultiSelect,
     FormPlainMultiSelect,
     dateUtils,
+    BFormCollapse,
+    BFormDropdown,
+    BFormModal,
+    BFormComponent
 }
 
 // Export our Vue plugin as our default
