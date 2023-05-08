@@ -17,6 +17,8 @@ import * as dateUtils from '../dateUtils';
 import BFormCollapse from './FormBootstrapVueComponents/BFormCollapse'
 import BFormDropdown from './FormBootstrapVueComponents/BFormDropdown'
 import BFormModal from './FormBootstrapVueComponents/BFormModal'
+import BFormComponent from './FormBootstrapVueComponents/BFormComponent'
+import BWrapperComponent from './FormBootstrapVueComponents/BWrapperComponent'
 
 // Export our components
 let components = {
@@ -35,7 +37,9 @@ let components = {
     FormPlainMultiSelect,
     BFormCollapse,
     BFormDropdown,
-    BFormModal
+    BFormModal,
+    BFormComponent,
+    BWrapperComponent,
 }
 
 // Export our named exports
@@ -56,7 +60,8 @@ export {
     dateUtils,
     BFormCollapse,
     BFormDropdown,
-    BFormModal
+    BFormModal,
+    BFormComponent
 }
 
 // Export our Vue plugin as our default
