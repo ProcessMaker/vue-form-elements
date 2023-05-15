@@ -1,6 +1,6 @@
 <template>
   <div class="form-group">
-    <label v-uni-for="name">{{ label }}</label>
+    <required-asterisk /><label v-uni-for="name">{{ label }}</label>
     <multi-select-view
       v-if="options.renderAs === 'dropdown'"
       :option-value="optionsKey"
@@ -67,6 +67,7 @@ import ValidationMixin from "./mixins/validation";
 import MultiSelectView from "./FormSelectList/MultiSelectView";
 import CheckboxView from "./FormSelectList/CheckboxView";
 import OptionboxView from "./FormSelectList/OptionboxView";
+import RequiredAsterisk from './common/RequiredAsterisk';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -76,7 +77,8 @@ export default {
   components: {
     OptionboxView,
     MultiSelectView,
-    CheckboxView
+    CheckboxView,
+    RequiredAsterisk
   },
   mixins: [uniqIdsMixin, ValidationMixin],
   inheritAttrs: false,
