@@ -20,6 +20,33 @@ export default {
                 return false;
             }
         },
+        required() {
+            for (const validation of get(this.config, 'validation', [])) {
+                const rule = get(validation, 'value', '').split(':')[0];
+
+                if (rule === 'required') {
+                    return true;
+                }
+
+                if (rule === 'required_if' || rule === 'required_unless') {
+                    const variable = validation.configs[0].value;
+                    const value = validation.configs[1].value;
+                    const check = get(this.$parent, variable);
+
+                    if (rule === 'required_if') {
+                        if (check === value) {
+                            return true;
+                        }
+                    } else {
+                        if (check !== value) {
+                            return true;
+                        }
+                    }
+                }
+
+            }
+            return false;
+        }
     },
     data() {
         return {
