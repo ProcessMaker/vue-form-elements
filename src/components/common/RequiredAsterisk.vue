@@ -7,4 +7,8 @@
   color: #dc3545;
   padding-right: 0.5em;
 }
+
+.conversational-chat .required-asterisk {
+  display: none;
+}
 </style>
