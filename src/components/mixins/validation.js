@@ -34,11 +34,11 @@ export default {
                     const check = get(this.$parent, variable);
 
                     if (rule === 'required_if') {
-                        if (check === value) {
+                        if (check == value) {
                             return true;
                         }
                     } else {
-                        if (check !== value) {
+                        if (check != value) {
                             return true;
                         }
                     }
