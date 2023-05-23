@@ -233,7 +233,7 @@ export default {
       return date;
     },
     parsingInputDate(val) {
-      const date = moment(val, this.format, true);
+      const date = moment.tz(val, this.format, getTimezone());
       // Check if user is typing, if the date is not valid, let the user continue
       if (!date.isValid()) return "";
       return date.toDate();
