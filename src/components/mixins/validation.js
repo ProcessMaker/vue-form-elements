@@ -31,7 +31,12 @@ export default {
                 if (rule === 'required_if' || rule === 'required_unless') {
                     const variable = validation.configs[0].value;
                     const value = validation.configs[1].value;
-                    const check = get(this.$parent, variable);
+                    let source = this.$parent;
+                    if (!('$v' in source)) {
+                        // Account for multicolumn components
+                        source = source.$parent;
+                    }
+                    const check = get(source, variable);
 
                     if (rule === 'required_if') {
                         if (check == value) {
