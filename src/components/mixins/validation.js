@@ -1,6 +1,7 @@
 let Validator = require('validatorjs');
 import moment from 'moment-timezone';
 import ProxyData from './ProxyData';
+import { get } from 'lodash';
 
 export default {
     mixins: [ProxyData],
@@ -8,7 +9,8 @@ export default {
         'validation',
         'validationData',
         'validationField',
-        'validationMessages'
+        'validationMessages',
+        'config'
     ],
     computed: {
         isReadOnly() {
@@ -17,6 +19,38 @@ export default {
             } else {
                 return false;
             }
+        },
+        required() {
+            for (const validation of get(this.config, 'validation', [])) {
+                const rule = get(validation, 'value', '').split(':')[0];
+
+                if (rule === 'required') {
+                    return true;
+                }
+
+                if (rule === 'required_if' || rule === 'required_unless') {
+                    const variable = validation.configs[0].value;
+                    const value = validation.configs[1].value;
+                    let source = this.$parent;
+                    if (!('$v' in source)) {
+                        // Account for multicolumn components
+                        source = source.$parent;
+                    }
+                    const check = get(source, variable);
+
+                    if (rule === 'required_if') {
+                        if (check == value) {
+                            return true;
+                        }
+                    } else {
+                        if (check != value) {
+                            return true;
+                        }
+                    }
+                }
+
+            }
+            return false;
         }
     },
     data() {
