@@ -89,10 +89,14 @@ export default {
     name: String,
     placeholder: String,
     label: String,
-    error: [String, Boolean],
+    error: {
+      type: [String, Boolean]
+    },
     helper: String,
     dataFormat: String,
-    value: [String, Boolean, Date],
+    value: {
+      type: [String, Boolean, Date]
+    },
     ariaLabel: String,
     tabIndex: Number,
     inputClass: { type: [String, Array, Object], default: "form-control" },
