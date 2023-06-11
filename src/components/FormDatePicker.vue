@@ -4,29 +4,11 @@
     <date-pick
       v-model="date"
       v-bind="datePickerConfig"
-      :format="format"
       :data-test="dataTest"
       :input-attributes="inputAttributes"
       class="datePicker"
       @input="submitDate"
     >
-      <template v-slot:default="{ open, inputValue }">
-        <input
-          type="text"
-          v-bind="inputAttributes"
-          :value="inputValue"
-          :class="[classList, 'form-control']"
-          @focus="onOpen(open)"
-          @click="onOpen(open)"
-          @change="onChangeHandler($event.target.value)"
-        />
-        <button
-          v-if="date"
-          type="button"
-          @click="clear"
-          class="vdpClearInput"
-        ></button>
-      </template>
     </date-pick>
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(err, index) in errors" :key="index">{{ err }}</div>
@@ -95,7 +77,7 @@ export default {
     helper: String,
     dataFormat: String,
     value: {
-      type: [String, Boolean, Date]
+      type: [String, Object, Boolean, Date]
     },
     ariaLabel: String,
     tabIndex: Number,
@@ -116,9 +98,6 @@ export default {
     maxDate: { type: [String, Boolean], default: false }
   },
   data() {
-    // set to the browser's timezone because the vue-date-pick always works
-    // with the browser's timezone
-    moment.tz.setDefault(moment.tz.guess());
     return {
       validatorErrors: [],
       date: "",
@@ -137,10 +116,10 @@ export default {
   computed: {
     datePickerConfig() {
       return {
-        format: this.format,
+        format: this.datepicker ? "MM/DD/YYYY hh:mm a" : "MM/DD/YYYY",
         displayFormat: this.format,
         pickTime: this.datepicker,
-        parseDate: this.parsingInputDate,
+        // parseDate: this.parsingInputDate,
         editable: !this.disabled,
         use12HourClock: this.datepicker,
         isDateDisabled: this.checkMinMaxDateDisabled
@@ -174,9 +153,6 @@ export default {
             ? this.validator.errors.get(this.name)
             : [];
       }
-    },
-    value(newValue) {
-      this.updateValue(newValue);
     }
   },
   created() {
@@ -190,16 +166,30 @@ export default {
       },
       "Must be after or equal Minimum Date"
     );
+    // set to the browser's timezone because the vue-date-pick always works
+    // with the browser's timezone
+    moment.tz.setDefault(getTimezone());
     this.updateValue(this.value);
   },
   methods: {
+    /**
+     * Updates the defaultValue on re-render or reassignment
+     * @param {string|Object} newValue
+     * @return {string | void}
+     */
     updateValue(newValue) {
       if (!!newValue && newValue.length > 0) {
-        const date = moment.tz(newValue, checkFormats, true, getTimezone());
+        const date = moment.tz(newValue, checkFormats, getTimezone());
+        console.log(`date${this.datepicker ? 'time' : ''}`, date);
         if (!date.isValid()) return "";
         this.date = date.format(this.format);
       }
     },
+    /**
+     * Parses the date when is a Mustache string
+     * @param {string} val
+     * @return {boolean|moment.Moment}
+     */
     parseDate(val) {
       let date = false;
 
@@ -210,7 +200,8 @@ export default {
           date = val;
         }
 
-        date = moment(date, checkFormats, true);
+        date = moment.tz(date, [...checkFormats,  this.format], true, getTimezone());
+        console.log('date', date);
         if (!date.isValid()) {
           date = false;
         }
@@ -218,6 +209,11 @@ export default {
 
       return date;
     },
+    /**
+     * Parses the date for available formats for Min and Max Dates
+     * @param {string | MomentInput} val
+     * @return {string | boolean | moment.MomentInput | Date}
+     */
     parseDateToDate(val) {
       let date = "";
 
@@ -238,20 +234,14 @@ export default {
 
       return date;
     },
-    parsingInputDate(val) {
-      const date = moment.tz(val, this.format, getTimezone());
-      // Check if user is typing, if the date is not valid, let the user continue
-      if (!date.isValid()) return "";
-      return date.toDate();
-    },
-    /*
+    /**
     Function to be used for the DatePicker, to see if minDate and maxDate are
     1. Valid
     2. Within the range
     In the datepicker itself, this goes through a for loop to check if the dates that the user is seeing, are valid and
     acceptable
-    @param {string, Date} date
-    @returns {boolean}
+    @param {string, Date | undefined} date
+    @returns {boolean | void}
      */
     checkMinMaxDateDisabled(date) {
       const minDate = !!this.minDate ? this.parseDateToDate(this.minDate) : "";
@@ -266,6 +256,10 @@ export default {
       // If maxDate is defined but minDate not defined, block the dates after maxDate is defined
       if (minDate.length === 0 && !!maxDate) return date > maxDate;
     },
+    /**
+     * Check if the Date and Value in `this` is the same
+     * @return {boolean}
+     */
     isDateAndValueTheSame() {
       if (!this.date && !this.value) {
         return true;
@@ -277,51 +271,36 @@ export default {
 
       return currentDate.isSame(currentValue, comparatorString);
     },
-    submitDate() {
-      if (this.onChangeDate !== "") {
-        this.date = this.onChangeDate;
-      }
+    /**
+     * @param {string} value
+     * @return {(null|void)}
+     */
+    submitDate(value) {
+      // if default value is defined, trigger an update for the Data Preview
       if (this.value && !this.date) {
         this.$emit("input", "");
       }
 
       if (this.isDateAndValueTheSame()) return;
-      const newDate =
-        this.dataFormat === "date"
-          ? moment.utc(this.date, this.datePickerConfig.format)
-          : moment(this.date, this.datePickerConfig.format);
-      // Check if the date that the user inputted, is valid against the minDate set
-      if (newDate.isBefore(this.parseDateToDate(this.minDate))) return null;
-      // Check if the date that the user inputted, is valid against the maxDate set
-      if (newDate.isAfter(moment(this.parseDateToDate(this.maxDate)))) return null;
+
+      console.log('val', value);
+
+      /** @type {moment.Moment} */
+
+      const parsedDate = this.parseDate(value);
+
+      if (!parsedDate) return;
+
+      if (!parsedDate.isValid()) return;
+
+      // // Check if the date that the user inputted, is valid against the minDate set
+      if (parsedDate.isBefore(this.parseDateToDate(this.minDate))) return null;
+      // // Check if the date that the user inputted, is valid against the maxDate set
+      if (parsedDate.isAfter(moment(this.parseDateToDate(this.maxDate)))) return null;
       if (this.dataFormat === "datetime") {
-        // we must change the date timezone to the user timezone, then convert it to ISOString
-        // e.g. browser at UTC-4, newDate is 2023-03-17 12:16:00, we must convert it to 2023-03-17 12:16:00 UTC-7
-        // then convert it to ISOString
-        const dateTime = newDate.format("YYYY-MM-DD HH:mm"); // browser tz
-        const fixedDate = moment.tz(dateTime, getTimezone()); // user tz
-        this.$emit("input", fixedDate.toISOString());
+        this.$emit("input", parsedDate.utc().format());
       } else {
-        this.$emit("input", newDate.toISOString());
-      }
-    },
-    onOpen(open) {
-      this.onChangeDate = "";
-      if (typeof open === "function") {
-        open();
-      }
-    },
-    clear() {
-      this.date = "";
-      this.$emit("input", "");
-    },
-    onChangeHandler(userText) {
-      if (userText) {
-        const userDate = moment(userText, [...checkFormats, this.format], true);
-        if (userDate.isValid()) {
-          this.onChangeDate = userDate.format(this.format);
-          this.submitDate();
-        }
+        this.$emit("input", parsedDate.format(this.format));
       }
     }
   }
