@@ -1,6 +1,6 @@
 <template>
   <div class="form-group">
-    <label v-uni-for="name">{{label}}</label>
+    <required-asterisk /><label v-uni-for="name">{{label}}</label>
     <input
       v-bind="$attrs"
       v-uni-id="name"
@@ -21,6 +21,7 @@ import { createUniqIdsMixin } from 'vue-uniq-ids'
 import ValidationMixin from './mixins/validation.js'
 import DataFormatMixin from './mixins/DataFormat.js';
 import DisplayErrors from './common/DisplayErrors.vue';
+import RequiredAsterisk from './common/RequiredAsterisk';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -29,6 +30,7 @@ export default {
   inheritAttrs: false,
   components: {
     DisplayErrors,
+    RequiredAsterisk,
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [

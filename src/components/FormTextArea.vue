@@ -1,5 +1,6 @@
 <template>
   <div class="form-group">
+    <required-asterisk />
     <label v-uni-for="label">{{ label }} </label>
     <div v-if="richtext" :class="classList" v-uni-id="label">
       <div v-if="readonly" v-html="value"></div>
@@ -44,6 +45,7 @@ import DataFormatMixin from "./mixins/DataFormat";
 import DisplayErrors from "./common/DisplayErrors";
 import Editor from "./Editor";
 import {throttle} from 'lodash-es';
+import RequiredAsterisk from './common/RequiredAsterisk';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -52,7 +54,8 @@ export default {
   inheritAttrs: false,
   components: {
     DisplayErrors,
-    Editor
+    Editor,
+    RequiredAsterisk,
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: [
@@ -92,6 +95,9 @@ export default {
           this.setHeight();
         },
         setup: (editor) => {
+          editor.on("blur", () => {
+            this.$emit("blur");
+          });
           editor.ui.registry.addButton("pagebreak", {
             tooltip: this.$t("Insert Page Break For PDF"),
             icon: "page-break",

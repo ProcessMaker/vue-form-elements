@@ -1,9 +1,9 @@
 import Validator from "@chantouchsek/validatorjs";
 import moment from "moment";
-import { has } from "lodash-es";
+import { has, get } from "lodash-es";
 
 export default {
-  name: 'ValidationMixin',
+  name: "ValidationMixin",
   props: [
     "validation",
     "validationData",
@@ -12,17 +12,43 @@ export default {
   ],
   computed: {
     isReadOnly() {
-      if (
-        this.readonly ||
+      return !!(this.readonly ||
         this.disabled ||
         this.$attrs.readonly ||
-        this.$attrs.disabled
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+        this.$attrs.disabled);
     },
+    required() {
+      for (const validation of get(this.config, "validation", [])) {
+        const rule = get(validation, "value", "").split(":")[0];
+
+        if (rule === "required") {
+          return true;
+        }
+
+        if (rule === "required_if" || rule === "required_unless") {
+          const variable = validation.configs[0].value;
+          const value = validation.configs[1].value;
+          let source = this.$parent;
+          if (!("$v" in source)) {
+            // Account for multicolumn components
+            source = source.$parent;
+          }
+          const check = get(source, variable);
+
+          if (rule === "required_if") {
+            if (check == value) {
+              return true;
+            }
+          } else {
+            if (check != value) {
+              return true;
+            }
+          }
+        }
+
+      }
+      return false;
+    }
   },
   mounted() {
     this.setValidatorLanguage();
@@ -196,7 +222,7 @@ export default {
     registerCustomRules(data) {
       Validator.register(
         "custom-same",
-        function (val, req) {
+        function(val, req) {
           let val1;
           let val2 = val;
           if (!req.includes(".")) {
@@ -218,7 +244,7 @@ export default {
 
       Validator.register(
         "after",
-        function (date, params) {
+        function(date, params) {
           // checks if incoming 'params' is a date or a key reference.
           let checkDate = moment(params);
           if (!checkDate.isValid()) {
@@ -235,7 +261,7 @@ export default {
 
       Validator.register(
         "after_or_equal",
-        function (date, params) {
+        function(date, params) {
           // checks if incoming 'params' is a date or a key reference.
           let checkDate = moment(params);
           if (!checkDate.isValid()) {
@@ -252,7 +278,7 @@ export default {
 
       Validator.register(
         "before",
-        function (date, params) {
+        function(date, params) {
           // checks if incoming 'params' is a date or a key reference.
           let checkDate = moment(params);
           if (!checkDate.isValid()) {
@@ -269,7 +295,7 @@ export default {
 
       Validator.register(
         "before_or_equal",
-        function (date, params) {
+        function(date, params) {
           // checks if incoming 'params' is a date or a key reference.
           let checkDate = moment(params);
           if (!checkDate.isValid()) {
@@ -286,7 +312,7 @@ export default {
 
       Validator.register(
         "required_if",
-        function (val, req, attribute) {
+        function(val, req, attribute) {
           if (typeof req === "string") {
             req = req.split(",");
           }
@@ -316,7 +342,7 @@ export default {
 
       Validator.register(
         "required_unless",
-        function (val, req, attribute) {
+        function(val, req, attribute) {
           if (typeof req === "string") {
             req = req.split(",");
           }
@@ -346,7 +372,7 @@ export default {
 
       Validator.register(
         "between",
-        function (value, req) {
+        function(value, req) {
           const number = Number(value);
           const min = req.split(",")[0];
           const max = req.split(",")[1];

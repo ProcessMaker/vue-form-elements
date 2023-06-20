@@ -10,6 +10,7 @@
         :checked="isChecked"
         @change="$emit('change', $event.target.checked)"
       >
+      <required-asterisk />
       <label :class="labelClass" v-uni-for="name">{{label}}</label>
       <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
         <div v-for="(error, index) in validatorErrors" :key="index">{{error}}</div>
@@ -22,14 +23,18 @@
 </template>
 
 <script>
-import ValidationMixin from './mixins/validation.js'
-import {createUniqIdsMixin} from 'vue-uniq-ids'
+import ValidationMixin from './mixins/validation.js';
+import {createUniqIdsMixin} from 'vue-uniq-ids';
 import DataFormatMixin from './mixins/DataFormat.js';
+import RequiredAsterisk from './common/RequiredAsterisk';
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   name: "FormCheckbox",
+  components: {
+    RequiredAsterisk,
+  },
   inheritAttrs: false,
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   model: {
