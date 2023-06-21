@@ -1,11 +1,14 @@
-process.env.TZ = 'America/Toronto';
+process.env.TZ = "America/Toronto";
 
 module.exports = {
-  preset: '@vue/cli-plugin-unit-jest',
+  preset: "@vue/cli-plugin-unit-jest",
+  moduleFileExtensions: ["js", "json", "vue"],
   transform: {
-    "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
+    "^.+\\.js$": "babel-jest",
+    "^.+\\.vue$": "@vue/vue2-jest"
   },
-  transformIgnorePatterns: [
-    "node_modules/(?!(vue-uniq-ids)/)"
-  ]
+  transformIgnorePatterns: ["node_modules/(?!(vue-uniq-ids|lodash)/)"],
+  moduleNameMapper: {
+    "/^@/(.*)$/": "<rootDir>/src/$1",
+  }
 };

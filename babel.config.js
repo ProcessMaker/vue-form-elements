@@ -2,6 +2,6 @@ module.exports = function (api) {
   api.cache(true);
 
   return {
-    presets: ['@vue/app'],
+    presets: ["@vue/cli-plugin-babel/preset"]
   };
 };
