@@ -46,10 +46,7 @@
       />
     </div>
 
-    <div
-      v-if="(validator && validator.errorCount) || error"
-      class="invalid-feedback d-block"
-    >
+    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
       <div v-for="(error, index) in validatorErrors" :key="index">
         {{ error }}
       </div>
@@ -64,10 +61,10 @@ import { createUniqIdsMixin } from "vue-uniq-ids";
 import Mustache from "mustache";
 import { isEqual, cloneDeep, get, set, debounce } from "lodash-es";
 import ValidationMixin from "./mixins/validation";
-import MultiSelectView from "./FormSelectList/MultiSelectView";
-import CheckboxView from "./FormSelectList/CheckboxView";
-import OptionboxView from "./FormSelectList/OptionboxView";
-import RequiredAsterisk from './common/RequiredAsterisk';
+import MultiSelectView from "./FormSelectList/MultiSelectView.vue";
+import CheckboxView from "./FormSelectList/CheckboxView.vue";
+import OptionboxView from "./FormSelectList/OptionboxView.vue";
+import RequiredAsterisk from "./common/RequiredAsterisk.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -82,18 +79,7 @@ export default {
   },
   mixins: [uniqIdsMixin, ValidationMixin],
   inheritAttrs: false,
-  props: [
-    "label",
-    "error",
-    "value",
-    "options",
-    "helper",
-    "name",
-    "controlClass",
-    "validationData",
-    "placeholder",
-    "multiple"
-  ],
+  props: ["label", "error", "value", "options", "helper", "name", "controlClass", "validationData", "placeholder", "multiple"],
   data() {
     return {
       lastRequest: {},
@@ -106,21 +92,21 @@ export default {
       loaded: false,
       previousDependentValue: null,
       filter: "",
-      countWithoutFilter: null,
+      countWithoutFilter: null
     };
   },
   computed: {
     selectListOptionsWithSelected() {
-      if (this.selectedOption && !this.selectListOptions.some(o => o.value === this.selectedOption.value)) {
+      if (this.selectedOption && !this.selectListOptions.some((o) => o.value === this.selectedOption.value)) {
         return [this.selectedOption, ...this.selectListOptions];
       }
       return this.selectListOptions;
     },
     collectionOptions() {
-      return get(this.options, 'collectionOptions');
+      return get(this.options, "collectionOptions");
     },
     isCollection() {
-      return get(this.options, 'dataSource') === "collection"
+      return get(this.options, "dataSource") === "collection";
     },
     mode() {
       return this.$root.$children[0].mode;
@@ -176,23 +162,16 @@ export default {
         return this.value;
       },
       set(val) {
-        this.selectedOption = val ? this.selectListOptions.find(o => o.value === val) : null;
+        this.selectedOption = val ? this.selectListOptions.find((o) => o.value === val) : null;
         return this.$emit("input", val);
       }
     },
     optionsKey() {
-      if (
-        this.options.dataSource &&
-        this.options.dataSource === "provideData"
-      ) {
+      if (this.options.dataSource && this.options.dataSource === "provideData") {
         return "value";
       }
 
-      if (
-        this.options.dataSource &&
-        this.options.dataSource === "dataConnector" &&
-        this.options.valueTypeReturned === "object"
-      ) {
+      if (this.options.dataSource && this.options.dataSource === "dataConnector" && this.options.valueTypeReturned === "object") {
         return this.optionsValue;
       }
 
@@ -201,19 +180,14 @@ export default {
       return this.stripMustache(fieldName);
     },
     optionsValue() {
-      if (
-        this.options.dataSource &&
-        (this.options.dataSource === "provideData" ||
-          this.isCollection)
-      ) {
+      if (this.options.dataSource && (this.options.dataSource === "provideData" || this.isCollection)) {
         return "content";
       }
       return "__content__";
     },
     classList() {
       return {
-        "has-errors":
-          (this.validator && this.validator.errorCount) || this.error,
+        "has-errors": (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass
       };
     }
@@ -222,12 +196,12 @@ export default {
     selectListOptions: {
       handler() {
         if (this.isCollection) {
-          if (this.value && !this.selectListOptions.some(o => o.value === this.value)) {
+          if (this.value && !this.selectListOptions.some((o) => o.value === this.value)) {
             this.loadIndividualRecord();
           }
         }
       }
-    },
+    }
   },
   methods: {
     renderPmql(pmql) {
@@ -247,11 +221,7 @@ export default {
       const { selectedEndPoint, selectedDataSource, dataName } = options;
 
       // If no data source has been specified, do not make the api call
-      if (
-        selectedDataSource === null ||
-        typeof selectedDataSource === "undefined" ||
-        selectedDataSource.toString().trim().length === 0
-      ) {
+      if (selectedDataSource === null || typeof selectedDataSource === "undefined" || selectedDataSource.toString().trim().length === 0) {
         return false;
       }
 
@@ -261,11 +231,7 @@ export default {
       }
 
       // If no endpoint has been specified, do not make the api call
-      if (
-        selectedEndPoint === null ||
-        typeof selectedEndPoint === "undefined" ||
-        selectedEndPoint.toString().trim().length === 0
-      ) {
+      if (selectedEndPoint === null || typeof selectedEndPoint === "undefined" || selectedEndPoint.toString().trim().length === 0) {
         return false;
       }
 
@@ -275,30 +241,19 @@ export default {
         }
       };
 
-      if (
-        typeof this.options.pmqlQuery !== "undefined" &&
-        this.options.pmqlQuery !== "" &&
-        this.options.pmqlQuery !== null
-      ) {
+      if (typeof this.options.pmqlQuery !== "undefined" && this.options.pmqlQuery !== "" && this.options.pmqlQuery !== null) {
         const data = this.makeProxyData();
         const pmql = Mustache.render(this.options.pmqlQuery, { data });
-        params.config.outboundConfig = [
-          { type: "PARAM", key: "pmql", value: pmql }
-        ];
+        params.config.outboundConfig = [{ type: "PARAM", key: "pmql", value: pmql }];
       }
       const request = { selectedDataSource, params };
       if (isEqual(this.lastRequest, request)) {
         return false;
-          }
-          this.lastRequest = cloneDeep(request);
-
-
+      }
+      this.lastRequest = cloneDeep(request);
 
       try {
-        const response = await this.$dataProvider.getDataSource(
-          selectedDataSource,
-          params
-        );
+        const response = await this.$dataProvider.getDataSource(selectedDataSource, params);
         const list = dataName ? get(response.data, dataName) : response.data;
         const transformedList = this.transformOptions(list);
         this.$root.$emit("selectListOptionsUpdated", transformedList);
@@ -323,7 +278,7 @@ export default {
       ) {
         return false;
       }
-      
+
       const options = {
         params: { per_page: MAX_COLLECTION_RECORDS }
       };
@@ -349,10 +304,10 @@ export default {
       let value = get(record, this.collectionOptions.valueField);
 
       // Special handler for file uploads
-      if (typeof content === 'object' && ('name' in content)) {
+      if (typeof content === "object" && "name" in content) {
         content = content.name;
       }
-      if (typeof value === 'object' && ('id' in value)) {
+      if (typeof value === "object" && "id" in value) {
         value = value.id;
       }
 
@@ -380,12 +335,9 @@ export default {
       } else {
         pmql = recordPmql;
       }
-      
+
       this.loading = true;
-      const [data] = await this.$dataProvider.getCollectionRecords(
-        this.collectionOptions.collectionId,
-        { params: { pmql } }
-      );
+      const [data] = await this.$dataProvider.getCollectionRecords(this.collectionOptions.collectionId, { params: { pmql } });
       this.loading = false;
 
       if (data.data && data.data.length > 0) {
@@ -396,18 +348,14 @@ export default {
       }
     },
     async getCollectionRecords(options) {
-      let data = { data : [] };
+      let data = { data: [] };
       let resolvedNonce = null;
-            
+
       // Nonce ensures we only use results from the latest request
       this.nonce = Math.random();
 
       this.loading = true;
-      [data, resolvedNonce] = await this.$dataProvider.getCollectionRecords(
-        this.collectionOptions.collectionId,
-        options,
-        this.nonce
-      );
+      [data, resolvedNonce] = await this.$dataProvider.getCollectionRecords(this.collectionOptions.collectionId, options, this.nonce);
       this.loading = false;
 
       if (resolvedNonce !== this.nonce) {
@@ -415,14 +363,14 @@ export default {
       }
 
       this.nonce = null;
-      
+
       if (!this.filter) {
         this.countWithoutFilter = data.meta ? data.meta.total : null;
       }
-      
+
       this.selectListOptions = data.data.map(this.formatCollectionRecordResults);
     },
-    debouncedSetFilter: debounce(function(value) {
+    debouncedSetFilter: debounce(function (value) {
       this.filter = value;
     }, 300),
     searchChange(value) {
@@ -442,15 +390,8 @@ export default {
      */
     async fillSelectListOptions(resetValueIfNotInOptions) {
       let wasUpdated = false;
-      if (
-        this.options.dataSource &&
-        this.options.dataSource === "provideData"
-      ) {
-        if (
-          this.options &&
-          this.options.optionsList &&
-          !isEqual(this.selectListOptions, this.options.optionsList)
-        ) {
+      if (this.options.dataSource && this.options.dataSource === "provideData") {
+        if (this.options && this.options.optionsList && !isEqual(this.selectListOptions, this.options.optionsList)) {
           this.selectListOptions = this.options.optionsList;
         }
         this.selectListOptions = this.selectListOptions || [];
@@ -471,10 +412,7 @@ export default {
         wasUpdated = true;
       }
 
-      if (
-        this.options.dataSource &&
-        this.options.dataSource === "dataConnector"
-      ) {
+      if (this.options.dataSource && this.options.dataSource === "dataConnector") {
         wasUpdated = await this.loadOptionsFromDataConnector(this.sourceConfig);
       }
 
@@ -498,7 +436,7 @@ export default {
       const resultList = [];
 
       if (!Array.isArray(list)) {
-        console.warn('The retrieved data is not an array. Please check the data sources options of the select list `' + this.name + '`')
+        console.warn("The retrieved data is not an array. Please check the data sources options of the select list `" + this.name + "`");
         return resultList;
       }
 
@@ -563,11 +501,7 @@ export default {
       return parsedOption;
     },
     stripMustache(str) {
-      const removed = str
-        .replace(/{{/g, "")
-        .replace(/}}/g, "")
-        .split(".")
-        .pop();
+      const removed = str.replace(/{{/g, "").replace(/}}/g, "").split(".").pop();
 
       return removed || str;
     },

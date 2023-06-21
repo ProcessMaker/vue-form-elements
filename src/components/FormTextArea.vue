@@ -28,12 +28,7 @@
       :value="value"
       @input="$emit('input', $event.target.value)"
     />
-    <display-errors
-      v-if="error || (validator && validator.errorCount)"
-      :name="name"
-      :error="error"
-      :validator="validator"
-    />
+    <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator" />
     <small v-if="helper" class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
@@ -42,10 +37,10 @@
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
-import DisplayErrors from "./common/DisplayErrors";
+import DisplayErrors from "./common/DisplayErrors.vue";
 import Editor from "./Editor";
-import {throttle} from 'lodash-es';
-import RequiredAsterisk from './common/RequiredAsterisk';
+import { throttle } from "lodash-es";
+import RequiredAsterisk from "./common/RequiredAsterisk.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -55,20 +50,10 @@ export default {
   components: {
     DisplayErrors,
     Editor,
-    RequiredAsterisk,
+    RequiredAsterisk
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
-  props: [
-    "label",
-    "error",
-    "name",
-    "value",
-    "helper",
-    "controlClass",
-    "richtext",
-    "readonly",
-    "rows"
-  ],
+  props: ["label", "error", "name", "value", "helper", "controlClass", "richtext", "readonly", "rows"],
   data() {
     return {
       objectOfAttrs: {
@@ -80,8 +65,7 @@ export default {
       editorSettings: {
         inline: false,
         statusbar: false,
-        content_style:
-          "body { font-family: Arial; } .pagebreak { border: 1px solid #ccc; }",
+        content_style: "body { font-family: Arial; } .pagebreak { border: 1px solid #ccc; }",
         menubar: false,
         plugins: ["link", "lists", "image"],
         toolbar: `undo redo | link image pagebreak | styleselect | bold italic forecolor |
@@ -102,9 +86,7 @@ export default {
             tooltip: this.$t("Insert Page Break For PDF"),
             icon: "page-break",
             onAction: function (_) {
-              editor.insertContent(
-                "<hr class='pagebreak' style='page-break-after: always;' />"
-              );
+              editor.insertContent("<hr class='pagebreak' style='page-break-after: always;' />");
             }
           });
         }
@@ -116,8 +98,7 @@ export default {
   computed: {
     classList() {
       return {
-        "is-invalid":
-          (this.validator && this.validator.errorCount) || this.error,
+        "is-invalid": (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass,
         richtext: this.richtext && !this.readonly
       };
@@ -161,10 +142,7 @@ export default {
       if (!this.rows) {
         return;
       }
-      if (
-        this.editorInstance.getContainer() &&
-        this.editorInstance.getContainer().style
-      ) {
+      if (this.editorInstance.getContainer() && this.editorInstance.getContainer().style) {
         this.editorInstance.getContainer().style.height = this.height;
       }
     }
@@ -185,4 +163,3 @@ export default {
   }
 }
 </style>
-

@@ -20,12 +20,7 @@
           @click="onOpen(open)"
           @change="onChangeHandler($event.target.value)"
         />
-        <button
-          v-if="date"
-          type="button"
-          class="vdpClearInput"
-          @click="clear"
-        ></button>
+        <button v-if="date" type="button" class="vdpClearInput" @click="clear"></button>
       </template>
     </date-pick>
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
@@ -42,13 +37,9 @@ import Mustache from "mustache";
 import DatePicker from "./DatePicker.vue";
 import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
-import {
-  getUserDateFormat,
-  getUserDateTimeFormat,
-  getTimezone
-} from "../dateUtils";
+import { getUserDateFormat, getUserDateTimeFormat, getTimezone } from "../dateUtils";
 import "vue-date-pick/dist/vueDatePick.css";
-import RequiredAsterisk from './common/RequiredAsterisk';
+import RequiredAsterisk from "./common/RequiredAsterisk.vue";
 
 import Validator from "@chantouchsek/validatorjs";
 
@@ -84,7 +75,7 @@ Validator.register(
 export default {
   components: {
     "date-pick": DatePicker,
-    RequiredAsterisk,
+    RequiredAsterisk
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: {
@@ -152,8 +143,7 @@ export default {
     },
     classList() {
       return {
-        "is-invalid":
-          (this.validator && this.validator.errorCount) || this.error
+        "is-invalid": (this.validator && this.validator.errorCount) || this.error
       };
     },
     errors() {
@@ -167,10 +157,7 @@ export default {
     validator: {
       deep: true,
       handler() {
-        this.validatorErrors =
-          this.validator && this.validator.errors.get(this.name)
-            ? this.validator.errors.get(this.name)
-            : [];
+        this.validatorErrors = this.validator && this.validator.errors.get(this.name) ? this.validator.errors.get(this.name) : [];
       }
     },
     value(newValue) {
@@ -282,14 +269,11 @@ export default {
 
       if (this.isDateAndValueTheSame()) return;
       const newDate =
-        this.dataFormat === "date"
-          ? moment.utc(this.date, this.datePickerConfig.format)
-          : moment(this.date, this.datePickerConfig.format);
+        this.dataFormat === "date" ? moment.utc(this.date, this.datePickerConfig.format) : moment(this.date, this.datePickerConfig.format);
       // Check if the date that the user inputted, is valid against the minDate set
       if (newDate.isBefore(this.parseDateToDate(this.minDate))) return null;
       // Check if the date that the user inputted, is valid against the maxDate set
-      if (newDate.isAfter(moment(this.parseDateToDate(this.maxDate))))
-        return null;
+      if (newDate.isAfter(moment(this.parseDateToDate(this.maxDate)))) return null;
       if (this.dataFormat === "datetime") {
         // we must change the date timezone to the user timezone, then convert it to ISOString
         // e.g. browser at UTC-4, newDate is 2023-03-17 12:16:00, we must convert it to 2023-03-17 12:16:00 UTC-7

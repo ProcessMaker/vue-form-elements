@@ -12,7 +12,7 @@ import FormHtmlViewer from './FormHtmlViewer.vue';
 import FormDelayTimeControl from './FormDelayTimeControl.vue';
 import FormMultiSelect from './FormMultiSelect.vue';
 import FormPlainMultiSelect from './FormPlainMultiSelect.vue';
-import RequiredAsterisk from './common/RequiredAsterisk';
+import RequiredAsterisk from './common/RequiredAsterisk.vue';
 import * as dateUtils from '../dateUtils.js';
 
 // Export our components
@@ -30,6 +30,7 @@ let components = {
     FormDelayTimeControl,
     FormMultiSelect,
     FormPlainMultiSelect,
+    RequiredAsterisk
 }
 
 // Export our named exports

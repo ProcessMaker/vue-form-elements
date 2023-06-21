@@ -1,6 +1,6 @@
 <template>
   <div class="form-group">
-    <required-asterisk /><label v-uni-for="name">{{label}}</label>
+    <required-asterisk /><label v-uni-for="name">{{ label }}</label>
     <input
       v-bind="$attrs"
       v-uni-id="name"
@@ -10,44 +10,37 @@
       class="form-control"
       :class="classList"
       v-on:blur="formatFloatValue()"
-    >
-    <display-errors v-if="error || (validator?.errorCount)" :name="name" :error="error" :validator="validator"/>
-    <small v-if="helper" class="form-text text-muted" v-html="helper"/>
+    />
+    <display-errors v-if="error || validator?.errorCount" :name="name" :error="error" :validator="validator" />
+    <small v-if="helper" class="form-text text-muted" v-html="helper" />
   </div>
 </template>
 
 <script>
-import { createUniqIdsMixin } from 'vue-uniq-ids'
-import ValidationMixin from './mixins/validation.js'
-import DataFormatMixin from './mixins/DataFormat.js';
-import DisplayErrors from './common/DisplayErrors.vue';
-import RequiredAsterisk from './common/RequiredAsterisk';
+import { createUniqIdsMixin } from "vue-uniq-ids";
+import ValidationMixin from "./mixins/validation.js";
+import DataFormatMixin from "./mixins/DataFormat.js";
+import DisplayErrors from "./common/DisplayErrors.vue";
+import RequiredAsterisk from "./common/RequiredAsterisk.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  name: 'FormInput',
+  name: "FormInput",
   inheritAttrs: false,
   components: {
     DisplayErrors,
-    RequiredAsterisk,
+    RequiredAsterisk
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
-  props: [
-    'value',
-    'label',
-    'error',
-    'helper',
-    'name',
-    'controlClass',
-  ],
-  computed:{
+  props: ["value", "label", "error", "helper", "name", "controlClass"],
+  computed: {
     classList() {
       return {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error,
+        "is-invalid": (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass
-      }
+      };
     }
-  },
-}
+  }
+};
 </script>

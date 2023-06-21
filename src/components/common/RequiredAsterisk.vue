@@ -1,6 +1,11 @@
 <template>
-    <span v-if="$parent.required" :title="$t('required')" class="required-asterisk">*</span>
+  <span v-if="$parent.required" :title="$t('required')" class="required-asterisk">*</span>
 </template>
+<script>
+export default {
+  name: "RequiredAsterisk"
+};
+</script>
 
 <style>
 .required-asterisk {
