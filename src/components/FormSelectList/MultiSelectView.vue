@@ -12,6 +12,8 @@
         :placeholder="placeholder ? placeholder : $t('type here to search')"
         v-bind="$attrs"
         :disabled="isReadOnly"
+        @search-change="$emit('search-change', $event)"
+        :loading="loading"
     >
       <template slot="noResult">
         {{ $t('No elements found. Consider changing the search query.') }}
@@ -50,6 +52,7 @@ export default {
     'placeholder',
     'emitObjects',
     'emitArray',
+    'loading',
   ],
   computed: {
     valueProxy: {
@@ -99,7 +102,7 @@ export default {
       if (!isArray && isObject) {return value;}
       if (!isArray && !isObject) {
         const founds = options.filter(option => {
-          const normalizedOption = option[keyField] ? option[keyField] : null;
+          const normalizedOption = keyField in option ? option[keyField] : null;
           return value == normalizedOption && normalizedOption !== null;
         });
         return founds.length > 0 ? founds[0] : [];

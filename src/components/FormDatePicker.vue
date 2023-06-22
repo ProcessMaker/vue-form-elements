@@ -1,13 +1,13 @@
 <template>
   <div class="form-group position-relative">
-    <label v-uni-for="name" class="mr-2">{{ label }}</label>
+    <required-asterisk /><label v-uni-for="name" class="mr-2">{{ label }}</label>
     <date-pick
       v-model="date"
-      v-bind="config"
+      v-bind="datePickerConfig"
       :format="format"
       :data-test="dataTest"
-      :class="[classList, 'datePicker']"
       :input-attributes="inputAttributes"
+      class="datePicker"
       @input="submitDate"
     >
       <template v-slot:default="{ open, inputValue }">
@@ -15,7 +15,7 @@
           type="text"
           v-bind="inputAttributes"
           :value="inputValue"
-          class="form-control"
+          :class="[classList, 'form-control']"
           @focus="onOpen(open)"
           @click="onOpen(open)"
           @change="onChangeHandler($event.target.value)"
@@ -46,6 +46,7 @@ import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
 import { getUserDateFormat, getUserDateTimeFormat, getTimezone } from "../dateUtils";
 import "vue-date-pick/dist/vueDatePick.css";
+import RequiredAsterisk from './common/RequiredAsterisk';
 
 const Validator = require("validatorjs");
 
@@ -80,14 +81,15 @@ Validator.register(
 
 export default {
   components: {
-    "date-pick": DatePicker
+    "date-pick": DatePicker,
+    RequiredAsterisk,
   },
   mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
   props: {
     name: String,
     placeholder: String,
     label: String,
-    error: String,
+    error: [String, Boolean],
     helper: String,
     dataFormat: String,
     value: [String, Boolean, Date],
@@ -129,7 +131,7 @@ export default {
     };
   },
   computed: {
-    config() {
+    datePickerConfig() {
       return {
         format: this.format,
         displayFormat: this.format,
@@ -233,7 +235,7 @@ export default {
       return date;
     },
     parsingInputDate(val) {
-      const date = moment(val, this.format, true);
+      const date = moment.tz(val, this.format, getTimezone());
       // Check if user is typing, if the date is not valid, let the user continue
       if (!date.isValid()) return "";
       return date.toDate();
@@ -265,7 +267,7 @@ export default {
         return true;
       }
 
-      const currentDate = moment(this.date, this.config.format);
+      const currentDate = moment(this.date, this.datePickerConfig.format);
       const currentValue = this.value ? moment(this.value) : null;
       const comparatorString = this.dataFormat !== "datetime" ? "day" : null;
 
@@ -282,8 +284,8 @@ export default {
       if (this.isDateAndValueTheSame()) return;
       const newDate =
         this.dataFormat === "date"
-          ? moment.utc(this.date, this.config.format)
-          : moment(this.date, this.config.format);
+          ? moment.utc(this.date, this.datePickerConfig.format)
+          : moment(this.date, this.datePickerConfig.format);
       // Check if the date that the user inputted, is valid against the minDate set
       if (newDate.isBefore(this.parseDateToDate(this.minDate))) return null;
       // Check if the date that the user inputted, is valid against the maxDate set
@@ -307,6 +309,7 @@ export default {
     },
     clear() {
       this.date = "";
+      this.$emit("input", "");
     },
     onChangeHandler(userText) {
       if (userText) {
@@ -327,5 +330,8 @@ export default {
 }
 .datePicker {
   display: block !important;
+}
+.vdpOuterWrap.vdpFloating {
+  z-index: 5;
 }
 </style>
