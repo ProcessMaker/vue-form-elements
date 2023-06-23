@@ -41,8 +41,6 @@
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import throttle from "lodash/throttle";
-import ValidationMixin from "./mixins/validation";
-import DataFormatMixin from "./mixins/DataFormat";
 import DisplayErrors from "./common/DisplayErrors";
 import Editor from "./Editor";
 import RequiredAsterisk from './common/RequiredAsterisk';
@@ -55,7 +53,7 @@ export default {
     Editor,
     RequiredAsterisk,
   },
-  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
+  mixins: [uniqIdsMixin],
   inheritAttrs: false,
   props: [
     "label",
