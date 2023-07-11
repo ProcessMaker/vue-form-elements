@@ -20,7 +20,9 @@
   ],
   "dependencies": {
     "@tinymce/tinymce-vue": "2.0.0",
+    "@vue/cli": "^5.0.8",
     "bootstrap": "^4.5.3",
+    "bootstrap-vue": "^2.23.1",
     "jquery": "^3.5.1",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.26",
