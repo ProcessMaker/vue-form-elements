@@ -54,7 +54,8 @@ export {
     FormPlainMultiSelect,
     dateUtils,
     RequiredAsterisk,
-    BFormComponent
+    BFormComponent,
+    BWrapperComponent,
 }
 
 // Export our Vue plugin as our default

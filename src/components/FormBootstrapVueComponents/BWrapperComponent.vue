@@ -2,7 +2,7 @@
   <div>
     <b-button @click="show = show ? false : true">{{ label }}</b-button>
     <div v-if="form">
-      <component v-model="show" :is="bootstrapComponent" v-bind="bootstrapConfigObject">
+      <component v-model:show="show" :is="bootstrapComponent" v-bind="bootstrapConfigObject">
         <vue-form-renderer
           v-model="wrapperModel"
           :page="form"
@@ -22,12 +22,12 @@ export default {
     bootstrapComponent: { type: String, default: 'b-modal' },
     bootstrapConfig: { type: String, default: '{}' },
     value: { default: null },
+    validationData: { default: null },
     name: { type: String, default: null },
     label: { type: String, default: '' },
   },
   data() {
     return {
-      wrapperModel: {},
       show: false,
     };
   },
@@ -36,15 +36,19 @@ export default {
   computed: {
     wrapperConfig() {
       const config = [];
-      config[this.form] = this.formConfig[this.form];
+      if(typeof this.form === 'string' && this.form.trim() !== '') {
+        config[this.form] = this.formConfig[this.form];
+      }
       return config;
     },
-    model: {
+    wrapperModel: {
       get() {
-        return this.value;
+        return this.validationData;
       },
-      set(value) {
-        this.$emit('input', value);
+      set(data) {
+        Object.keys(data).forEach((variable) => {
+          this.validationData && this.$set(this.validationData, variable, data[variable]);
+        });
       },
     },
     bootstrapConfigObject() {
