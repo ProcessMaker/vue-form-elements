@@ -116,7 +116,7 @@ export default {
   computed: {
     datePickerConfig() {
       return {
-        format: this.datepicker ? "MM/DD/YYYY hh:mm a" : "MM/DD/YYYY",
+        format: this.datepicker ? "MM/DD/YYYY hh:mm" : "MM/DD/YYYY",
         displayFormat: this.format,
         pickTime: this.datepicker,
         // parseDate: this.parsingInputDate,
@@ -125,9 +125,15 @@ export default {
         isDateDisabled: this.checkMinMaxDateDisabled
       };
     },
+    /**
+     * @return {boolean}
+     */
     datepicker() {
       return this.dataFormat === "datetime";
     },
+    /**
+     * @return {string}
+     */
     format() {
       return this.datepicker ? getUserDateTimeFormat() : getUserDateFormat();
     },
@@ -180,7 +186,6 @@ export default {
     updateValue(newValue) {
       if (!!newValue && newValue.length > 0) {
         const date = moment.tz(newValue, checkFormats, getTimezone());
-        console.log(`date${this.datepicker ? 'time' : ''}`, date);
         if (!date.isValid()) return "";
         this.date = date.format(this.format);
       }
@@ -200,8 +205,7 @@ export default {
           date = val;
         }
 
-        date = moment.tz(date, [...checkFormats,  this.format], true, getTimezone());
-        console.log('date', date);
+        date = moment.tz(date, this.datePickerConfig.format, getTimezone());
         if (!date.isValid()) {
           date = false;
         }
@@ -282,8 +286,6 @@ export default {
       }
 
       if (this.isDateAndValueTheSame()) return;
-
-      console.log('val', value);
 
       /** @type {moment.Moment} */
 
