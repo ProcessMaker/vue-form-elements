@@ -114,7 +114,7 @@ export default {
   data() {
     // set to the browser's timezone because the vue-date-pick always works
     // with the browser's timezone
-    moment.tz.setDefault(moment.tz.guess());
+    moment.tz.setDefault(getTimezone());
     return {
       validatorErrors: [],
       date: "",
