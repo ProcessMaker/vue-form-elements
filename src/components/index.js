@@ -12,7 +12,7 @@ import FormHtmlViewer from './FormHtmlViewer'
 import FormDelayTimeControl from './FormDelayTimeControl'
 import FormMultiSelect from './FormMultiSelect';
 import FormPlainMultiSelect from './FormPlainMultiSelect';
-import { RequiredAsterisk } from './common/RequiredAsterisk';
+import RequiredAsterisk from './common/RequiredAsterisk';
 import * as dateUtils from '../dateUtils';
 
 // Export our components
@@ -50,7 +50,6 @@ export {
     dateUtils,
     RequiredAsterisk,
 }
-// export default RequiredAsterisk;
 
 // Export our Vue plugin as our default
 export default {
