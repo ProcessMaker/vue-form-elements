@@ -21,7 +21,7 @@ export default {
             }
         },
         required() {
-            for (const validation of get(this.config, 'validation', [])) {
+            for (const validation of get(this.config, 'validation', []) || []) {
                 const rule = get(validation, 'value', '').split(':')[0];
 
                 if (rule === 'required') {
