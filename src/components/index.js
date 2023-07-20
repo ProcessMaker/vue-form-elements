@@ -15,6 +15,9 @@ import FormPlainMultiSelect from './FormPlainMultiSelect';
 import RequiredAsterisk from './common/RequiredAsterisk';
 import * as dateUtils from '../dateUtils';
 
+import BFormComponent from './FormBootstrapVueComponents/BFormComponent'
+import BWrapperComponent from './FormBootstrapVueComponents/BWrapperComponent'
+
 // Export our components
 let components = {
     FormInput,
@@ -30,6 +33,8 @@ let components = {
     FormDelayTimeControl,
     FormMultiSelect,
     FormPlainMultiSelect,
+    BFormComponent,
+    BWrapperComponent,
 }
 
 // Export our named exports
@@ -49,6 +54,8 @@ export {
     FormPlainMultiSelect,
     dateUtils,
     RequiredAsterisk,
+    BFormComponent,
+    BWrapperComponent,
 }
 
 // Export our Vue plugin as our default
