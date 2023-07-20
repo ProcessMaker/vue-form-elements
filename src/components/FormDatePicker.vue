@@ -235,7 +235,7 @@ export default {
       return date;
     },
     parsingInputDate(val) {
-      const date = moment.tz(val, this.format, getTimezone());
+      const date = moment(val, this.format).local(true);
       // Check if user is typing, if the date is not valid, let the user continue
       if (!date.isValid()) return "";
       return date.toDate();
@@ -294,8 +294,7 @@ export default {
         // we must change the date timezone to the user timezone, then convert it to ISOString
         // e.g. browser at UTC-4, newDate is 2023-03-17 12:16:00, we must convert it to 2023-03-17 12:16:00 UTC-7
         // then convert it to ISOString
-        const dateTime = newDate.format("YYYY-MM-DD HH:mm"); // browser tz
-        const fixedDate = moment.tz(dateTime, getTimezone()); // user tz
+        const fixedDate = moment.tz(newDate, getTimezone()); // user tz
         this.$emit("input", fixedDate.toISOString());
       } else {
         this.$emit("input", newDate.toISOString());
