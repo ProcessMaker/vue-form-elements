@@ -36,7 +36,6 @@
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import ValidationMixin from "./mixins/validation";
-import DataFormatMixin from "./mixins/DataFormat";
 import DisplayErrors from "./common/DisplayErrors.vue";
 import Editor from "./Editor";
 import { throttle } from "lodash-es";
@@ -52,7 +51,7 @@ export default {
     Editor,
     RequiredAsterisk
   },
-  mixins: [uniqIdsMixin, ValidationMixin, DataFormatMixin],
+  mixins: [uniqIdsMixin, ValidationMixin],
   props: ["label", "error", "name", "value", "helper", "controlClass", "richtext", "readonly", "rows"],
   data() {
     return {
@@ -130,9 +129,11 @@ export default {
     }, 500);
   },
   mounted() {
-    window.ProcessMaker.EventBus.$on("modal-shown", () => {
-      this.rebootEditor();
-    });
+    if('ProcessMaker' in window && 'EventBus' in window.ProcessMaker) {
+      window.ProcessMaker.EventBus.$on("modal-shown", () => {
+        this.rebootEditor();
+      });
+    }
   },
   methods: {
     setHeight() {
