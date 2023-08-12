@@ -46,31 +46,31 @@ import Validator from "@chantouchsek/validatorjs";
 const uniqIdsMixin = createUniqIdsMixin();
 const checkFormats = ["YYYY-MM-DD", "MM/DD/YYYY", moment.ISO_8601];
 
-Validator.register(
+Object.assign(Validator.register, (
   "date_or_mustache",
-  function (value, requirement, attribute) {
-    let rendered = null;
-    try {
-      // Clear out any mustache statements
-      rendered = Mustache.render(value, {});
-    } catch (e) {
-      rendered = value;
-    }
+    function (value, requirement, attribute) {
+      let rendered = null;
+      try {
+        // Clear out any mustache statements
+        rendered = Mustache.render(value, {});
+      } catch (e) {
+        rendered = value;
+      }
 
-    if (value !== rendered) {
-      // contains mustache, so just give them the benefit of the doubt here
-      return true;
-    }
+      if (value !== rendered) {
+        // contains mustache, so just give them the benefit of the doubt here
+        return true;
+      }
 
-    if (value === "") {
-      // Empty is ok, it just disables min/max
-      return true;
-    }
+      if (value === "") {
+        // Empty is ok, it just disables min/max
+        return true;
+      }
 
-    return moment(value, checkFormats, true).isValid();
-  },
-  "Must be YYYY-MM-DD, ISO8601, or mustache syntax"
-);
+      return moment(value, checkFormats, true).isValid();
+    },
+    "Must be YYYY-MM-DD, ISO8601, or mustache syntax"
+));
 
 export default {
   components: {

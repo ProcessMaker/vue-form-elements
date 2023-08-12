@@ -11,16 +11,15 @@ if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.
   Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
 
-
-Validator.register('custom-date', function(date, requirement, attribute) {
+Object.assign(Validator.register, ('custom-date', function(date, requirement, attribute) {
   let checkDate = moment(date, [getUserDateFormat(), moment.ISO_8601], true);
   return checkDate.isValid();
-}, 'The :attribute must be a valid date.');
+}, 'The :attribute must be a valid date.'));
 
-Validator.register('custom-datetime', function(date, requirement, attribute) {
+Object.assign(Validator.register, ('custom-datetime', function(date, requirement, attribute) {
   let checkDate = moment(date, [getUserDateTimeFormat(), moment.ISO_8601], true);
   return checkDate.isValid();
-}, 'The :attribute must be a valid date and time.');
+}, 'The :attribute must be a valid date and time.'));
 
 export default {
   name: 'DataFormatMixin',

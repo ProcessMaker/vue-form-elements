@@ -26,6 +26,7 @@ export default defineConfig({
       name: libraryName,
       fileName: (format) => `vue-form-elements.${format}.js`
     },
+    sourcemap: 'hidden',
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
