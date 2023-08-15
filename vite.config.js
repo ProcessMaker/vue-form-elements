@@ -2,7 +2,6 @@ import { fileURLToPath, URL } from "node:url";
 
 import { resolve } from "path";
 import { defineConfig } from "vite";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import { createVuePlugin } from "vite-plugin-vue2";
 
 const libraryName = "VueFormElements";
@@ -10,8 +9,7 @@ const libraryName = "VueFormElements";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    createVuePlugin(),
-    cssInjectedByJsPlugin()
+    createVuePlugin()
   ],
   resolve: {
     alias: {
@@ -33,6 +31,7 @@ export default defineConfig({
       external: ["vue", "moment", "moment-timezone", "@chantouchsek/validatorjs"],
       output: {
         exports: "named",
+        assetFileNames: `vue-form-elements.[ext]`,
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
