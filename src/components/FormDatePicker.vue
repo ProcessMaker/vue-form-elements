@@ -20,7 +20,7 @@
           @click="onOpen(open)"
           @change="onChangeHandler($event.target.value)"
         />
-        <button v-if="date" type="button" class="vdpClearInput" @click="clear"></button>
+        <button v-if="date && !isReadOnly" type="button" class="vdpClearInput" @click="clear"></button>
       </template>
     </date-pick>
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
@@ -97,10 +97,6 @@ export default {
       type: Boolean,
       default: false
     },
-    readonly: {
-      type: Boolean,
-      default: false
-    },
     minDate: { type: [String, Boolean], default: false },
     maxDate: { type: [String, Boolean], default: false }
   },
@@ -118,7 +114,7 @@ export default {
         "aria-label": this.ariaLabel,
         "tab-index": this.tabIndex,
         disabled: this.disabled,
-        readonly: this.readonly
+        readonly: this.isReadOnly
       },
       onChangeDate: ""
     };
