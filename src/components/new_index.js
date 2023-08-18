@@ -17,6 +17,8 @@ import hasDefaultOptionKeyMixin from "./mixins/hasDefaultOptionKey.js";
 import ProxyDataMixin from "./mixins/ProxyData.js";
 import ValidationMixin from "./mixins/validation.js";
 import RequiredAsterisk from "./common/RequiredAsterisk.vue";
+import BFormComponent from './FormBootstrapVueComponents/BFormComponent.vue'
+import BWrapperComponent from './FormBootstrapVueComponents/BWrapperComponent.vue';
 import {
   getTimezone,
   getLang,
@@ -41,7 +43,9 @@ const components = {
   FormDelayTimeControl,
   FormMultiSelect,
   FormPlainMultiSelect,
-  RequiredAsterisk
+  RequiredAsterisk,
+  BFormComponent,
+  BWrapperComponent,
 };
 
 const mixins = {
@@ -89,6 +93,8 @@ export {
   ProxyDataMixin,
   ValidationMixin,
   RequiredAsterisk,
+  BFormComponent,
+  BWrapperComponent,
   getTimezone,
   getLang,
   getUserDateFormat,
