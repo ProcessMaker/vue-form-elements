@@ -220,7 +220,7 @@ export default {
       }
     },
     registerCustomRules(data) {
-      Object.assign(Validator.register, (
+      Validator.register(
         "custom-same",
           function(val, req) {
             let val1;
@@ -240,9 +240,9 @@ export default {
             return false;
           },
           "The :attribute and :custom-same fields must match."
-      ));
+      );
 
-      Object.assign(Validator.register, (
+      Validator.register(
         "after",
           function(date, params) {
             // checks if incoming 'params' is a date or a key reference.
@@ -257,9 +257,9 @@ export default {
             return inputDate > afterDate;
           },
           "The :attribute must be after :after."
-      ));
+      );
 
-      Object.assign(Validator.register, (
+      Validator.register(
         "after_or_equal",
           function(date, params) {
             // checks if incoming 'params' is a date or a key reference.
@@ -274,9 +274,9 @@ export default {
             return inputDate >= equalOrAfterDate;
           },
           "The :attribute must be equal or after :after_or_equal."
-      ));
+      );
 
-      Object.assign(Validator.register, (
+      Validator.register(
         "before",
           function(date, params) {
             // checks if incoming 'params' is a date or a key reference.
@@ -291,9 +291,9 @@ export default {
             return inputDate < beforeDate;
           },
           "The :attribute must be before :before."
-      ));
+      );
 
-      Object.assign(Validator.register, (
+      Validator.register(
         "before_or_equal",
           function(date, params) {
             // checks if incoming 'params' is a date or a key reference.
@@ -308,9 +308,9 @@ export default {
             return inputDate <= beforeDate;
           },
           "The :attribute must be equal or before :before_or_equal."
-      ));
+      );
 
-      Object.assign(Validator.register, (
+      Validator.register(
         "required_if",
           function(val, req, attribute) {
             if (typeof req === "string") {
@@ -338,9 +338,9 @@ export default {
             return true;
           },
           "The :attribute field is required."
-      ));
+      );
 
-      Object.assign(Validator.register, (
+      Validator.register(
         "required_unless",
           function(val, req, attribute) {
             if (typeof req === "string") {
@@ -368,9 +368,9 @@ export default {
             return true;
           },
           "The :attribute field is required."
-      ));
+      );
 
-      Object.assign(Validator.register, (
+      Validator.register(
         "between",
           function(value, req) {
             const number = Number(value);
@@ -382,7 +382,7 @@ export default {
             return false;
           },
           "Must have a value between :between"
-      ));
+      );
     }
   }
 };

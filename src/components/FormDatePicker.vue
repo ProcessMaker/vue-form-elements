@@ -46,7 +46,7 @@ import Validator from "@chantouchsek/validatorjs";
 const uniqIdsMixin = createUniqIdsMixin();
 const checkFormats = ["YYYY-MM-DD", "MM/DD/YYYY", moment.ISO_8601];
 
-Object.assign(Validator.register, (
+Validator.register(
   "date_or_mustache",
     function (value, requirement, attribute) {
       let rendered = null;
@@ -70,7 +70,7 @@ Object.assign(Validator.register, (
       return moment(value, checkFormats, true).isValid();
     },
     "Must be YYYY-MM-DD, ISO8601, or mustache syntax"
-));
+);
 
 export default {
   components: {
