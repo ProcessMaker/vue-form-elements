@@ -20,7 +20,6 @@
   ],
   "dependencies": {
     "@tinymce/tinymce-vue": "2.0.0",
-    "@vue/cli": "^5.0.8",
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.23.1",
     "core-js": "^3.8.3",
@@ -49,6 +48,7 @@
     "@vue/cli-service": "~5.0.8",
     "@vue/eslint-config-airbnb": "^6.0.0",
     "@vue/test-utils": "1.0.0-beta.29",
+    "@vue/vue2-jest": "^27.0.0-alpha.3",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^27.5.1",
     "eslint": "^7.32.0",
@@ -59,12 +59,11 @@
     "eslint-plugin-vue": "^9.3.0",
     "eslint-plugin-vuejs-accessibility": "^1.1.0",
     "i18next": "^15.1.1",
+    "jest": "^27.1.0",
     "mustache": "^3.0.1",
     "prettier": "2.7.1",
     "sass-loader": "^10.2.0",
-    "vue-template-compiler": "^2.6.12",
-    "jest": "^27.1.0",
-    "@vue/vue2-jest": "^27.0.0-alpha.3"
+    "vue-template-compiler": "^2.6.12"
   },
   "peerDependencies": {
     "mustache": "^3.0.1"
@@ -110,7 +109,7 @@
   },
   "engines": {
     "npm": ">=8",
-    "node": ">=16 <18"
+    "node": ">=18"
   },
   "homepage": "https://www.github.com/processmaker/vue-form-elements",
   "keywords": [
