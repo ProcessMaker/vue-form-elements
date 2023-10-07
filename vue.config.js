@@ -1,12 +1,15 @@
 module.exports = {
   configureWebpack: {
-    externals: process.env.NODE_ENV !== 'standalone' ? [
-      'validatorjs',
-    ] : [],
+    externals: process.env.NODE_ENV !== "standalone" ? ["validatorjs"] : []
+  },
+  devServer: {
+    client: {
+      overlay: false
+    }
   },
 
   css: {
-    extract: true,
+    extract: true
   },
 
   transpileDependencies: true
