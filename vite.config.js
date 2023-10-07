@@ -27,7 +27,7 @@ export default defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ["vue", "moment", "moment-timezone", "@chantouchsek/validatorjs"],
+      external: ["vue", "moment", "moment-timezone", "@chantouchsek/validatorjs", "@processmaker/vue-multiselect"],
       output: {
         exports: "named",
         assetFileNames: `vue-form-elements.[ext]`,
@@ -37,7 +37,8 @@ export default defineConfig({
           vue: "Vue",
           moment: "moment",
           "moment-timezone": "moment-timezone",
-          "@chantouchsek/validatorjs": "@chantouchsek/validatorjs"
+          "@chantouchsek/validatorjs": "@chantouchsek/validatorjs",
+          "@processmaker/vue-multiselect": "VueMultiselect"
         }
       }
     }
