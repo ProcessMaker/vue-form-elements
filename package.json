@@ -23,6 +23,7 @@
     "@vue/cli": "^5.0.8",
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.23.1",
+    "core-js": "^3.8.3",
     "jquery": "^3.5.1",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.26",
@@ -40,10 +41,10 @@
     "@panter/vue-i18next": "^0.15.0",
     "@processmaker/vue-multiselect": "2.2.0",
     "@types/jest": "^24.0.18",
-    "@vue/cli-plugin-babel": "^3.12.1",
+    "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "^3.0.0-beta.15",
     "@vue/cli-plugin-unit-jest": "^4.1.2",
-    "@vue/cli-service": "^3.0.0-beta.15",
+    "@vue/cli-service": "~5.0.8",
     "@vue/test-utils": "1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
@@ -89,15 +90,15 @@
   "bugs": {
     "url": "https://github.com/processmaker/vue-form-elements/issues"
   },
+  "engines": {
+    "npm": ">=8",
+    "node": ">=16 <18"
+  },
   "homepage": "https://www.github.com/processmaker/vue-form-elements",
   "keywords": [
     "html",
     "vuejs",
     "form"
   ],
-  "license": "MIT",
-  "engines": {
-    "npm": ">=8",
-    "node": ">=16 <18"
-  }
+  "license": "MIT"
 }
