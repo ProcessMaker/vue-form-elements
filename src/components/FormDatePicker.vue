@@ -114,15 +114,6 @@ export default {
     return {
       validatorErrors: [],
       date: "",
-      inputAttributes: {
-        class: `${this.inputClass}`,
-        placeholder: this.placeholder,
-        name: this.name,
-        "aria-label": this.ariaLabel,
-        "tab-index": this.tabIndex,
-        disabled: this.disabled,
-        readonly: this.isReadOnly
-      },
       onChangeDate: ""
     };
   },
@@ -136,6 +127,17 @@ export default {
         editable: !this.disabled,
         use12HourClock: this.datepicker,
         isDateDisabled: this.checkMinMaxDateDisabled
+      };
+    },
+    inputAttributes() {
+      return {
+        class: `${this.inputClass}`,
+        placeholder: this.placeholder,
+        name: this.name,
+        "aria-label": this.ariaLabel,
+        "tab-index": this.tabIndex,
+        disabled: this.disabled,
+        readonly: this.isReadOnly
       };
     },
     datepicker() {
