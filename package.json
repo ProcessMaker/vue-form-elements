@@ -36,7 +36,7 @@
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.23.1",
     "jquery": "^3.5.1",
-    "lodash-es": "^4.17.21",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.26",
     "popper.js": "^1.14.4",
@@ -67,6 +67,7 @@
     "sass": "^1.62.0",
     "vite": "^4.3.3",
     "vite-bundle-visualizer": "^0.6.0",
+    "vite-plugin-commonjs": "^0.10.1",
     "vite-plugin-vue2": "^2.0.2",
     "vue-template-compiler": "^2.6.12"
   },

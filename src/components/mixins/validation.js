@@ -1,6 +1,6 @@
 import Validator from "@chantouchsek/validatorjs";
 import moment from "moment";
-import { has, get } from "lodash-es";
+import { has, get } from "lodash";
 
 export default {
   name: "ValidationMixin",

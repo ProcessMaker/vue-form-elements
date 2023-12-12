@@ -39,7 +39,7 @@
 
 <script>
 import ValidationMixin from "./mixins/validation.js";
-import { last } from "lodash-es";
+import { last } from "lodash";
 
 const periodNames = {
   minute: "minute",

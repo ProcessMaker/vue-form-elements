@@ -38,7 +38,7 @@ import { createUniqIdsMixin } from "vue-uniq-ids";
 import ValidationMixin from "./mixins/validation";
 import DisplayErrors from "./common/DisplayErrors.vue";
 import Editor from "./Editor";
-import { throttle } from "lodash-es";
+import { throttle } from "lodash";
 import RequiredAsterisk from "./common/RequiredAsterisk.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();

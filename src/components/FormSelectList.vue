@@ -59,7 +59,7 @@
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import Mustache from "mustache";
-import { isEqual, cloneDeep, get, set, debounce } from "lodash-es";
+import { isEqual, cloneDeep, get, set, debounce } from "lodash";
 import ValidationMixin from "./mixins/validation";
 import MultiSelectView from "./FormSelectList/MultiSelectView.vue";
 import CheckboxView from "./FormSelectList/CheckboxView.vue";
