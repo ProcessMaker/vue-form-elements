@@ -109,7 +109,7 @@
   },
   "engines": {
     "npm": ">=8",
-    "node": ">=18"
+    "node": ">=16"
   },
   "homepage": "https://www.github.com/processmaker/vue-form-elements",
   "keywords": [
