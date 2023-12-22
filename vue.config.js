@@ -1,6 +1,6 @@
 module.exports = {
   configureWebpack: {
-    externals: process.env.NODE_ENV !== "standalone" ? ["validatorjs"] : []
+    externals: process.env.NODE_ENV !== "standalone" ? ["validatorjs", "moment", "moment-timezone", "vue"] : []
   },
   lintOnSave: false,
   devServer: {
@@ -12,6 +12,6 @@ module.exports = {
   css: {
     extract: true
   },
-
-  transpileDependencies: true
+  transpileDependencies: true,
+  lintOnSave: false
 };
