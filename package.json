@@ -48,11 +48,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
-    "@babel/preset-env": "^7.21.4",
     "@babel/eslint-parser": "^7.12.16",
+    "@babel/preset-env": "^7.21.4",
     "@panter/vue-i18next": "^0.15.0",
     "@processmaker/vue-multiselect": "2.2.0",
     "@types/jest": "^24.0.18",
+    "@vitejs/plugin-vue2": "^2.3.1",
     "@vue/test-utils": "1.0.0-beta.29",
     "@vue/vue2-jest": "^27.0.0-alpha.3",
     "babel-core": "7.0.0-bridge.0",
@@ -72,7 +73,6 @@
     "vite": "^4.3.3",
     "vite-bundle-visualizer": "^0.6.0",
     "vite-plugin-commonjs": "^0.10.1",
-    "vite-plugin-vue2": "^2.0.2",
     "vue-template-compiler": "^2.6.12"
   },
   "peerDependencies": {

@@ -2,17 +2,14 @@ import { fileURLToPath, URL } from "node:url";
 
 import { resolve } from "path";
 import { defineConfig } from "vite";
-import { createVuePlugin } from "vite-plugin-vue2";
+import vue from "@vitejs/plugin-vue2";
 import commonjs from "vite-plugin-commonjs";
 
 const libraryName = "VueFormElements";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    createVuePlugin(),
-    commonjs()
-  ],
+  plugins: [vue(), commonjs()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url))
@@ -29,7 +26,13 @@ export default defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ["vue", "moment", "moment-timezone", "@chantouchsek/validatorjs", "@processmaker/vue-multiselect"],
+      external: [
+        "vue",
+        "moment",
+        "moment-timezone",
+        // "@chantouchsek/validatorjs",
+        "@processmaker/vue-multiselect"
+      ],
       output: {
         exports: "named",
         assetFileNames: `vue-form-elements.[ext]`,
@@ -39,7 +42,7 @@ export default defineConfig({
           vue: "Vue",
           moment: "moment",
           "moment-timezone": "moment-timezone",
-          "@chantouchsek/validatorjs": "@chantouchsek/validatorjs",
+          // "@chantouchsek/validatorjs": "Validator",
           "@processmaker/vue-multiselect": "VueMultiselect"
         }
       }
