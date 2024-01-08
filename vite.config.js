@@ -30,7 +30,7 @@ export default defineConfig({
         "vue",
         "moment",
         "moment-timezone",
-        "@chantouchsek/validatorjs",
+        // "@chantouchsek/validatorjs",
         "@processmaker/vue-multiselect"
       ],
       output: {
@@ -42,7 +42,7 @@ export default defineConfig({
           vue: "Vue",
           moment: "moment",
           "moment-timezone": "moment-timezone",
-          "@chantouchsek/validatorjs": "Validator",
+          // "@chantouchsek/validatorjs": "Validator",
           "@processmaker/vue-multiselect": "VueMultiselect"
         }
       }
