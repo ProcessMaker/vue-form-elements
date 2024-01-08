@@ -19,7 +19,7 @@
     "*.js"
   ],
   "dependencies": {
-    "@tinymce/tinymce-vue": "2.0.0",
+    "@tinymce/tinymce-vue": "^2.0.0",
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.23.1",
     "core-js": "^3.8.3",
@@ -28,7 +28,7 @@
     "moment-timezone": "^0.5.26",
     "popper.js": "^1.14.4",
     "sass": "^1.51.0",
-    "tinymce": "5.10.0",
+    "tinymce": "^5.10.0",
     "v-calendar": "^0.9.7",
     "validatorjs": "^3.22.1",
     "vue": "^2.6.12",
