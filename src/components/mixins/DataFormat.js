@@ -1,4 +1,4 @@
-import Validator from 'validatorjs';
+import * as Validator from "validatorjs";
 import moment from 'moment-timezone';
 import { getUserDateFormat, getUserDateTimeFormat } from '../../dateUtils';
 
