@@ -17,16 +17,11 @@ import hasDefaultOptionKeyMixin from "./mixins/hasDefaultOptionKey.js";
 import ProxyDataMixin from "./mixins/ProxyData.js";
 import ValidationMixin from "./mixins/validation.js";
 import RequiredAsterisk from "./common/RequiredAsterisk.vue";
-import BFormComponent from './FormBootstrapVueComponents/BFormComponent.vue'
-import BWrapperComponent from './FormBootstrapVueComponents/BWrapperComponent.vue';
-import {
-  getTimezone,
-  getLang,
-  getUserDateFormat,
-  getUserDateTimeFormat,
-  isValidDate,
-  formatIfDate
-} from "../dateUtils";
+import BFormComponent from "./FormBootstrapVueComponents/BFormComponent.vue";
+import BWrapperComponent from "./FormBootstrapVueComponents/BWrapperComponent.vue";
+import { formatIfDate, getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat, isValidDate } from "../dateUtils";
+
+export * as dateUtils from "../dateUtils";
 
 // Export our components
 const components = {
@@ -64,8 +59,8 @@ function install(Vue) {
   // Boolean flag to see if we're already installed
   this._processMakerVueFormElementsInstalled = true;
   for (const component in components) {
-    if (!components[component].name) components[component].name = component;
-    Vue.component(components[component].name, components[component]);
+    const name = components[component].name ?? component.replace(/^.*[\\/]/, "").replace(/\.[^/.]+$/, "");
+    Vue.component(name, components[component]);
   }
   for (const mixin in mixins) {
     Vue.mixin(mixins[mixin].name);

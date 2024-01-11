@@ -20,7 +20,7 @@ export default defineConfig({
   build: {
     cssCodeSplit: false,
     lib: {
-      entry: resolve(__dirname, "src/components/index.js"),
+      entry: resolve(__dirname, "src/components/new_index.js"),
       name: libraryName,
       fileName: (format) => `vue-form-elements.${format}.js`
     },
