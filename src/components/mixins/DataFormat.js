@@ -1,4 +1,4 @@
-import * as Validator from "validatorjs";
+import Validator from "@chantouchsek/validatorjs";
 import moment from 'moment-timezone';
 import { getUserDateFormat, getUserDateTimeFormat } from '../../dateUtils';
 
@@ -7,7 +7,7 @@ let globalObject = typeof window === 'undefined'
   ? global
   : window;
 
-if (globalObject.ProcessMaker && globalObject.ProcessMaker.user && globalObject.ProcessMaker.user.lang) {
+if (globalObject.ProcessMaker?.user?.lang) {
   Validator.useLang(globalObject.ProcessMaker.user.lang);
 }
 
@@ -89,7 +89,7 @@ export default {
         return true;
       }
 
-      this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]}, null);
+      this.dataTypeValidator = new Validator( {[this.name]: value}, {[this.name]: rules[this.dataFormat]});
       return this.dataTypeValidator.passes();
     },
     formatFloatValue() {

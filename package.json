@@ -30,6 +30,7 @@
     "src"
   ],
   "dependencies": {
+    "@chantouchsek/validatorjs": "1.2.3",
     "@tinymce/tinymce-vue": "2.0.0",
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.23.1",
@@ -40,7 +41,6 @@
     "moment-timezone": "^0.5.26",
     "popper.js": "^1.14.4",
     "tinymce": "5.10.0",
-    "validatorjs": "^3.22.1",
     "vue": "^2.6.12",
     "vue-date-pick": "^1.5.1",
     "vue-uniq-ids": "^1.0.0",

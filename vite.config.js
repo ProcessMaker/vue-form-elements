@@ -12,8 +12,7 @@ export default defineConfig({
   plugins: [vue(), commonjs()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-      validatorjs: "validatorjs/dist/validator.js"
+      "@": fileURLToPath(new URL("./src", import.meta.url))
     },
     extensions: [".js", ".mjs", ".vue", ".json"]
   },
@@ -31,7 +30,6 @@ export default defineConfig({
         "vue",
         "moment",
         "moment-timezone",
-        "validatorjs",
         "@processmaker/vue-multiselect"
       ],
       output: {
@@ -43,7 +41,6 @@ export default defineConfig({
           vue: "Vue",
           moment: "moment",
           "moment-timezone": "moment-timezone",
-          validatorjs: "Validator",
           "@processmaker/vue-multiselect": "VueMultiselect"
         }
       }

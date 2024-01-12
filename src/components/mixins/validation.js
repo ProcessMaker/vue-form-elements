@@ -1,4 +1,4 @@
-import * as Validator from "validatorjs";
+import Validator from "@chantouchsek/validatorjs";
 import moment from "moment-timezone";
 import ProxyData from "./ProxyData";
 import { get, has } from "lodash";
@@ -137,7 +137,9 @@ export default {
           [fieldName]: validationRules
         };
         this.registerCustomRules(data);
-        this.validator = new Validator(data, rules, this.validationMessages ? this.validationMessages : null);
+        this.validator = new Validator(data, rules, {
+          validationMessages: this.validationMessages ? this.validationMessages : null
+        });
         this.validator.setAttributeNames({ [fieldName]: this.label });
         this.validator.errors.first(this.name);
         // Validation will not run until you call passes/fails on it
