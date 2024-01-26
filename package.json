@@ -3,50 +3,57 @@
   "version": "0.50.2",
   "description": "Reusable VueJS Based Form Elements styled with Bootstrap 4",
   "scripts": {
+    "dev": "vite",
     "serve": "NODE_ENV=standalone vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vite build",
+    "preview": "vite preview",
+    "bundle-analyzer": "vite-bundle-visualizer",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "build-bundle": "vue-cli-service build --target lib --name vue-form-elements ./src/components/index.js",
+    "build-bundle": "npm run build",
     "build-watch": "vue-cli-service build --target lib --name vue-form-elements --watch ./src/components/index.js"
   },
-  "main": "./dist/vue-form-elements.common.js",
+  "main": "./dist/vue-form-elements.umd.js",
+  "module": "./dist/vue-form-elements.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-form-elements.es.js",
+      "require": "./dist/vue-form-elements.umd.js"
+    },
+    "./dist/vue-form-elements.css": {
+      "import": "./dist/vue-form-elements.css",
+      "require": "./dist/vue-form-elements.css"
+    }
+  },
   "files": [
     "dist/*",
-    "src/*",
-    "public/*",
-    "*.json",
-    "*.js"
+    "src/*"
   ],
   "dependencies": {
-    "@tinymce/tinymce-vue": "^2.0.0",
+    "@chantouchsek/validatorjs": "1.2.3",
+    "@tinymce/tinymce-vue": "2.0.0",
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.23.1",
     "core-js": "^3.8.3",
     "jquery": "^3.5.1",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.26",
     "popper.js": "^1.14.4",
-    "sass": "^1.51.0",
-    "tinymce": "^5.10.0",
-    "v-calendar": "^0.9.7",
-    "validatorjs": "^3.22.1",
+    "tinymce": "5.10.0",
     "vue": "^2.6.12",
     "vue-date-pick": "^1.5.1",
     "vue-uniq-ids": "^1.0.0",
     "weekstart": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
+    "@babel/core": "^7.21.4",
     "@babel/eslint-parser": "^7.12.16",
+    "@babel/preset-env": "^7.21.4",
     "@panter/vue-i18next": "^0.15.0",
     "@processmaker/vue-multiselect": "2.2.0",
     "@types/jest": "^24.0.18",
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-eslint": "~5.0.0",
-    "@vue/cli-plugin-unit-jest": "~5.0.8",
-    "@vue/cli-service": "~5.0.8",
-    "@vue/eslint-config-airbnb": "^6.0.0",
+    "@vitejs/plugin-vue2": "^2.3.1",
     "@vue/test-utils": "1.0.0-beta.29",
     "@vue/vue2-jest": "^27.0.0-alpha.3",
     "babel-core": "7.0.0-bridge.0",
@@ -62,7 +69,10 @@
     "jest": "^27.1.0",
     "mustache": "^3.0.1",
     "prettier": "2.7.1",
-    "sass-loader": "^10.2.0",
+    "sass": "^1.62.0",
+    "vite": "^4.3.3",
+    "vite-bundle-visualizer": "^0.6.0",
+    "vite-plugin-commonjs": "^0.10.1",
     "vue-template-compiler": "^2.6.12"
   },
   "peerDependencies": {
@@ -94,15 +104,9 @@
       }
     ]
   },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
   "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
+    "defaults",
+    "> 0.2% and not dead"
   ],
   "bugs": {
     "url": "https://github.com/processmaker/vue-form-elements/issues"

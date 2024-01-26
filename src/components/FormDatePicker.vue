@@ -48,7 +48,7 @@ import { getUserDateFormat, getUserDateTimeFormat, getTimezone } from "../dateUt
 import "vue-date-pick/dist/vueDatePick.css";
 import RequiredAsterisk from './common/RequiredAsterisk';
 
-const Validator = require("validatorjs");
+import Validator from "@chantouchsek/validatorjs";
 
 const uniqIdsMixin = createUniqIdsMixin();
 const checkFormats = ["YYYY-MM-DD", "MM/DD/YYYY", moment.ISO_8601];
