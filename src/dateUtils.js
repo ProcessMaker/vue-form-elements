@@ -6,7 +6,7 @@ moment.tz.setDefault(getTimezone());
 const startsWithNumbers = /^\d{4}-/;
 
 function getProcessMakerUserValue(key) {
-  if (ProcessMaker?.user) {
+  if (typeof ProcessMaker !== "undefined" && ProcessMaker.user) {
     return ProcessMaker.user[key];
   }
 }
@@ -20,8 +20,8 @@ export function getLang() {
 }
 
 export function getUserDateFormat() {
-  if (ProcessMaker?.user?.datetime_format) {
-    return ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
+  if (typeof ProcessMaker !== "undefined" && ProcessMaker?.user?.datetime_format) {
+    return ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, '');
   }
 
   return "MM/DD/YYYY";
