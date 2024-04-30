@@ -188,6 +188,12 @@ export default {
   },
   methods: {
     updateValue(newValue) {
+      // allow to send empty value or null to Date and Datetime fields
+      if (newValue === null || newValue === undefined) {
+        this.$set(this, "date", '');
+        return;
+      }
+
       if (!!newValue && newValue.length > 0) {
         const date = moment.tz(newValue, checkFormats, true, getTimezone());
         if (!date.isValid()) return "";
