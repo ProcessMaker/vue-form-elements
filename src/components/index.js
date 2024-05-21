@@ -13,7 +13,7 @@ import FormDelayTimeControl from "./FormDelayTimeControl.vue";
 import FormMultiSelect from "./FormMultiSelect.vue";
 import FormPlainMultiSelect from "./FormPlainMultiSelect.vue";
 import RequiredAsterisk from "./common/RequiredAsterisk.vue";
-import * as dateUtils from "../dateUtils";
+import * as dateUtils from "../dateUtils.ts";
 
 import BFormComponent from "./FormBootstrapVueComponents/BFormComponent.vue";
 import BWrapperComponent from "./FormBootstrapVueComponents/BWrapperComponent.vue";

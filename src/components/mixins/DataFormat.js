@@ -1,6 +1,6 @@
 import Validator from "@chantouchsek/validatorjs";
 import moment from 'moment-timezone';
-import { getUserDateFormat, getUserDateTimeFormat } from '../../dateUtils';
+import { getUserDateFormat, getUserDateTimeFormat } from '../../dateUtils.ts';
 
 // To include another language in the Validator with variable processmaker
 let globalObject = typeof window === 'undefined'

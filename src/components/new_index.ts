@@ -19,9 +19,9 @@ import ValidationMixin from "./mixins/validation.js";
 import RequiredAsterisk from "./common/RequiredAsterisk.vue";
 import BFormComponent from "./FormBootstrapVueComponents/BFormComponent.vue";
 import BWrapperComponent from "./FormBootstrapVueComponents/BWrapperComponent.vue";
-import { formatIfDate, getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat, isValidDate } from "../dateUtils";
+import { formatIfDate, getLang, getTimezone, getUserDateFormat, getUserDateTimeFormat, isValidDate } from "../dateUtils.ts";
 
-export * as dateUtils from "../dateUtils";
+import * as dateUtils from "../dateUtils.ts";
 
 // Export our components
 const components = {
@@ -95,7 +95,8 @@ export {
   getUserDateFormat,
   getUserDateTimeFormat,
   isValidDate,
-  formatIfDate
+  formatIfDate,
+  dateUtils
 };
 
 // Export our Vue plugin as our default

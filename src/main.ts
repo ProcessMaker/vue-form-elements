@@ -1,15 +1,15 @@
-require('bootstrap')
-import Vue from 'vue';
-import i18next from 'i18next';
-import VueI18Next from '@panter/vue-i18next';
+import "bootstrap";
+import Vue from "vue";
+import i18next from "i18next";
+import VueI18Next from "@panter/vue-i18next";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { Multiselect } from "@processmaker/vue-multiselect";
 
-import 'bootstrap/dist/css/bootstrap.css'
+import "bootstrap/dist/css/bootstrap.css";
 
-import DemoApp from './DemoApp'
+import DemoApp from "./DemoApp.vue";
 
 // Allow strings to be wrapped in $t(...) for translating
 // outside this package. This standalone app just returns

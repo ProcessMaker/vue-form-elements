@@ -44,7 +44,7 @@ import Mustache from "mustache";
 import DatePicker from "./DatePicker.vue";
 import ValidationMixin from "./mixins/validation";
 import DataFormatMixin from "./mixins/DataFormat";
-import { getUserDateFormat, getUserDateTimeFormat, getTimezone } from "../dateUtils";
+import { getUserDateFormat, getUserDateTimeFormat, getTimezone } from "../dateUtils.ts";
 import "vue-date-pick/dist/vueDatePick.css";
 import RequiredAsterisk from './common/RequiredAsterisk';
 

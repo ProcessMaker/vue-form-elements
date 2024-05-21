@@ -1,20 +1,22 @@
+/* eslint-env node */
+require("@rushstack/eslint-patch/modern-module-resolution");
+
 module.exports = {
   env: {
     browser: true,
     es2020: true,
     node: true
   },
+  globals: {
+    ProcessMaker: true
+  },
 
-  extends: [
-    "plugin:vue/recommended",
-    "airbnb-base",
-    "plugin:prettier/recommended"
-  ],
+  extends: ["plugin:vue/recommended", "airbnb-base", "plugin:prettier/recommended", "@vue/eslint-config-typescript/recommended"],
 
   parserOptions: {
     ecmaVersion: 6,
     sourceType: "module",
-    parser: "@babel/eslint-parser"
+    parser: "@typescript-eslint/parser"
   },
 
   plugins: ["vue", "prettier"],
@@ -41,10 +43,7 @@ module.exports = {
 
   overrides: [
     {
-      files: [
-        "**/__tests__/*.{j,t}s?(x)",
-        "**/tests/unit/**/*.spec.{j,t}s?(x)"
-      ],
+      files: ["**/__tests__/*.{j,t}s?(x)", "**/tests/unit/**/*.spec.{j,t}s?(x)"],
       env: {
         jest: true
       }

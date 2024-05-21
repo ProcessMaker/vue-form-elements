@@ -1,6 +1,6 @@
 import {
   isValidDate,
-} from '../../src/dateUtils'
+} from '@/dateUtils.ts'
 
 describe('dateUtils', () => {
   const validDates = [

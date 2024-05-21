@@ -31,7 +31,7 @@ import { createUniqIdsMixin } from "vue-uniq-ids";
 import Mustache from "mustache";
 import ValidationMixin from "./mixins/validation";
 import Editor from "./Editor";
-import { formatIfDate } from "../dateUtils";
+import { formatIfDate } from "../dateUtils.ts";
 
 // Create the mixin
 const uniqIdsMixin = createUniqIdsMixin();
