@@ -331,7 +331,7 @@ export default {
     async fetchDataSourceOptions(dataSource, params, dataName) {
       try {
         let resolvedNonce = null;
-        let response = { data : [] };
+        let response = null;
 
         // Nonce ensures we only use results from the latest request
         this.nonce = Math.random();
