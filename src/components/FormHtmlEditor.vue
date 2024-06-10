@@ -64,6 +64,7 @@ export default {
            alignleft aligncenter alignright alignjustify | bullist numlist outdent indent`,
         skin: false,
         relative_urls: false,
+        convert_urls: false,
         remove_script_host: false
       }
     };
