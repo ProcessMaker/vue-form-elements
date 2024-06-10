@@ -92,8 +92,7 @@ export default {
     "controlClass",
     "validationData",
     "placeholder",
-    "multiple",
-    'transientData'
+    "multiple"
   ],
   data() {
     return {
