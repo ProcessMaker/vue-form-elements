@@ -109,6 +109,12 @@ export default {
       countWithoutFilter: null,
     };
   },
+  mounted() {
+    this.$root.$on("selectListOptionsUpdated", this.onSelectListOptionsUpdated);
+  },
+  beforeDestroy() {
+    this.$root.$off("selectListOptionsUpdated", this.onSelectListOptionsUpdated);
+  },
   computed: {
     selectListOptionsWithSelected() {
       if (this.selectedOption && !this.selectListOptions.some(o => o.value === this.selectedOption.value)) {
@@ -228,8 +234,35 @@ export default {
         }
       }
     },
+    value: {
+      deep: true,
+      handler(newValue) {
+        if (newValue && typeof newValue === "object") {
+          this.updateOption(newValue);
+        }
+      }
+    }
   },
   methods: {
+    /**
+     * Updates the specified option with the provided updated value.
+     *
+     * @param {Object} updatedValue - The updated value of the option.
+     */
+    updateOption(updatedValue) {
+      const index = this.selectListOptions.findIndex((option) => option.id === updatedValue.id);
+      if (index !== -1) {
+        this.$set(this.selectListOptions, index, updatedValue);
+      }
+    },
+    /**
+     * If the value is an object, it updates the selected option if necessary.
+     */
+    onSelectListOptionsUpdated() {
+      if (this.value && typeof this.value === "object") {
+        this.updateOption(this.value);
+      }
+    },
     renderPmql(pmql) {
       if (typeof pmql !== "undefined" && pmql !== "" && pmql !== null) {
         const data = this.makeProxyData();
@@ -299,8 +332,8 @@ export default {
         );
         const list = dataName ? get(response.data, dataName) : response.data;
         const transformedList = this.transformOptions(list);
-        this.$root.$emit("selectListOptionsUpdated", transformedList);
         this.selectListOptions = transformedList;
+        this.$root.$emit("selectListOptionsUpdated", transformedList);
         return true;
       } catch (err) {
         /* Ignore error */
@@ -321,7 +354,7 @@ export default {
       ) {
         return false;
       }
-      
+
       const options = {
         params: { per_page: MAX_COLLECTION_RECORDS }
       };
@@ -378,7 +411,7 @@ export default {
       } else {
         pmql = recordPmql;
       }
-      
+
       this.loading = true;
       const [data] = await this.$dataProvider.getCollectionRecords(
         this.collectionOptions.collectionId,
@@ -396,7 +429,7 @@ export default {
     async getCollectionRecords(options) {
       let data = { data : [] };
       let resolvedNonce = null;
-            
+
       // Nonce ensures we only use results from the latest request
       this.nonce = Math.random();
 
@@ -413,11 +446,11 @@ export default {
       }
 
       this.nonce = null;
-      
+
       if (!this.filter) {
         this.countWithoutFilter = data.meta ? data.meta.total : null;
       }
-      
+
       this.selectListOptions = data.data.map(this.formatCollectionRecordResults);
     },
     debouncedSetFilter: debounce(function(value) {
