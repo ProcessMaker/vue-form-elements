@@ -250,7 +250,7 @@ export default {
      * @return {boolean} Returns true if multi-select is disabled, false otherwise.
      */
     isMultiSelectDisabled() {
-      this.options.allowMultiSelect === false;
+      return this.options.allowMultiSelect === false;
     },
 
     /**
