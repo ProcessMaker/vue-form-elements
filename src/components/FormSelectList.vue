@@ -237,13 +237,22 @@ export default {
     value: {
       deep: true,
       handler(newValue) {
-        if (newValue && typeof newValue === "object") {
+        if (newValue && typeof newValue === "object" && this.isMultiSelectDisabled()) {
           this.updateOption(newValue);
         }
       }
     }
   },
   methods: {
+    /**
+     * Checks if multi-select is disabled.
+     *
+     * @return {boolean} Returns true if multi-select is disabled, false otherwise.
+     */
+    isMultiSelectDisabled() {
+      return this.options.allowMultiSelect === false;
+    },
+
     /**
      * Updates the specified option with the provided updated value.
      *
@@ -259,7 +268,7 @@ export default {
      * If the value is an object, it updates the selected option if necessary.
      */
     onSelectListOptionsUpdated() {
-      if (this.value && typeof this.value === "object") {
+      if (this.value && typeof this.value === "object" && this.isMultiSelectDisabled()) {
         this.updateOption(this.value);
       }
     },
