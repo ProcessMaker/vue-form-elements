@@ -261,7 +261,7 @@ export default {
     updateOption(updatedValue) {
       const index = this.selectListOptions.findIndex((option) => option.id === updatedValue.id);
       if (index !== -1) {
-        this.$set(this.selectListOptions, index, updatedValue);
+        Object.assign(this.selectListOptions[index], updatedValue);
       }
     },
     /**
