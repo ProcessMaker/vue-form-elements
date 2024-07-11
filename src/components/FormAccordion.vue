@@ -4,17 +4,14 @@
       v-b-toggle="`collapse-${config.name || config.label}`"
       class="accordion-button text-left card-header d-flex align-items-center w-100 pl-3"
       :id="`accordion-button-${config.name || config.label}`"
-      >
-        <i
-          v-if="config.icon"
-          class="fas mr-1 fa-fw"
-          :class="`fa-${config.icon}`"
-        />
-
-        <span class="ml-1 mr-auto">{{ config.label }}</span>
-
-        <i class="when-opened fas fa-chevron-down accordion-arrow ml-auto" />
-        <i class="when-closed fas fa-chevron-right accordion-arrow ml-auto" />
+    >
+      <div v-if="config.icon">
+        <i v-if="fontAwesomeIcon" class="fas mr-1 fa-fw" :class="`fa-${config.icon}`" />
+        <img v-if="svgIcon" :src="config.icon" :alt="config.name + ' icon'" width="18px" class="mr-1" />
+      </div>
+      <span class="ml-1 mr-auto">{{ config.label }}</span>
+      <i class="when-opened fas fa-chevron-down accordion-arrow ml-auto" />
+      <i class="when-closed fas fa-chevron-right accordion-arrow ml-auto" />
     </button>
 
     <b-collapse
@@ -41,7 +38,9 @@ export default {
     return {
       initiallyOpen: Boolean(this.config.initiallyOpen),
       items: [],
-    }
+      fontAwesomeIcon: false,
+      svgIcon: false,
+    };
   },
   watch: {
     value: {
@@ -54,7 +53,21 @@ export default {
       this.$emit('input', this.items);
     },
   },
-}
+  mounted() {
+    this.getAccordionIcon();
+  },
+  methods: {
+    getAccordionIcon() {
+      if (this.config.icon.includes("svg")) {
+        this.fontAwesomeIcon = false;
+        this.svgIcon = true;
+      } else {
+        this.fontAwesomeIcon = true;
+        this.svgIcon = false;
+      }
+    }
+  }
+};
 </script>
 
 <style scoped lang="scss">
