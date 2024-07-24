@@ -119,8 +119,11 @@ export default {
     collectionOptions() {
       return get(this.options, 'collectionOptions');
     },
+    isDataConnector() {
+      return get(this.options, 'dataSource') === "dataConnector";
+    },
     isCollection() {
-      return get(this.options, 'dataSource') === "collection"
+      return get(this.options, 'dataSource') === "collection";
     },
     mode() {
       return this.$root.$children[0].mode;
@@ -227,7 +230,7 @@ export default {
           }
         }
       }
-    },
+    }
   },
   methods: {
     renderPmql(pmql) {
@@ -237,6 +240,7 @@ export default {
       }
       return "";
     },
+
     /**
      * Load select list options from a data connector
      *
@@ -246,57 +250,99 @@ export default {
     async loadOptionsFromDataConnector(options) {
       const { selectedEndPoint, selectedDataSource, dataName } = options;
 
-      // If no data source has been specified, do not make the api call
-      if (
-        selectedDataSource === null ||
-        typeof selectedDataSource === "undefined" ||
-        selectedDataSource.toString().trim().length === 0
-      ) {
+      if (!this.shouldLoadOptionsFromDataConnector(selectedDataSource, selectedEndPoint)) {
         return false;
       }
 
-      // Do not run in standalone mode
-      if (!this.$dataProvider) {
+      const params = this.prepareParamsForDataConnector(selectedEndPoint);
+      const request = { selectedDataSource, params };
+
+      if (isEqual(this.lastRequest, request)) {
+        return false;
+      }
+
+      this.lastRequest = cloneDeep(request);
+
+      this.fetchDataSourceOptions(selectedDataSource, params, dataName);
+    },
+
+    shouldLoadOptionsFromDataConnector(selectedDataSource, selectedEndPoint) {
+      if (this.isEditorMode()) {
+        return false;
+      }
+
+      // If no data source has been specified, do not make the api call
+      if (this.isNoDataSourceSelected(selectedDataSource)) {
         return false;
       }
 
       // If no endpoint has been specified, do not make the api call
-      if (
-        selectedEndPoint === null ||
-        typeof selectedEndPoint === "undefined" ||
-        selectedEndPoint.toString().trim().length === 0
-      ) {
+      if (this.isNoEndpointSelected(selectedEndPoint)) {
         return false;
       }
 
+      // Do not run in standalone mode
+      if (this.isStandaloneMode()) {
+        return false;
+      }
+
+      return true;
+    },
+
+    isEditorMode() {
+      return this.mode === "editor";
+    },
+
+    isNoDataSourceSelected(dataSource) {
+      return dataSource === null || typeof dataSource === "undefined" || dataSource.toString().trim().length === 0;
+    },
+
+    isNoEndpointSelected(endpoint) {
+      return endpoint === null || typeof endpoint === "undefined" || endpoint.toString().trim().length === 0;
+    },
+
+    isStandaloneMode() {
+      return !this.$dataProvider;
+    },
+
+    prepareParamsForDataConnector(selectedEndPoint) {
       const params = {
         config: {
           endpoint: selectedEndPoint
         }
       };
 
-      if (
-        typeof this.options.pmqlQuery !== "undefined" &&
-        this.options.pmqlQuery !== "" &&
-        this.options.pmqlQuery !== null
-      ) {
-        const data = this.makeProxyData();
-        const pmql = Mustache.render(this.options.pmqlQuery, { data });
+      const pmql = this.renderPmql(this.options.pmqlQuery);
+
+      if (pmql) {
         params.config.outboundConfig = [
-          { type: "PARAM", key: "pmql", value: pmql }
+          {
+            type: "PARAM",
+            key: "pmql",
+            value: pmql
+          }
         ];
       }
-      const request = { selectedDataSource, params };
-      if (isEqual(this.lastRequest, request)) {
-        return false;
-      }
-      this.lastRequest = cloneDeep(request);
 
+      return params;
+    },
+
+    async fetchDataSourceOptions(dataSource, params, dataName) {
       try {
-        const response = await this.$dataProvider.getDataSource(
-          selectedDataSource,
-          params
-        );
+        let resolvedNonce = null;
+        let response = null;
+
+        // Nonce ensures we only use results from the latest request
+        this.nonce = Math.random();
+
+        [response, resolvedNonce] = await this.$dataProvider.getDataSource(dataSource, params, this.nonce);
+
+        if (resolvedNonce !== this.nonce) {
+          return;
+        }
+
+        this.nonce = null;
+
         const list = dataName ? get(response.data, dataName) : response.data;
         const transformedList = this.transformOptions(list);
         this.$root.$emit("selectListOptionsUpdated", transformedList);
@@ -308,6 +354,7 @@ export default {
         return false;
       }
     },
+
     async loadOptionsFromCollection() {
       if (this.mode === "editor") {
         return false;
@@ -396,7 +443,7 @@ export default {
     async getCollectionRecords(options) {
       let data = { data : [] };
       let resolvedNonce = null;
-            
+
       // Nonce ensures we only use results from the latest request
       this.nonce = Math.random();
 
