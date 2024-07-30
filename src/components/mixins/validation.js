@@ -31,7 +31,7 @@ export default {
             // Account for multicolumn components
             source = source.$parent;
           }
-          const check = get(source, variable);
+          const check = get(source, variable) || get(this.transientData, variable);
 
           if (rule === "required_if") {
             if (check == value) {
