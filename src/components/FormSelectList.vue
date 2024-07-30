@@ -266,7 +266,7 @@ export default {
         return false;
       }
       this.lastRequest = cloneDeep(request);
-      this.fetchDataSourceOptions(selectedDataSource, params, dataName);
+      return await this.fetchDataSourceOptions(selectedDataSource, params, dataName);
     },
 
     shouldLoadOptionsFromDataConnector(selectedDataSource, selectedEndPoint) {
