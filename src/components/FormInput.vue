@@ -5,12 +5,12 @@
       v-bind="$attrs"
       v-uni-id="name"
       :value="value"
-      @input="$emit('input', $event.target.value)"
+      @input="handleInput"
       :name="name"
       class="form-control"
       :class="classList"
       v-on:blur="formatFloatValue()"
-    >
+    />
     <display-errors v-if="error || (validator && validator.errorCount)" :name="name" :error="error" :validator="validator"/>
     <small v-if="helper" class="form-text text-muted" v-html="helper"/>
   </div>
@@ -39,7 +39,13 @@ export default {
     'helper',
     'name',
     'controlClass',
+    'validateKeyStrokes',
   ],
+  data() {
+    return {
+      validator: null,
+    }
+  },
   computed:{
     classList() {
       return {
@@ -48,10 +54,18 @@ export default {
       }
     }
   },
-  data() {
-    return {
-      validator: null
+  methods: {
+    handleInput(event) {
+      if (this.validateKeyStrokes) {
+        const allowedVariableRegex = new RegExp(this.validateKeyStrokes);
+        if (!allowedVariableRegex.test(event.target.value)) {
+          this.$emit("input", this.value);
+          event.target.value = this.value;
+          return;
+        }
+      }
+      this.$emit("input", event.target.value);
     }
-  },
-}
+  }
+};
 </script>
