@@ -11,10 +11,6 @@ jobs:
   build:
     name: Scan
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        containers: [0, 1, 2, 3, 4]  # Distribuirá la carga entre 5 contenedores para paralelismo
 
     steps:
       ########################################
@@ -88,12 +84,12 @@ jobs:
           spec: "tests/e2e/**/*"
           record: true
           parallel: true  # Habilita el paralelismo
-          group: "CI - Chrome - Container ${{ matrix.containers }}"  # Identificar grupo de pruebas por contenedor
+          group: "CI - Chrome"  # Grupo de ejecución para Cypress
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
+          COMMIT_INFO_SHA: ${{github.event.pull_request.head.sha}}
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
@@ -111,12 +107,13 @@ jobs:
 
       - name: Prepare coverage
         working-directory: screen-builder
-        run: cp .nyc_output/out.json coverage/coverage-${{ matrix.containers }}.json
+        run: cp .nyc_output/out.json coverage/coverage.json
+
       - name: Archive code coverage
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-${{ matrix.containers }}
-          path: ./screen-builder/coverage/coverage-${{ matrix.containers }}.json
+          name: coverage
+          path: ./screen-builder/coverage/coverage.json
 
       - name: Create coverage report
         working-directory: screen-builder
