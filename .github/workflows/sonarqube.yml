@@ -11,6 +11,10 @@ jobs:
   build:
     name: Scan
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # https://github.com/cypress-io/github-action/issues/48
+      matrix:
+        containers: [1, 2, 3] # Uses 2 parallel instances
 
     steps:
       ########################################
@@ -63,11 +67,11 @@ jobs:
 
       - name: Link vue-form-elements
         working-directory: screen-builder
-        run: npm link @processmaker/vue-form-elements
+        run: npm ci && npm link @processmaker/vue-form-elements
 
       - name: Install screen-builder dependencies 
         working-directory: screen-builder
-        run: npm ci && npm run build-bundle
+        run: npm run build-bundle
 
       ########################################
       # Run Cypress tests in parallel
