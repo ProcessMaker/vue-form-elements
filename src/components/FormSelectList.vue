@@ -241,10 +241,18 @@ export default {
     isMultiSelectDisabled() {
       return this.options.allowMultiSelect === false;
     },
+    hasNestedProperty(obj, path) {
+      return path.split(".").reduce((acc, part) => acc && acc[part], obj);
+    },
     renderPmql(pmql) {
       if (typeof pmql !== "undefined" && pmql !== "" && pmql !== null) {
         const data = this.makeProxyData();
-        return Mustache.render(pmql, data);
+        const preprocessedTemplate = pmql.replace(/{{\s*([\w.]+)\s*}}/g, (match, key) => {
+          return this.hasNestedProperty(data, key) ? match : `[[[${key}]]]`;
+        });
+        const output = Mustache.render(preprocessedTemplate, data);
+        const last = Mustache.render(output.replace("[[[", "{{").replace("]]]", "}}"), { data });
+        return last;
       }
       return "";
     },
