@@ -254,11 +254,15 @@ export default {
     @returns {boolean}
      */
     checkMinMaxDateDisabled(date) {
+      date = moment(date.toLocaleDateString() + ' ' + moment().format('hh:mm:ss a')).toDate();
       const minDate = !!this.minDate ? this.parseDateToDate(this.minDate) : "";
       const maxDate = !!this.maxDate ? this.parseDateToDate(this.maxDate) : "";
       // If minDate and maxDate are not defined, return. This would be the default case
       if (minDate.length === 0 && maxDate.length === 0) return;
       if (!!minDate && !!maxDate) {
+        if (this.config.dataFormat === 'date') {
+          return !(moment(date).isSameOrAfter(minDate, 'day') && moment(date).isSameOrBefore(this.maxDate, 'day'));
+        }
         return !(date >= minDate && date <= maxDate);
       }
       // If minDate is defined but maxDate not defined, block the dates before minDate is defined
