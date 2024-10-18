@@ -304,6 +304,28 @@ export default {
         },
         "Must have a value between :between"
       );
+
+      // Update screen builder's tests/e2e/specs/Builder.spec.js when changing this
+      Validator.register(
+        "dot_notation",
+        (path) => {
+          // Split the string by dots
+          const keys = path.split('.');
+
+          // Regular expression for valid keys: start with a letter, followed by letters, numbers, or underscores
+          const validKey = /^[a-zA-Z][a-zA-Z0-9_]*$/;
+
+          // Check each key for validity
+          for (let key of keys) {
+            if (!validKey.test(key)) {
+              return false;
+            }
+          }
+
+          return true;
+        },
+        "Invalid variable name",
+      );
     }
   }
 };
