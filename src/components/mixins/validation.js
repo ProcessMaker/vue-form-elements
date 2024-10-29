@@ -2,6 +2,7 @@ import Validator from "@chantouchsek/validatorjs";
 import moment from "moment-timezone";
 import ProxyData from "./ProxyData";
 import { get, has } from "lodash";
+import Mustache from "mustache";
 
 export default {
   name: "ValidationMixin",
@@ -140,7 +141,8 @@ export default {
         this.validator = new Validator(data, rules, {
           validationMessages: this.validationMessages ? this.validationMessages : null
         });
-        this.validator.setAttributeNames({ [fieldName]: this.label });
+        const renderedLabel = Mustache.render(this.label, data);
+        this.validator.setAttributeNames({ [fieldName]: renderedLabel });
         this.validator.errors.first(this.name);
         // Validation will not run until you call passes/fails on it
         this.validator.passes();
