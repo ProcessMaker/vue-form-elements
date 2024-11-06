@@ -119,19 +119,28 @@ export default {
         let data = this.validationData ? this.validationData : { [fieldName]: this.value };
         let validationRules = "";
 
-        if (typeof this.validation !== "string" && this.validation.length) {
+        if (Array.isArray(this.validation)) {
           let rules = [];
 
           this.validation.forEach((configs) => {
             if (!configs.value) {
               return;
             }
-            rules.push(configs.value);
+            const ruleValue = configs.value
+              .replace('after:', 'after_date:')
+              .replace('before:', 'before_date:')
+              .replace('after_or_equal:', 'after_or_equal_date:')
+              .replace('before_or_equal:', 'before_or_equal_date:');
+            rules.push(ruleValue);
           });
 
           validationRules = rules;
         } else {
-          validationRules = this.validation;
+          validationRules = this.validation
+            .replace('after:', 'after_date:')
+            .replace('before:', 'before_date:')
+            .replace('after_or_equal:', 'after_or_equal_date:')
+            .replace('before_or_equal:', 'before_or_equal_date:');
         }
 
         let rules = {
@@ -172,7 +181,7 @@ export default {
       );
 
       Validator.register(
-        "after",
+        "after_date",
         function (date, params) {
           // checks if incoming 'params' is a date or a key reference.
           let checkDate = moment(params);
@@ -185,11 +194,11 @@ export default {
 
           return inputDate > afterDate;
         },
-        "The :attribute must be after :after."
+        "The :attribute must be after :after_date."
       );
 
       Validator.register(
-        "after_or_equal",
+        "after_or_equal_date",
         function (date, params) {
           // checks if incoming 'params' is a date or a key reference.
           let checkDate = moment(params);
@@ -202,11 +211,11 @@ export default {
 
           return inputDate >= equalOrAfterDate;
         },
-        "The :attribute must be equal or after :after_or_equal."
+        "The :attribute must be equal or after :after_or_equal_date."
       );
 
       Validator.register(
-        "before",
+        "before_date",
         function (date, params) {
           // checks if incoming 'params' is a date or a key reference.
           let checkDate = moment(params);
@@ -219,11 +228,11 @@ export default {
 
           return inputDate < beforeDate;
         },
-        "The :attribute must be before :before."
+        "The :attribute must be before :before_date."
       );
 
       Validator.register(
-        "before_or_equal",
+        "before_or_equal_date",
         function (date, params) {
           // checks if incoming 'params' is a date or a key reference.
           let checkDate = moment(params);
@@ -236,7 +245,7 @@ export default {
 
           return inputDate <= beforeDate;
         },
-        "The :attribute must be equal or before :before_or_equal."
+        "The :attribute must be equal or before :before_or_equal_date."
       );
 
       Validator.register(
