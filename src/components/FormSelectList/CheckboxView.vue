@@ -81,10 +81,14 @@ export default {
     getOptionAriaLabel(option) {
       let ariaLabel = '';
       if (this.optionsExtra?.length) {
-        const optionExtra = this.optionsExtra.find(extra => extra[this.optionValue] === option[this.optionValue]);
-        ariaLabel = optionExtra[this.optionAriaLabel || "ariaLabel"];
+        const optionExtra = this.optionsExtra.find(extra => 
+          extra.hasOwnProperty(this.optionValue) && 
+          extra[this.optionValue] === option[this.optionValue]);
+        if (optionExtra) {
+          ariaLabel = optionExtra[this.optionAriaLabel || "ariaLabel"] ?? '';
+        }
       } else {
-         ariaLabel = option[this.optionAriaLabel || "ariaLabel"];
+         ariaLabel = option[this.optionAriaLabel || "ariaLabel"] ?? '';
       }
       return (!ariaLabel || ariaLabel === "") ? this.getOptionContent(option) : ariaLabel;
     },
