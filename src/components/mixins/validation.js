@@ -111,7 +111,9 @@ export default {
       } else if (document.documentElement.lang) {
         lang = document.documentElement.lang;
       }
-      globalObject.ProcessMaker.setValidatorLanguage(Validator, lang);
+      if (typeof globalObject.ProcessMaker.setValidatorLanguage === 'function') {
+        globalObject.ProcessMaker.setValidatorLanguage(Validator, lang);
+      }
 
       globalObject.validatorLanguageSet = true;
     },

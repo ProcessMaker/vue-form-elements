@@ -7,7 +7,7 @@ let globalObject = typeof window === 'undefined'
   ? global
   : window;
 
-if (globalObject.ProcessMaker?.user?.lang) {
+if (globalObject.ProcessMaker?.user?.lang && typeof globalObject.ProcessMaker.setValidatorLanguage === 'function') {
   globalObject.ProcessMaker.setValidatorLanguage(Validator, globalObject.ProcessMaker.user.lang);
 }
 
