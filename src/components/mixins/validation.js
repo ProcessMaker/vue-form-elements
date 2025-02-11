@@ -105,11 +105,13 @@ export default {
         return;
       }
 
+      let lang = 'en';
       if (has(globalObject, "ProcessMaker.user.lang")) {
-        Validator.useLang(globalObject.ProcessMaker.user.lang);
+        lang = globalObject.ProcessMaker.user.lang;
       } else if (document.documentElement.lang) {
-        Validator.useLang(document.documentElement.lang);
+        lang = document.documentElement.lang;
       }
+      globalObject.ProcessMaker.setValidatorLanguage(Validator, lang);
 
       globalObject.validatorLanguageSet = true;
     },

@@ -8,7 +8,7 @@ let globalObject = typeof window === 'undefined'
   : window;
 
 if (globalObject.ProcessMaker?.user?.lang) {
-  Validator.useLang(globalObject.ProcessMaker.user.lang);
+  globalObject.ProcessMaker.setValidatorLanguage(Validator, globalObject.ProcessMaker.user.lang);
 }
 
 Validator.register('custom-date', function(date) {
