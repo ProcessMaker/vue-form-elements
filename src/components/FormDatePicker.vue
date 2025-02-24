@@ -105,7 +105,8 @@ export default {
       default: false
     },
     minDate: { type: [String, Boolean], default: false },
-    maxDate: { type: [String, Boolean], default: false }
+    maxDate: { type: [String, Boolean], default: false },
+    transientData: { type: Object, default: () => ({}) }
   },
   data() {
     // set to the browser's timezone because the vue-date-pick always works
