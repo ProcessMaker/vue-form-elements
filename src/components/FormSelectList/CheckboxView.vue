@@ -35,6 +35,7 @@ export default {
     'optionContent',
     'optionAriaLabel',
     'options',
+    'optionsExtra',
     'error',
     'helper',
     'name',
@@ -78,7 +79,17 @@ export default {
       return option[this.optionContent || 'content'];
     },
     getOptionAriaLabel(option) {
-      const ariaLabel = option[this.optionAriaLabel || "ariaLabel"];
+      let ariaLabel = '';
+      if (this.optionsExtra?.length) {
+        const optionExtra = this.optionsExtra.find(extra => 
+          extra.hasOwnProperty(this.optionValue) && 
+          extra[this.optionValue] === option[this.optionValue]);
+        if (optionExtra) {
+          ariaLabel = optionExtra[this.optionAriaLabel || "ariaLabel"] ?? '';
+        }
+      } else {
+         ariaLabel = option[this.optionAriaLabel || "ariaLabel"] ?? '';
+      }
       return (!ariaLabel || ariaLabel === "") ? this.getOptionContent(option) : ariaLabel;
     },
     getOptionId(option, index) {
