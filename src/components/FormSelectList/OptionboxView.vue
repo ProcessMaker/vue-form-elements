@@ -10,6 +10,7 @@
           v-model="selected"
           v-bind="$attrs"
           :disabled="isReadOnly"
+          :aria-label="getOptionAriaLabel(option)"
       >
       <label :class="labelClass" v-uni-for="getOptionId(option, index)">
         {{getOptionContent(option)}}
@@ -38,6 +39,7 @@ export default {
     'controlClass',
     'emitObjects',
     'emitArray',
+    'optionAriaLabel'
   ],
   data() {
     return {
@@ -76,6 +78,10 @@ export default {
     },
     getOptionContent(option) {
       return option[this.optionContent || 'content'];
+    },
+    getOptionAriaLabel(option) {
+      const ariaLabel = option[this.optionAriaLabel || "ariaLabel"];
+      return (!ariaLabel || ariaLabel === "") ? this.getOptionContent(option) : ariaLabel;
     },
     getOptionId(option, index) {
       return `${this.name}-${this.getOptionValue(option)}-${index}`;

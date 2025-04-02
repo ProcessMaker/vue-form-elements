@@ -65,7 +65,8 @@ export default {
     "controlClass",
     "richtext",
     "readonly",
-    "rows"
+    "rows",
+    "transientData"
   ],
   data() {
     return {

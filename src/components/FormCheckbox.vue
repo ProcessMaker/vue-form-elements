@@ -49,6 +49,7 @@ export default {
     'toggle',
     'checked',
     'initiallyChecked',
+    'transientData'
   ],
   computed: {
     validatorErrors() {

@@ -5,6 +5,7 @@
       v-if="options.renderAs === 'dropdown'"
       :option-value="optionsKey"
       :option-content="optionsValue"
+      :option-aria-label="optionsAriaLabel"
       v-uni-id="name"
       v-model="valueProxy"
       :placeholder="placeholder ? placeholder : $t('Select...')"
@@ -26,7 +27,9 @@
         :name="name"
         :option-value="optionsKey"
         :option-content="optionsValue"
+        :option-aria-label="optionsAriaLabel"
         :options="selectListOptionsWithSelected"
+        :options-extra="options.optionsListExtra"
         :react-options="reactOptions"
         :emit-objects="options.valueTypeReturned === 'object'"
         v-bind="$attrs"
@@ -39,7 +42,9 @@
         :name="name"
         :option-value="optionsKey"
         :option-content="optionsValue"
+        :option-aria-label="optionsAriaLabel"
         :options="selectListOptionsWithSelected"
+        :options-extra="options.optionsListExtra"
         :react-options="reactOptions"
         :emit-objects="options.valueTypeReturned === 'object'"
         v-bind="$attrs"
@@ -92,7 +97,8 @@ export default {
     "controlClass",
     "validationData",
     "placeholder",
-    "multiple"
+    "multiple",
+    "transientData"
   ],
   data() {
     return {
@@ -159,7 +165,8 @@ export default {
         valueTypeReturned: this.options.valueTypeReturned,
         dataName: this.options.dataName,
         value: this.options.value,
-        key: this.options.key
+        key: this.options.key,
+        ariaLabel: this.options.optionAriaLabel
       };
     },
     valueProxy: {
@@ -212,6 +219,16 @@ export default {
         return "content";
       }
       return "__content__";
+    },
+    optionsAriaLabel() {
+      if (
+        this.options.dataSource &&
+        (this.options.dataSource === "provideData" ||
+          this.isCollection)
+      ) {
+        return "ariaLabel";
+      }
+      return "__ariaLabel__";
     },
     classList() {
       return {
@@ -384,6 +401,7 @@ export default {
     formatCollectionRecordResults(record) {
       let content = get(record, this.collectionOptions.labelField);
       let value = get(record, this.collectionOptions.valueField);
+      let ariaLabel = get(record, this.collectionOptions.ariaLabelField || this.collectionOptions.labelField);
 
       // Special handler for file uploads
       if (typeof content === 'object' && ('name' in content)) {
@@ -395,7 +413,8 @@ export default {
 
       return {
         value: String(value),
-        content: String(content)
+        content: String(content),
+        ariaLabel: String(ariaLabel)
       };
     },
     includeFilterInPmql(pmql) {
@@ -557,15 +576,32 @@ export default {
             ? Mustache.render(this.options.value, item)
             : Mustache.render(`{{${this.options.value || "content"}}}`, item);
 
+        // Modified ariaLabel handling        
+        let itemAriaLabel = itemContent;
+        if (this.options.optionAriaLabel) {
+          itemAriaLabel = this.options.optionAriaLabel.indexOf("{{") >= 0
+            ? Mustache.render(this.options.optionAriaLabel, item)
+            : Mustache.render(`{{${this.options.optionAriaLabel || "ariaLabel"}}}`, item);
+        }
+
         Mustache.escape = escape; // Reset mustache to original escape function
 
         parsedOption[this.optionsValue] = itemContent;
+        parsedOption[this.optionsAriaLabel] = itemAriaLabel;
+
         if (this.options.valueTypeReturned === "object") {
           parsedOption = suffix.length > 0 ? get(item, suffix) : item;
           if (!parsedOption.hasOwnProperty(this.optionsValue)) {
             Object.defineProperty(parsedOption, this.optionsValue, {
               get() {
                 return itemContent;
+              }
+            });
+          }
+          if (!parsedOption.hasOwnProperty(this.optionsAriaLabel)) {
+            Object.defineProperty(parsedOption, this.optionsAriaLabel, {
+              get() {
+                return itemAriaLabel;
               }
             });
           }
@@ -580,9 +616,15 @@ export default {
       }
       const suffix = this.attributeParent(this.options.value);
       let contentProperty = this.options.value;
+      let ariaLabelProperty = this.options.ariaLabel || this.options.value;
+
       if (contentProperty.indexOf("{{") === -1) {
         contentProperty = `{{ ${contentProperty} }}`;
       }
+      if (ariaLabelProperty.indexOf("{{") === -1) {
+        ariaLabelProperty = `{{ ${ariaLabelProperty} }}`;
+      }
+
       if (!parsedOption.hasOwnProperty(this.optionsValue)) {
         Object.defineProperty(parsedOption, this.optionsValue, {
           get() {
@@ -597,6 +639,22 @@ export default {
           }
         });
       }
+
+      if (!parsedOption.hasOwnProperty(this.optionsAriaLabel)) {
+        Object.defineProperty(parsedOption, this.optionsAriaLabel, {
+          get() {
+            // note this = parsedOption
+            let data = {};
+            if (suffix) {
+              set(data, suffix, this);
+            } else {
+              data = this;
+            }
+            return Mustache.render(ariaLabelProperty, data);
+          }
+        });
+      }
+
       return parsedOption;
     },
     stripMustache(str) {
