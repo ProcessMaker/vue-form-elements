@@ -3,6 +3,7 @@
     <button
       v-b-toggle="`collapse-${config.name || config.label}`"
       class="accordion-button text-left card-header d-flex align-items-center w-100 pl-3"
+      :style="customStyle"
       :id="`accordion-button-${config.name || config.label}`"
     >
       <div v-if="config.icon">
@@ -41,6 +42,15 @@ export default {
       fontAwesomeIcon: false,
       svgIcon: false,
     };
+  },
+  computed: {
+    customStyle() {
+      let customStyle = '';
+      if (this.config.customStyle) {
+        customStyle = this.config.customStyle;
+      }
+      return customStyle;
+    }
   },
   watch: {
     value: {
