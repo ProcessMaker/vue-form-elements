@@ -1,11 +1,11 @@
 <template>
-  <form>
-    <div v-for="(option, index) in options" :key="getOptionValue(option)" :class="divClass">
+  <div v-bind="$attrs">
+    <div v-for="(option, index) in options" :key="getOptionValue(option)" :class="divClass" role="radio">
       <input
         v-model="selected"
         v-uni-id="getOptionId(option, index)"
         :class="inputClass"
-        type="radio"
+        :type="allowMultiselect ? 'checkbox' : 'radio'"
         :name="`${name}`"
         :value="emitObjects ? option : getOptionValue(option)"
         v-bind="$attrs"
@@ -16,7 +16,7 @@
         {{ getOptionContent(option) }}
       </label>
     </div>
-  </form>
+  </div>
 </template>
 
 <script>
@@ -32,6 +32,7 @@ export default {
     "value",
     "optionValue",
     "optionContent",
+    "optionAriaLabel",
     "options",
     "optionsExtra",
     "error",
@@ -40,7 +41,7 @@ export default {
     "controlClass",
     "emitObjects",
     "emitArray",
-    "optionAriaLabel"
+    "allowMultiselect"
   ],
   data() {
     return {
@@ -99,4 +100,5 @@ export default {
     }
   }
 };
+
 </script>

@@ -3,11 +3,11 @@
     <required-asterisk /><label v-uni-for="name">{{ label }}</label>
     <multi-select-view
       v-if="options.renderAs === 'dropdown'"
+      v-model="valueProxy"
+      v-uni-id="name"
       :option-value="optionsKey"
       :option-content="optionsValue"
       :option-aria-label="optionsAriaLabel"
-      v-uni-id="name"
-      v-model="valueProxy"
       :placeholder="placeholder ? placeholder : $t('Select...')"
       :show-labels="false"
       :options="selectListOptionsWithSelected"
@@ -16,30 +16,16 @@
       :emit-objects="options.valueTypeReturned === 'object'"
       :emit-array="options.allowMultiSelect"
       v-bind="$attrs"
-      @search-change="searchChange"
       :loading="loading"
+      @search-change="searchChange"
     >
     </multi-select-view>
 
-    <div v-if="options.renderAs === 'checkbox' && options.allowMultiSelect">
-      <checkbox-view
-        v-model="valueProxy"
-        :name="name"
-        :option-value="optionsKey"
-        :option-content="optionsValue"
-        :option-aria-label="optionsAriaLabel"
-        :options="selectListOptionsWithSelected"
-        :options-extra="options.optionsListExtra"
-        :react-options="reactOptions"
-        :emit-objects="options.valueTypeReturned === 'object'"
-        v-bind="$attrs"
-      />
-    </div>
-
-    <div v-if="options.renderAs === 'checkbox' && !options.allowMultiSelect">
+    <div v-if="options.renderAs === 'checkbox'">
       <optionbox-view
         v-model="valueProxy"
         :name="name"
+        :allow-multiselect="options.allowMultiSelect"
         :option-value="optionsKey"
         :option-content="optionsValue"
         :option-aria-label="optionsAriaLabel"
@@ -51,10 +37,7 @@
       />
     </div>
 
-    <div
-      v-if="(validator && validator.errorCount) || error"
-      class="invalid-feedback d-block"
-    >
+    <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback d-block">
       <div v-for="(error, index) in validatorErrors" :key="index">
         {{ error }}
       </div>
@@ -70,9 +53,8 @@ import Mustache from "mustache";
 import { isEqual, cloneDeep, get, set, debounce } from "lodash";
 import ValidationMixin from "./mixins/validation";
 import MultiSelectView from "./FormSelectList/MultiSelectView";
-import CheckboxView from "./FormSelectList/CheckboxView";
 import OptionboxView from "./FormSelectList/OptionboxView";
-import RequiredAsterisk from './common/RequiredAsterisk';
+import RequiredAsterisk from "./common/RequiredAsterisk";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -82,7 +64,6 @@ export default {
   components: {
     OptionboxView,
     MultiSelectView,
-    CheckboxView,
     RequiredAsterisk
   },
   mixins: [uniqIdsMixin, ValidationMixin],
@@ -112,24 +93,24 @@ export default {
       loaded: false,
       previousDependentValue: null,
       filter: "",
-      countWithoutFilter: null,
+      countWithoutFilter: null
     };
   },
   computed: {
     selectListOptionsWithSelected() {
-      if (this.selectedOption && !this.selectListOptions.some(o => o.value === this.selectedOption.value)) {
+      if (this.selectedOption && !this.selectListOptions.some((o) => o.value === this.selectedOption.value)) {
         return [this.selectedOption, ...this.selectListOptions];
       }
       return this.selectListOptions;
     },
     collectionOptions() {
-      return get(this.options, 'collectionOptions');
+      return get(this.options, "collectionOptions");
     },
     isDataConnector() {
-      return get(this.options, 'dataSource') === "dataConnector";
+      return get(this.options, "dataSource") === "dataConnector";
     },
     isCollection() {
-      return get(this.options, 'dataSource') === "collection";
+      return get(this.options, "dataSource") === "collection";
     },
     mode() {
       return this.$root.$children[0].mode;
@@ -186,23 +167,16 @@ export default {
         return this.value;
       },
       set(val) {
-        this.selectedOption = val ? this.selectListOptions.find(o => o.value === val) : null;
+        this.selectedOption = val ? this.selectListOptions.find((o) => o.value === val) : null;
         return this.$emit("input", val);
       }
     },
     optionsKey() {
-      if (
-        this.options.dataSource &&
-        this.options.dataSource === "provideData"
-      ) {
+      if (this.options.dataSource && this.options.dataSource === "provideData") {
         return "value";
       }
 
-      if (
-        this.options.dataSource &&
-        this.options.dataSource === "dataConnector" &&
-        this.options.valueTypeReturned === "object"
-      ) {
+      if (this.options.dataSource && this.options.dataSource === "dataConnector" && this.options.valueTypeReturned === "object") {
         return this.optionsValue;
       }
 
@@ -211,29 +185,20 @@ export default {
       return this.stripMustache(fieldName);
     },
     optionsValue() {
-      if (
-        this.options.dataSource &&
-        (this.options.dataSource === "provideData" ||
-          this.isCollection)
-      ) {
+      if (this.options.dataSource && (this.options.dataSource === "provideData" || this.isCollection)) {
         return "content";
       }
       return "__content__";
     },
     optionsAriaLabel() {
-      if (
-        this.options.dataSource &&
-        (this.options.dataSource === "provideData" ||
-          this.isCollection)
-      ) {
+      if (this.options.dataSource && (this.options.dataSource === "provideData" || this.isCollection)) {
         return "ariaLabel";
       }
       return "__ariaLabel__";
     },
     classList() {
       return {
-        "has-errors":
-          (this.validator && this.validator.errorCount) || this.error,
+        "has-errors": (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass
       };
     }
@@ -242,7 +207,7 @@ export default {
     selectListOptions: {
       handler() {
         if (this.isCollection) {
-          if (this.value && !this.selectListOptions.some(o => o.value === this.value)) {
+          if (this.value && !this.selectListOptions.some((o) => o.value === this.value)) {
             this.loadIndividualRecord();
           }
         }
@@ -401,13 +366,13 @@ export default {
     formatCollectionRecordResults(record) {
       let content = get(record, this.collectionOptions.labelField);
       let value = get(record, this.collectionOptions.valueField);
-      let ariaLabel = get(record, this.collectionOptions.ariaLabelField || this.collectionOptions.labelField);
+      const ariaLabel = get(record, this.collectionOptions.ariaLabelField || this.collectionOptions.labelField);
 
       // Special handler for file uploads
-      if (typeof content === 'object' && ('name' in content)) {
+      if (typeof content === "object" && "name" in content) {
         content = content.name;
       }
-      if (typeof value === 'object' && ('id' in value)) {
+      if (typeof value === "object" && "id" in value) {
         value = value.id;
       }
 
@@ -438,10 +403,7 @@ export default {
       }
 
       this.loading = true;
-      const [data] = await this.$dataProvider.getCollectionRecords(
-        this.collectionOptions.collectionId,
-        { params: { pmql } }
-      );
+      const [data] = await this.$dataProvider.getCollectionRecords(this.collectionOptions.collectionId, { params: { pmql } });
       this.loading = false;
 
       if (data.data && data.data.length > 0) {
@@ -452,18 +414,14 @@ export default {
       }
     },
     async getCollectionRecords(options) {
-      let data = { data : [] };
+      let data = { data: [] };
       let resolvedNonce = null;
 
       // Nonce ensures we only use results from the latest request
       this.nonce = Math.random();
 
       this.loading = true;
-      [data, resolvedNonce] = await this.$dataProvider.getCollectionRecords(
-        this.collectionOptions.collectionId,
-        options,
-        this.nonce
-      );
+      [data, resolvedNonce] = await this.$dataProvider.getCollectionRecords(this.collectionOptions.collectionId, options, this.nonce);
       this.loading = false;
 
       if (resolvedNonce !== this.nonce) {
@@ -478,7 +436,7 @@ export default {
 
       this.selectListOptions = data.data.map(this.formatCollectionRecordResults);
     },
-    debouncedSetFilter: debounce(function(value) {
+    debouncedSetFilter: debounce(function (value) {
       this.filter = value;
     }, 300),
     searchChange(value) {
@@ -498,15 +456,8 @@ export default {
      */
     async fillSelectListOptions(resetValueIfNotInOptions) {
       let wasUpdated = false;
-      if (
-        this.options.dataSource &&
-        this.options.dataSource === "provideData"
-      ) {
-        if (
-          this.options &&
-          this.options.optionsList &&
-          !isEqual(this.selectListOptions, this.options.optionsList)
-        ) {
+      if (this.options.dataSource && this.options.dataSource === "provideData") {
+        if (this.options && this.options.optionsList && !isEqual(this.selectListOptions, this.options.optionsList)) {
           this.selectListOptions = this.options.optionsList;
         }
         this.selectListOptions = this.selectListOptions || [];
@@ -527,10 +478,7 @@ export default {
         wasUpdated = true;
       }
 
-      if (
-        this.options.dataSource &&
-        this.options.dataSource === "dataConnector"
-      ) {
+      if (this.options.dataSource && this.options.dataSource === "dataConnector") {
         wasUpdated = await this.loadOptionsFromDataConnector(this.sourceConfig);
       }
 
@@ -554,7 +502,7 @@ export default {
       const resultList = [];
 
       if (!Array.isArray(list)) {
-        console.warn('The retrieved data is not an array. Please check the data sources options of the select list `' + this.name + '`')
+        console.warn(`The retrieved data is not an array. Please check the data sources options of the select list \`${this.name}\``);
         return resultList;
       }
 
@@ -576,12 +524,13 @@ export default {
             ? Mustache.render(this.options.value, item)
             : Mustache.render(`{{${this.options.value || "content"}}}`, item);
 
-        // Modified ariaLabel handling        
+        // Modified ariaLabel handling
         let itemAriaLabel = itemContent;
         if (this.options.optionAriaLabel) {
-          itemAriaLabel = this.options.optionAriaLabel.indexOf("{{") >= 0
-            ? Mustache.render(this.options.optionAriaLabel, item)
-            : Mustache.render(`{{${this.options.optionAriaLabel || "ariaLabel"}}}`, item);
+          itemAriaLabel =
+            this.options.optionAriaLabel.indexOf("{{") >= 0
+              ? Mustache.render(this.options.optionAriaLabel, item)
+              : Mustache.render(`{{${this.options.optionAriaLabel || "ariaLabel"}}}`, item);
         }
 
         Mustache.escape = escape; // Reset mustache to original escape function
@@ -658,11 +607,7 @@ export default {
       return parsedOption;
     },
     stripMustache(str) {
-      const removed = str
-        .replace(/{{/g, "")
-        .replace(/}}/g, "")
-        .split(".")
-        .pop();
+      const removed = str.replace(/{{/g, "").replace(/}}/g, "").split(".").pop();
 
       return removed || str;
     },
