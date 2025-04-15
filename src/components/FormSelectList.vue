@@ -21,11 +21,25 @@
     >
     </multi-select-view>
 
-    <div v-if="options.renderAs === 'checkbox'">
+    <div v-if="options.renderAs === 'checkbox' && options.allowMultiSelect">
+      <checkbox-view
+        v-model="valueProxy"
+        :name="name"
+        :option-value="optionsKey"
+        :option-content="optionsValue"
+        :option-aria-label="optionsAriaLabel"
+        :options="selectListOptionsWithSelected"
+        :options-extra="options.optionsListExtra"
+        :react-options="reactOptions"
+        :emit-objects="options.valueTypeReturned === 'object'"
+        v-bind="$attrs"
+      />
+    </div>
+
+    <div v-if="options.renderAs === 'checkbox' && !options.allowMultiSelect">
       <optionbox-view
         v-model="valueProxy"
         :name="name"
-        :allow-multiselect="options.allowMultiSelect"
         :option-value="optionsKey"
         :option-content="optionsValue"
         :option-aria-label="optionsAriaLabel"
@@ -54,6 +68,7 @@ import { isEqual, cloneDeep, get, set, debounce } from "lodash";
 import ValidationMixin from "./mixins/validation";
 import MultiSelectView from "./FormSelectList/MultiSelectView";
 import OptionboxView from "./FormSelectList/OptionboxView";
+import CheckboxView from "./FormSelectList/CheckboxView";
 import RequiredAsterisk from "./common/RequiredAsterisk";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -63,6 +78,7 @@ const MAX_COLLECTION_RECORDS = 100;
 export default {
   components: {
     OptionboxView,
+    CheckboxView,
     MultiSelectView,
     RequiredAsterisk
   },

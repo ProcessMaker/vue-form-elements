@@ -1,16 +1,17 @@
 <template>
   <div :aria-label="$attrs['aria-label']">
-    <div v-for="(option, index) in options" :key="getOptionValue(option)" :class="divClass" role="radio">
+    <div v-for="(option, index) in options" :key="getOptionValue(option)" :class="divClass" role="checkbox">
       <input
         v-model="selected"
         v-uni-id="getOptionId(option, index)"
         :class="inputClass"
-        type="radio"
+        type="checkbox"
         :name="`${name}`"
         :value="emitObjects ? option : getOptionValue(option)"
         v-bind="$attrs"
         :disabled="isReadOnly"
         :aria-label="getOptionAriaLabel(option)"
+        @change="$emit('input', selected)"
       />
       <label v-uni-for="getOptionId(option, index)" :class="labelClass">
         {{ getOptionContent(option) }}
@@ -24,7 +25,6 @@ import { createUniqIdsMixin } from "vue-uniq-ids";
 import ValidationMixin from "../mixins/validation";
 
 const uniqIdsMixin = createUniqIdsMixin();
-
 export default {
   mixins: [uniqIdsMixin, ValidationMixin],
   inheritAttrs: false,
@@ -40,8 +40,7 @@ export default {
     "name",
     "controlClass",
     "emitObjects",
-    "emitArray",
-    "allowMultiselect"
+    "emitArray"
   ],
   data() {
     return {
@@ -64,15 +63,12 @@ export default {
     }
   },
   watch: {
-    value(val) {
-      this.selected = val;
-    },
-    selected() {
-      this.$emit("input", this.selected);
+    value(value) {
+      this.selected = value instanceof Array ? value : [];
     }
   },
   mounted() {
-    this.selected = this.value;
+    this.selected = this.value instanceof Array ? this.value : [];
   },
   methods: {
     getOptionValue(option) {
@@ -100,5 +96,4 @@ export default {
     }
   }
 };
-
 </script>
