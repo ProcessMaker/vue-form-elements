@@ -41,7 +41,7 @@
     "moment-timezone": "^0.5.45",
     "popper.js": "^1.14.4",
     "tinymce": "5.10.0",
-    "vue": "^2.6.12",
+    "vue": "^3.0.0",
     "vue-date-pick": "^1.5.1",
     "vue-uniq-ids": "^1.0.0",
     "weekstart": "^1.0.0"
