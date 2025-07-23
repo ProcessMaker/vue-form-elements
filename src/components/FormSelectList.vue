@@ -384,18 +384,22 @@ export default {
       let value = get(record, this.collectionOptions.valueField);
       const ariaLabel = get(record, this.collectionOptions.ariaLabelField || this.collectionOptions.labelField);
 
-      // Special handler for file uploads
-      if (typeof content === "object" && "name" in content) {
+      // Special handler for file uploads.
+      // Ensure 'content' is a non-null object before checking for 'name' key.
+      if (content && typeof content === "object" && "name" in content) {
         content = content.name;
       }
-      if (typeof value === "object" && "id" in value) {
+
+      // Ensure 'value' is a non-null object before checking for 'id' key.
+      if (value && typeof value === "object" && "id" in value) {
         value = value.id;
       }
 
+      // Safely convert to string, fallback to empty string if null or undefined.
       return {
-        value: String(value),
-        content: String(content),
-        ariaLabel: String(ariaLabel)
+        value: String(value ?? ""),
+        content: String(content ?? ""),
+        ariaLabel: String(ariaLabel ?? "")
       };
     },
     includeFilterInPmql(pmql) {
