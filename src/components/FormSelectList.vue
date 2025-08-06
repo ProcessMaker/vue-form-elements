@@ -423,7 +423,7 @@ export default {
     },
     includeFilterInPmql(pmql) {
       if (this.filter) {
-        const filterPmql = `${this.collectionOptions.labelField} like "%${this.filter}%"`;
+        const filterPmql = `lower(${this.collectionOptions.labelField}) like "%${this.filter.toLowerCase()}%"`;
         if (pmql) {
           pmql = `(${pmql}) AND ${filterPmql}`;
         } else {
