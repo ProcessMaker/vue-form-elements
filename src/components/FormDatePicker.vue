@@ -145,7 +145,16 @@ export default {
       return this.dataFormat === "datetime";
     },
     format() {
-      return this.datepicker ? getUserDateTimeFormat() : getUserDateFormat();
+      let format = this.datepicker ? getUserDateTimeFormat() : getUserDateFormat();
+      if (this.datepicker) {
+        // Check if the format already includes time patterns (hh:mm A or HH:mm)
+        const hasTimePattern = /[Hh]{1,2}:[mM]{1,2}/.test(format);
+        if (!hasTimePattern) {
+          // If forceDateTime is true and no time pattern exists, ensure the format includes hh:mm A
+          format = format.replace(/[\sHh:msaAzZ]/g, '') + ' hh:mm A';
+        }
+      }
+      return format;
     },
     classList() {
       return {
