@@ -153,6 +153,7 @@ export default {
           // If forceDateTime is true and no time pattern exists, ensure the format includes hh:mm A
           format = `${format.replace(/[\sHh:msaAzZ]/g, '')} hh:mm A`;
         }
+        return format;
       }
       return getUserDateFormat();
     },
