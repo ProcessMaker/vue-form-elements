@@ -6,7 +6,7 @@
         v-uni-id="getOptionId(option, index)"
         :class="inputClass"
         type="radio"
-        :name="`${name}`"
+        :name="inputName"
         :value="emitObjects ? option : getOptionValue(option)"
         v-bind="$attrs"
         :disabled="isReadOnly"
@@ -48,6 +48,11 @@ export default {
     return {
       selected: []
     };
+  },
+  computed: {
+    inputName() {
+      return `${this.name}-${this._uid}`;
+    }
   },
   watch: {
     value(val) {
