@@ -78,8 +78,8 @@ const MAX_COLLECTION_RECORDS = 100;
 const API_CLIENT_CACHE_CONFIG = {
   cache: {
     enabled: true,
-    debug: true
-  }
+    debug: false,
+  },
 };
 
 export default {
