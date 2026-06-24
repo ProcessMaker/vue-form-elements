@@ -75,6 +75,13 @@ const uniqIdsMixin = createUniqIdsMixin();
 
 const MAX_COLLECTION_RECORDS = 100;
 
+const API_CLIENT_CACHE_CONFIG = {
+  cache: {
+    enabled: true,
+    debug: true
+  }
+};
+
 export default {
   components: {
     OptionboxView,
@@ -309,7 +316,8 @@ export default {
       const params = {
         config: {
           endpoint: selectedEndPoint
-        }
+        },
+        ...API_CLIENT_CACHE_CONFIG
       };
       const pmql = this.renderPmql(this.options.pmqlQuery);
       if (pmql) {
@@ -360,7 +368,8 @@ export default {
       }
 
       const options = {
-        params: { per_page: MAX_COLLECTION_RECORDS }
+        params: { per_page: MAX_COLLECTION_RECORDS },
+        ...API_CLIENT_CACHE_CONFIG
       };
 
       let pmql = this.renderPmql(this.collectionOptions.pmql);
@@ -423,7 +432,10 @@ export default {
       }
 
       this.loading = true;
-      const [data] = await this.$dataProvider.getCollectionRecords(this.collectionOptions.collectionId, { params: { pmql } });
+      const [data] = await this.$dataProvider.getCollectionRecords(this.collectionOptions.collectionId, {
+        params: { pmql },
+        ...API_CLIENT_CACHE_CONFIG
+      });
       this.loading = false;
 
       if (data.data && data.data.length > 0) {
