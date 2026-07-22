@@ -298,15 +298,40 @@ describe('FormSelectList', () => {
       expect(withContent.__content__).not.toContain('&lt;');
     });
 
-    it('restores Mustache.escape after renderMustacheUnescaped', () => {
+    it('converts double-brace variables to triple-brace without touching Mustache.escape', () => {
       const wrapper = mountDataConnector();
       const originalEscape = Mustache.escape;
 
-      const rendered = wrapper.vm.renderMustacheUnescaped('{{name}}', { name: specialLabel });
+      expect(wrapper.vm.toUnescapedMustache('{{name}}')).toBe('{{{name}}}');
+      expect(wrapper.vm.toUnescapedMustache('{{name}} - {{code}}')).toBe('{{{name}}} - {{{code}}}');
+      expect(wrapper.vm.toUnescapedMustache('{{#items}}{{name}}{{/items}}')).toBe('{{#items}}{{{name}}}{{/items}}');
+      expect(wrapper.vm.toUnescapedMustache('{{{name}}}')).toBe('{{{name}}}');
 
+      const rendered = Mustache.render(wrapper.vm.toUnescapedMustache('{{name}}'), { name: specialLabel });
       expect(rendered).toBe(specialLabel);
       expect(Mustache.escape).toBe(originalEscape);
       expect(Mustache.escape('&')).toBe('&amp;');
+    });
+
+    it('does not HTML-escape special characters for mustache templates on reload', () => {
+      const wrapper = shallowMount(FormSelectList, {
+        mocks: { $t },
+        propsData: {
+          options: {
+            ...dataConnectorOptions,
+            value: '{{name}}'
+          }
+        },
+        computed: {
+          mode: () => 'preview'
+        }
+      });
+      const selectedObject = { id: 1, name: specialLabel };
+
+      const withContent = wrapper.vm.addObjectContentProp(selectedObject);
+
+      expect(withContent.__content__).toBe(specialLabel);
+      expect(withContent.__ariaLabel__).toBe(specialLabel);
     });
   });
 });

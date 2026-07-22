@@ -528,32 +528,27 @@ export default {
 
       list.forEach((item) => {
         // if the content has a mustache expression
-        const { escape } = Mustache;
-        Mustache.escape = (t) => t; // Do not escape mustache content
-
         let parsedOption = {};
         if (this.options.key) {
           const itemValue =
             this.options.key.indexOf("{{") >= 0
-              ? Mustache.render(this.options.key, item)
-              : Mustache.render(`{{${this.options.key || "value"}}}`, item);
+              ? Mustache.render(this.toUnescapedMustache(this.options.key), item)
+              : Mustache.render(`{{{${this.options.key || "value"}}}}`, item);
           parsedOption[this.optionsKey] = itemValue;
         }
         const itemContent =
           this.options.value.indexOf("{{") >= 0
-            ? Mustache.render(this.options.value, item)
-            : Mustache.render(`{{${this.options.value || "content"}}}`, item);
+            ? Mustache.render(this.toUnescapedMustache(this.options.value), item)
+            : Mustache.render(`{{{${this.options.value || "content"}}}}`, item);
 
         // Modified ariaLabel handling
         let itemAriaLabel = itemContent;
         if (this.options.optionAriaLabel) {
           itemAriaLabel =
             this.options.optionAriaLabel.indexOf("{{") >= 0
-              ? Mustache.render(this.options.optionAriaLabel, item)
-              : Mustache.render(`{{${this.options.optionAriaLabel || "ariaLabel"}}}`, item);
+              ? Mustache.render(this.toUnescapedMustache(this.options.optionAriaLabel), item)
+              : Mustache.render(`{{{${this.options.optionAriaLabel || "ariaLabel"}}}}`, item);
         }
-
-        Mustache.escape = escape; // Reset mustache to original escape function
 
         parsedOption[this.optionsValue] = itemContent;
         parsedOption[this.optionsAriaLabel] = itemAriaLabel;
@@ -579,12 +574,16 @@ export default {
       });
       return resultList;
     },
-    renderMustacheUnescaped(template, data) {
-      const { escape } = Mustache;
-      Mustache.escape = (t) => t; // Do not escape mustache content
-      const result = Mustache.render(template, data);
-      Mustache.escape = escape; // Reset mustache to original escape function
-      return result;
+    toUnescapedMustache(template) {
+      // Convert {{ var }} to {{{ var }}} so special characters are not HTML-escaped.
+      // Leave sections, inverted sections, partials, comments, and already-unescaped tags alone.
+      return template.replace(/\{\{(?!\{)([^}]+)\}\}(?!\})/g, (match, content) => {
+        const trimmed = content.trim();
+        if (!trimmed || /^[#/^!>&]/.test(trimmed)) {
+          return match;
+        }
+        return `{{{${content}}}}`;
+      });
     },
     addObjectContentProp(parsedOption) {
       if (!(parsedOption instanceof Object)) {
@@ -593,13 +592,16 @@ export default {
       const suffix = this.attributeParent(this.options.value);
       let contentProperty = this.options.value;
       let ariaLabelProperty = this.options.ariaLabel || this.options.value;
-      const renderMustacheUnescaped = this.renderMustacheUnescaped.bind(this);
 
       if (contentProperty.indexOf("{{") === -1) {
-        contentProperty = `{{ ${contentProperty} }}`;
+        contentProperty = `{{{ ${contentProperty} }}}`;
+      } else {
+        contentProperty = this.toUnescapedMustache(contentProperty);
       }
       if (ariaLabelProperty.indexOf("{{") === -1) {
-        ariaLabelProperty = `{{ ${ariaLabelProperty} }}`;
+        ariaLabelProperty = `{{{ ${ariaLabelProperty} }}}`;
+      } else {
+        ariaLabelProperty = this.toUnescapedMustache(ariaLabelProperty);
       }
 
       if (!parsedOption.hasOwnProperty(this.optionsValue)) {
@@ -612,7 +614,7 @@ export default {
             } else {
               data = this;
             }
-            return renderMustacheUnescaped(contentProperty, data);
+            return Mustache.render(contentProperty, data);
           }
         });
       }
@@ -627,7 +629,7 @@ export default {
             } else {
               data = this;
             }
-            return renderMustacheUnescaped(ariaLabelProperty, data);
+            return Mustache.render(ariaLabelProperty, data);
           }
         });
       }
