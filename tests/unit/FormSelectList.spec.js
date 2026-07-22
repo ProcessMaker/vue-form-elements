@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
+import Mustache from 'mustache';
 import FormSelectList from '../../src/components/FormSelectList.vue';
 
 describe('FormSelectList', () => {
@@ -243,5 +244,69 @@ describe('FormSelectList', () => {
     wrapper.setProps({ value });
     expect(wrapper.find('.invalid-feedback').exists()).toBe(false);
     expect(wrapper.find('select').classes('is-invalid')).toBe(false);
+  });
+
+  describe('Mustache label escaping for object values', () => {
+    const specialLabel = 'Hello & World <tag>';
+    const dataConnectorOptions = {
+      renderAs: 'dropdown',
+      allowMultiSelect: true,
+      dataSource: 'dataConnector',
+      valueTypeReturned: 'object',
+      key: 'id',
+      value: 'name',
+      optionAriaLabel: 'name'
+    };
+
+    beforeEach(() => {
+      window.ProcessMaker = { user: {} };
+      window.validatorLanguageSet = true;
+    });
+
+    const mountDataConnector = () =>
+      shallowMount(FormSelectList, {
+        mocks: { $t },
+        propsData: {
+          options: dataConnectorOptions
+        },
+        computed: {
+          mode: () => 'preview'
+        }
+      });
+
+    it('does not HTML-escape special characters in transformOptions', () => {
+      const wrapper = mountDataConnector();
+      const list = [{ id: 1, name: specialLabel }];
+
+      const transformed = wrapper.vm.transformOptions(list);
+
+      expect(transformed[0].__content__).toBe(specialLabel);
+      expect(transformed[0].__ariaLabel__).toBe(specialLabel);
+      expect(transformed[0].__content__).not.toContain('&amp;');
+      expect(transformed[0].__content__).not.toContain('&lt;');
+    });
+
+    it('does not HTML-escape special characters in addObjectContentProp (reload path)', () => {
+      const wrapper = mountDataConnector();
+      const selectedObject = { id: 1, name: specialLabel };
+
+      const withContent = wrapper.vm.addObjectContentProp(selectedObject);
+
+      expect(withContent.__content__).toBe(specialLabel);
+      expect(withContent.__ariaLabel__).toBe(specialLabel);
+      expect(withContent.__content__).not.toContain('&amp;');
+      expect(withContent.__content__).not.toContain('&lt;');
+    });
+
+    it('restores Mustache.escape after renderMustacheUnescaped', () => {
+      const wrapper = mountDataConnector();
+      const originalEscape = Mustache.escape;
+
+      const rendered = wrapper.vm.renderMustacheUnescaped('{{name}}', { name: specialLabel });
+
+      expect(rendered).toBe(specialLabel);
+      expect(Mustache.escape).toBe(originalEscape);
+      expect(Mustache.escape('&')).toBe('&amp;');
+    });
   });
 });

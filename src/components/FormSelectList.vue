@@ -579,6 +579,13 @@ export default {
       });
       return resultList;
     },
+    renderMustacheUnescaped(template, data) {
+      const { escape } = Mustache;
+      Mustache.escape = (t) => t; // Do not escape mustache content
+      const result = Mustache.render(template, data);
+      Mustache.escape = escape; // Reset mustache to original escape function
+      return result;
+    },
     addObjectContentProp(parsedOption) {
       if (!(parsedOption instanceof Object)) {
         return parsedOption;
@@ -586,6 +593,7 @@ export default {
       const suffix = this.attributeParent(this.options.value);
       let contentProperty = this.options.value;
       let ariaLabelProperty = this.options.ariaLabel || this.options.value;
+      const renderMustacheUnescaped = this.renderMustacheUnescaped.bind(this);
 
       if (contentProperty.indexOf("{{") === -1) {
         contentProperty = `{{ ${contentProperty} }}`;
@@ -604,7 +612,7 @@ export default {
             } else {
               data = this;
             }
-            return Mustache.render(contentProperty, data);
+            return renderMustacheUnescaped(contentProperty, data);
           }
         });
       }
@@ -619,7 +627,7 @@ export default {
             } else {
               data = this;
             }
-            return Mustache.render(ariaLabelProperty, data);
+            return renderMustacheUnescaped(ariaLabelProperty, data);
           }
         });
       }
