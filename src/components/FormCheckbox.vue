@@ -10,7 +10,7 @@
         :checked="isChecked"
         @change="$emit('change', $event.target.checked)"
       >
-      <required-asterisk />
+      <required-asterisk :toggle-enabled="toggle"/>
       <label :class="labelClass" v-uni-for="name">{{label}}</label>
       <div v-if="(validator && validator.errorCount) || error" class="invalid-feedback">
         <div v-for="(error, index) in validatorErrors" :key="index">{{error}}</div>
