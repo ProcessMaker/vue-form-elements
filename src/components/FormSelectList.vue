@@ -114,6 +114,7 @@ export default {
       selectedOption: null,
       loading: false,
       loaded: false,
+      dataObjectOptionsPending: false,
       previousDependentValue: null,
       filter: "",
       countWithoutFilter: null
@@ -185,7 +186,7 @@ export default {
               this.addObjectContentProp(item);
             });
           }
-          return this.areItemsInSelectListOptions(newValue) ? this.value : [];
+          return this.shouldPreservePendingDataObjectValue(newValue) || this.areItemsInSelectListOptions(newValue) ? this.value : [];
         }
         return this.value;
       },
@@ -505,6 +506,7 @@ export default {
           requestOptions = [];
         }
 
+        this.dataObjectOptionsPending = requestOptions === null || requestOptions === undefined;
         const list = requestOptions || [];
         this.selectListOptions = this.transformOptions(list);
         wasUpdated = true;
@@ -678,6 +680,10 @@ export default {
      * @param {boolean} resetValueIfNotInOptions
      */
     updateWatcherDependentFieldValue(resetValueIfNotInOptions) {
+      if (this.shouldPreservePendingDataObjectValue(this.value)) {
+        return;
+      }
+
       let hasKeyInOptions = true;
 
       if (Array.isArray(this.value)) {
@@ -704,6 +710,20 @@ export default {
       if (!hasKeyInOptions && resetValueIfNotInOptions) {
         this.$emit("reset", this.name);
       }
+    },
+    hasValue(value) {
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      return value !== null && value !== undefined && value !== "";
+    },
+    shouldPreservePendingDataObjectValue(value) {
+      return (
+        this.options.dataSource === "dataObject" &&
+        this.dataObjectOptionsPending &&
+        this.selectListOptions.length === 0 &&
+        this.hasValue(value)
+      );
     },
     /**
      * Returns true if one or more items in list (an array) are in Select List's options
