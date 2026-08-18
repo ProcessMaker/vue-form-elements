@@ -11,10 +11,127 @@ jobs:
   build:
     name: Scan
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # https://github.com/cypress-io/github-action/issues/48
+      matrix:
+        containers: [1, 2, 3] # Uses 2 parallel instances
+
     steps:
+      ########################################
+      # Checkout and Build vue-form-elements
+      ########################################
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Setup node env 🏗
+        uses: actions/setup-node@master
+        with:
+          node-version: 20
+          check-latest: true
+          cache: 'npm'
+      
+      - name: Install vfe dependencies 
+        run: npm ci && npm run build-bundle
+
+      - name: Link vue-form-elements
+        run: npm link
+
+      ########################################
+      # Checkout and Build screen-builder
+      ########################################
+      - name: Get screen-builder-version from PR body
+        uses: actions-ecosystem/action-regex-match@v2
+        id: screen-builder-version
+        with:
+          text: ${{ github.event.pull_request.body }}
+          regex: 'ci:screen-builder:([^\s]+)'
+
+      - name: Set env variable SCREEN_BUILDER_BRANCH (default=develop)
+        run: |
+          export SCREEN_BUILDER_BRANCH='develop'
+          if [[ ${{ contains(github.event.pull_request.body, 'ci:next') }} ]]; then
+            export SCREEN_BUILDER_BRANCH=next
+          fi
+          if [[ ${{ steps.screen-builder-version.outputs.match != '' }} ]]; then
+            export SCREEN_BUILDER_BRANCH=${{ steps.screen-builder-version.outputs.group1 }}
+          fi
+          echo "SCREEN_BUILDER_BRANCH=${SCREEN_BUILDER_BRANCH}" >> $GITHUB_ENV
+
+      - name: Checkout screen-builder
+        uses: actions/checkout@v4
+        with:
+          repository: ProcessMaker/screen-builder
+          path: screen-builder
+          ref: ${{ env.SCREEN_BUILDER_BRANCH }}
+
+      - name: Link vue-form-elements
+        working-directory: screen-builder
+        run: npm ci && npm link @processmaker/vue-form-elements
+
+      - name: Install screen-builder dependencies 
+        working-directory: screen-builder
+        run: npm run build-bundle
+
+      ########################################
+      # Run Cypress tests in parallel
+      ########################################
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: screen-builder
+          browser: chrome
+          install: false
+          start: npm run dev
+          wait-on: 'http://localhost:5173/'
+          config-file: cypress.config.js
+          spec: "tests/e2e/**/*"
+          record: true
+          parallel: true  # Habilita el paralelismo
+          group: "CI - Chrome"  # Grupo de ejecución para Cypress
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          COMMIT_INFO_SHA: ${{github.event.pull_request.head.sha}}
+
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: screen-builder/tests/e2e/screenshots
+
+      - name: Upload Cypress Videos
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-videos
+          path: screen-builder/tests/e2e/videos
+
+      - name: Prepare coverage
+        working-directory: screen-builder
+        run: cp .nyc_output/out.json coverage/coverage.json
+
+      - name: Archive code coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: ./screen-builder/coverage/coverage.json
+
+      - name: Create coverage report
+        working-directory: screen-builder
+        run: npx nyc report --reporter html --reporter text --reporter json-summary --reporter lcov --report-dir coverage
+
+      - name: Store Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: |
+            coverage
+            .nyc_output
+            reports
+
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
