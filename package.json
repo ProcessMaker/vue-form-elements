@@ -121,5 +121,9 @@
     "vuejs",
     "form"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "processmaker": {
+    "downstream": ["screen-builder"],
+    "command": "build-bundle"
+  }
 }
