@@ -8,6 +8,8 @@
           :page="form"
           :config="wrapperConfig"
           :current-page="form"
+          @submit="onSubmit"
+          @after-submit="onAfterSubmit"
         />
       </component>
     </div>
@@ -31,7 +33,13 @@ export default {
       show: false,
     };
   },
-  mounted() {
+  methods: {
+    onSubmit(...args) {
+      this.$emit('submit', ...args);
+    },
+    onAfterSubmit(...args) {
+      this.$emit('after-submit', ...args);
+    },
   },
   computed: {
     wrapperConfig() {
