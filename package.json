@@ -123,7 +123,6 @@
   ],
   "license": "MIT",
   "processmaker": {
-    "downstream": ["screen-builder"],
-    "command": "build-bundle"
+    "downstream": ["screen-builder"]
   }
 }
