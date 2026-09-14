@@ -28,6 +28,10 @@ export default {
     name: { type: String, default: null },
     label: { type: String, default: '' },
   },
+  emits: {
+    submit: null,
+    "after-submit": null
+  },
   data() {
     return {
       show: false,
