@@ -178,6 +178,58 @@ describe('FormDatePicker', () => {
       expect(wrapper.html()).not.toContain(validationError);
     });
 
+    it('keeps the selected calendar day on Melbourne DST start', () => {
+      const previousTz = process.env.TZ;
+      process.env.TZ = 'Australia/Melbourne';
+
+      try {
+        window.ProcessMaker.user = {
+          timezone: 'Australia/Melbourne',
+          datetime_format: 'MM/DD/YYYY',
+        };
+
+        const wrapper = mount(FormDatePicker, {
+          propsData: {
+            dataFormat: 'date',
+          },
+        });
+
+        const parsed = wrapper.vm.parsingInputDate('10/04/2026');
+
+        expect(parsed.getFullYear()).toBe(2026);
+        expect(parsed.getMonth()).toBe(9);
+        expect(parsed.getDate()).toBe(4);
+      } finally {
+        process.env.TZ = previousTz;
+      }
+    });
+
+    it('keeps the selected calendar day on New Zealand DST start', () => {
+      const previousTz = process.env.TZ;
+      process.env.TZ = 'Pacific/Auckland';
+
+      try {
+        window.ProcessMaker.user = {
+          timezone: 'Pacific/Auckland',
+          datetime_format: 'MM/DD/YYYY',
+        };
+
+        const wrapper = mount(FormDatePicker, {
+          propsData: {
+            dataFormat: 'date',
+          },
+        });
+
+        const parsed = wrapper.vm.parsingInputDate('09/27/2026');
+
+        expect(parsed.getFullYear()).toBe(2026);
+        expect(parsed.getMonth()).toBe(8);
+        expect(parsed.getDate()).toBe(27);
+      } finally {
+        process.env.TZ = previousTz;
+      }
+    });
+
     it('convert invalid value to current date', async () => {
       const wrapper = mount(FormDatePicker, {
         propsData: {
