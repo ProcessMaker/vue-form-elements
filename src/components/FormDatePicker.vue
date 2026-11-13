@@ -250,9 +250,11 @@ export default {
       return date;
     },
     parsingInputDate(val) {
-      const date = moment(val, this.format).local(true);
-      // Check if user is typing, if the date is not valid, let the user continue
+      const date = this.dataFormat === "date" ? moment.utc(val, this.format, true) : moment.tz(val, this.format, true, getTimezone());
       if (!date.isValid()) return "";
+      if (this.dataFormat === "date") {
+        return new Date(date.year(), date.month(), date.date());
+      }
       return date.toDate();
     },
     /*
